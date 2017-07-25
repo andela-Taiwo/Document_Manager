@@ -6,9 +6,8 @@ module.exports = {
   create(req, res) {
     return User
       .create({
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        phoneNumber: req.body.phoneNumber,
+        userName: req.body.userName,
+        password: req.body.password,
         email: req.body.email,
         roleId: req.body.roleId
       })
@@ -26,7 +25,6 @@ module.exports = {
     .catch(error => res.status(400).send(error));
   },
   getAllUsers(req, res) {
-    console.log('Userssssssssss');
     return User
     .all()
     .then(users => res.status(200).send(users))
@@ -41,11 +39,10 @@ module.exports = {
     })
     .then((user) => {
       user.update({
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        phoneNumber: req.body.phoneNumber,
+        userName: req.body.userName,
+        password: req.body.password,
         email: req.body.email,
-        roleId: req.body.roleId
+        roleId: 2
       }).then((userUpdate) => {
         const data = {
           error: 'false',

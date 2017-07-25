@@ -8,7 +8,7 @@ module.exports = {
         content: req.body.content,
         access: req.body.access,
         userId: req.params.id,
-        roleId: req.body.roleId
+        roleId: 2
       })
       .then(document => res.status(201).send(document))
       .catch(error => res.status(400).send(error));
