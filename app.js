@@ -2,6 +2,7 @@
 const express = require('express');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
+const expressValidator = require('express-validator');
 
 const app = express();
 
@@ -11,6 +12,21 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 // parse application/json
 app.use(bodyParser.json());
+app.use(expressValidator({
+  errorFormatter: (param, msg, value) => {
+    const namespace = param.split('.');
+    const root = namespace.shift();
+    let formParam = root;
+    while (namespace.length) {
+      formParam += `[${namespace.shift()}]`;
+    }
+    return {
+      param: formParam,
+      msg,
+      value
+    };
+  }
+}));
 
 // Require our routes into the application.
 require('./server/route')(app);
