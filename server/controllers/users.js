@@ -1,6 +1,6 @@
 const User = require('../models').User;
 const verifyUserParams = require('../helper/profile').verifyUserParams;
-
+const jwt = require('jsonwebtoken');
 
 module.exports = {
   addUser(req, res) {
@@ -13,19 +13,64 @@ module.exports = {
         return {};
       }
       return User
-        .create({
+    .findOne({ where: { email: req.body.email } })
+    .then((foundUser) => {
+      if (!foundUser) {
+        User.create({
           userName: req.body.userName,
           password: req.body.password,
-          email: req.body.email,
-          roleId: req.body.roleId
+          email: req.body.email
         })
         .then((user) => {
-          res.status(201).send({ user });
-        })
-        .catch((error) => {
-          res.status(412).json({ msg: error.message });
+
+          const userId = user.id;
+          const userEmail = user.email;
+          const roleId = user.roleId;
+          const userDetails = {
+            userId,
+            userEmail,
+            roleId
+          };
+          const myToken = jwt.sign({ user: userDetails },
+            'DOC$-AP1$',
+            { expiresIn: 24 * 60 * 60 });
+          res.send(200, { token: myToken,
+            userId: user.id,
+            userName: user.userName });
         });
+      } else {
+        res.status(404).json('user already exist!');
+      }
+    })
+  .catch((error) => {
+    res.status(412).json({ msg: error.message });
+  });
     });
+  },
+  logginUser(req, res) {
+    return User
+    .findOne({
+      where: {
+        email: req.body.email,
+      }
+    })
+    .then((user) => {
+      if (user.password === req.body.password) {
+        const userId = user.id;
+        const userEmail = user.email;
+        const roleId = user.roleId;
+        const userDetails = {
+          userId,
+          userEmail,
+          roleId
+        };
+        const myToken = jwt.sign({ user: userDetails },
+          'DOC$-AP1$',
+          { expiresIn: 24 * 60 * 60 });
+        res.status(201).send({ token: myToken });
+      }
+    })
+    .catch(error => res.status(400).send(error));
   },
   getUser(req, res) {
     return User

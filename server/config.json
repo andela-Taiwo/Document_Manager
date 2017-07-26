@@ -4,7 +4,9 @@
     "password": null,
     "database": "docmanagerapi",
     "host": "localhost",
-    "dialect": "postgres"
+    "dialect": "postgres",
+    "jwtSecret":null,
+    "jwtSession": {"session": false}
   },
   "test": {
     "username": "root",
