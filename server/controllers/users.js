@@ -1,18 +1,31 @@
 const User = require('../models').User;
-// const verifyUserParams = require('../helper/profile').verifyUserParams;
+const verifyUserParams = require('../helper/profile').verifyUserParams;
 
 
 module.exports = {
-  create(req, res) {
-    return User
-      .create({
-        userName: req.body.userName,
-        password: req.body.password,
-        email: req.body.email,
-        roleId: req.body.roleId
-      })
-      .then(user => res.status(201).send(user))
-      .catch(error => res.status(400).send(error));
+  addUser(req, res) {
+    verifyUserParams(req)
+    .then((result) => {
+      const verifiedParams = result.mapped();
+      const noErrors = result.isEmpty();
+      if (!noErrors) {
+        res.send(verifiedParams);
+        return {};
+      }
+      return User
+        .create({
+          userName: req.body.userName,
+          password: req.body.password,
+          email: req.body.email,
+          roleId: req.body.roleId
+        })
+        .then((user) => {
+          res.status(201).send({ user });
+        })
+        .catch((error) => {
+          res.status(412).json({ msg: error.message });
+        });
+    });
   },
   getUser(req, res) {
     return User
@@ -28,7 +41,9 @@ module.exports = {
     return User
     .all()
     .then(users => res.status(200).send(users))
-    .catch(error => res.status(400).send(error));
+    .catch((error) => {
+      res.status(412).json({ msg: error.message });
+    });
   },
   updateUser(req, res) {
     return User
@@ -51,6 +66,9 @@ module.exports = {
         };
         res.send(data);
       });
+    })
+    .catch((error) => {
+      res.status(412).json({ msg: error.message });
     });
   },
   deleteUser(req, res) {
@@ -66,6 +84,9 @@ module.exports = {
         data: user
       };
       res.send(data);
+    })
+    .catch((error) => {
+      res.status(412).json({ msg: error.message });
     });
   }
 };

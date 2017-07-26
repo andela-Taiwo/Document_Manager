@@ -1,7 +1,18 @@
 const Document = require('../models').Document;
+const verifyDocParams = require('../helper/profile.js').verifyDocParams;
 
 module.exports = {
+
   addDocument(req, res) {
+    verifyDocParams(req)
+    .then((result) => {
+      const verifiedParams = result.mapped();
+      const noErrors = result.isEmpty();
+      if (!noErrors) {
+        res.send(verifiedParams);
+        return {};
+      }
+    });
     return Document
       .create({
         title: req.body.title,
@@ -10,24 +21,32 @@ module.exports = {
         userId: req.params.id,
         roleId: 2
       })
-      .then(document => res.status(201).send(document))
-      .catch(error => res.status(400).send(error));
+      .then((document) => {
+        res.status(201).send({ document });
+      })
+      .catch((error) => {
+        res.status(412).json({ msg: error.message });
+      });
   },
   getDocument(req, res) {
     return Document
     .find({
       where: {
-        id: req.params.id
+        Id: req.params.id
       }
     })
     .then(document => res.status(201).send(document))
-    .catch(error => res.status(400).send(error));
+    .catch((error) => {
+      res.status(412).json({ msg: error.message });
+    });
   },
   getAllDocuments(req, res) {
     return Document
     .all()
     .then(documents => res.status(200).send(documents))
-    .catch(error => res.status(400).send(error));
+    .catch((error) => {
+      res.status(412).json({ msg: error.message });
+    });
   },
 
   updateDocument(req, res) {
@@ -52,6 +71,9 @@ module.exports = {
         };
         res.send(updatedDocument);
       });
+    })
+    .catch((error) => {
+      res.status(412).json({ msg: error.message });
     });
   },
   deleteDocument(req, res) {
@@ -67,6 +89,9 @@ module.exports = {
         deletedDocument: deleteDocument
       };
       res.send(deletedDocument);
+    })
+    .catch((error) => {
+      res.status(412).json({ msg: error.message });
     });
   }
 };
