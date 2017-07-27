@@ -19,10 +19,9 @@ module.exports = {
         User.create({
           userName: req.body.userName,
           password: req.body.password,
-          email: req.body.email
+          email: req.body.email,
         })
         .then((user) => {
-
           const userId = user.id;
           const userEmail = user.email;
           const roleId = user.roleId;
@@ -115,6 +114,41 @@ module.exports = {
     .catch((error) => {
       res.status(412).json({ msg: error.message });
     });
+  },
+  searchUsers(req, res) {
+    const searchTerm = req.query.search.trim();
+
+    const query = {
+      where: {
+        $or: [{
+          userName: {
+            $iLike: `%${searchTerm}%`,
+          },
+          email: {
+            $iLike: `%${searchTerm}%`,
+          },
+        }],
+      },
+    };
+
+    query.limit = (req.query.limit > 0) ? req.query.limit : 10;
+    query.offset = (req.query.offset > 0) ? req.query.offset : 0;
+    query.order = ['createdAt'];
+    return User
+      .findAndCountAll(query)
+      .then((users) => {
+        const pagination = Helper.pagination(
+          query.limit, query.offset, users.count
+        );
+        if (!users.rows.length) {
+          return res.status(200).send({
+            message: 'Search term does not match any user',
+          });
+        }
+        res.status(200).send({
+          pagination, users: users.rows,
+        });
+      });
   },
   deleteUser(req, res) {
     return User

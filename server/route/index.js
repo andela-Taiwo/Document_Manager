@@ -16,8 +16,8 @@ module.exports = (app) => {
   app.get('/api/v1/users/:id', authorize, usersController.getUser);
   app.put('/api/v1/users/:id', authorize, usersController.updateUser);
   app.delete('/api/v1/users/:id', authorize, usersController.deleteUser);
-
-  app.post('/api/v1/documents/:id', authorize, documentsController.addDocument);
+  app.post('/api/v1/documents', authorize, documentsController.addDocument);
+  // app.post('/api/v1/documents/:id', authorize, documentsController.addDocument);
   app.get('/api/v1/documents/:id', authorize, documentsController.getDocument);
   app.get('/api/v1/documents', authorize, documentsController.getAllDocuments);
   app.put('/api/v1/documents/:id', authorize, documentsController.updateDocument);
