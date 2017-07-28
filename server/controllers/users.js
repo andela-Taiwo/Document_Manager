@@ -22,7 +22,6 @@ module.exports = {
           email: req.body.email
         })
         .then((user) => {
-
           const userId = user.id;
           const userEmail = user.email;
           const roleId = user.roleId;
