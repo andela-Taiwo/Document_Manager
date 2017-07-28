@@ -1,6 +1,7 @@
 const User = require('../models').User;
 const verifyUserParams = require('../helper/profile').verifyUserParams;
 const jwt = require('jsonwebtoken');
+const Helper = require('../helper/pagination');
 
 module.exports = {
   addUser(req, res) {

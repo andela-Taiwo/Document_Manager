@@ -35,7 +35,6 @@ module.exports = {
       // });
   },
   getDocument(req, res) {
-    console.log(req.params);
     Role.findById(req.decoded.user.roleId)
     .then((role) => {
       if (req.decoded.user.roleId === 1) {
@@ -53,16 +52,6 @@ module.exports = {
         })
         .then(documents => res.status(200).send(documents))
         .catch(err => res.status(400).send(err.toString()));
-    // return Document
-    // .find({
-    //   where: {
-    //     Id: req.params.id
-    //   }
-    // })
-    // .then(document => res.status(201).send(document))
-    // .catch((error) => {
-    //   res.status(412).json({ msg: error.message });
-    // });
     });
   },
   /**
@@ -88,14 +77,7 @@ module.exports = {
           attributes: ['id', 'title', 'access', 'content', 'createdAt']
         })
         .then(documents => res.status(200).send(documents))
-        .catch(() => res.status(400).send('Connection Error'));
-
-      // return Document
-      // .all()
-      // .then(documents => res.status(200).send(documents))
-      // .catch((error) => {
-      //   res.status(412).json({ msg: error.message });
-      // });
+        .catch(err => res.status(400).send(err.toString()));
     });
   },
 
@@ -109,16 +91,17 @@ module.exports = {
     return Document
     .findOne({
       where: {
-        userId: req.params.id
+        id: req.params.id,
+        userId: req.decoded.user.userId
       }
     })
     .then((document) => {
       document.update({
         title: req.body.title,
         content: req.body.content,
-        userId: req.params.id,
+        userId: req.decoded.user.userId,
         access: req.body.access,
-        roleId: req.body.roleId
+        roleId: req.decoded.user.roleId
       }).then((documentUpdate) => {
         const updatedDocument = {
           error: 'false',
@@ -136,7 +119,8 @@ module.exports = {
     return Document
     .destroy({
       where: {
-        id: req.params.id
+        id: req.params.id,
+        userId: req.decoded.user.userId
       }
     }).then((deleteDocument) => {
       const deletedDocument = {
