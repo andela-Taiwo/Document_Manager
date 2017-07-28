@@ -117,7 +117,8 @@ module.exports = {
     });
   },
   searchUsers(req, res) {
-    const searchTerm = req.query.search.trim();
+    console.log(req.query.q);
+    const searchTerm = req.query.q.trim();
 
     const query = {
       where: {
