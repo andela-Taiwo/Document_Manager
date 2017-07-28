@@ -30,11 +30,16 @@ module.exports = {
       })
       .then((document) => {
         res.status(201).send({ document });
+      })
+      .catch((error) => {
+        res.status(412).json({ msg: error.message });
       });
-      // .catch((error) => {
-      //   res.status(412).json({ msg: error.message });
-      // });
   },
+  /**
+   *@param {object} req
+   * @param {object} res
+   * @return {json}  document
+   * */
   getDocument(req, res) {
     Role.findById(req.decoded.user.roleId)
     .then((role) => {
@@ -116,20 +121,22 @@ module.exports = {
       res.status(412).json({ msg: error.message });
     });
   },
-  searchAllDocuments(req, res) {
-    console.log(req.query.q);
-    const searchTerm = req.query.q.trim();
 
+  /**
+   *@param {object} req
+   * @param {object} res
+   * @return {json}  documents
+   * */
+
+  searchAllDocuments(req, res) {
+    const searchTerm = req.query.q.trim();
     const query = {
       where: {
-        $or: [{
-          title: {
-            $iLike: `%${searchTerm}%`,
-          },
-          content: {
-            $iLike: `%${searchTerm}%`,
-          },
-        }],
+
+        title: {
+          $iLike: `%${searchTerm}%`,
+        },
+
       },
     };
 
@@ -144,14 +151,23 @@ module.exports = {
         );
         if (!documents.rows.length) {
           return res.status(200).send({
-            message: 'Search term does not match any user',
+            message: 'Search term does not match any document',
           });
         }
         res.status(200).send({
           pagination, documents: documents.rows,
         });
+      })
+      .catch((error) => {
+        res.status(412).json({ msg: error.message });
       });
   },
+
+  /**
+   *@param {object} req
+   * @param {object} res
+   * @return {json}  document
+   * */
   deleteDocument(req, res) {
     return Document
     .destroy({
