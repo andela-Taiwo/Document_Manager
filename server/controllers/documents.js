@@ -67,12 +67,15 @@ module.exports = {
    * */
 
   getAllDocuments(req, res) {
+    const query = req.query;
     Role.findById(req.decoded.user.roleId)
     .then((role) => {
       if (req.decoded.user.roleId === 1) {
         return Document
           .findAll({
-            attributes: ['id', 'title', 'content', 'access', 'createdAt']
+            attributes: ['id', 'title', 'content', 'access', 'createdAt'],
+            offset: (query.offset) || 0,
+            limit: query.limit || 0
           })
           .then(documents => res.status(200).send(documents))
           .catch(() => res.status(400).send('Connection Error'));
@@ -80,7 +83,9 @@ module.exports = {
       return Document
         .findAll({
           where: { access: [role.roleType, 'public'] },
-          attributes: ['id', 'title', 'access', 'content', 'createdAt']
+          attributes: ['id', 'title', 'access', 'content', 'createdAt'],
+          offset: (query.offset) || 0,
+          limit: query.limit || 10
         })
         .then(documents => res.status(200).send(documents))
         .catch(err => res.status(400).send(err.toString()));
