@@ -22,5 +22,6 @@ module.exports = (app) => {
   app.get('/api/v1/documents/:id', authorize, documentsController.getDocument);
   app.get('/api/v1/documents', authorize, documentsController.getAllDocuments);
   app.put('/api/v1/documents/:id', authorize, documentsController.updateDocument);
+  app.get('/api/v1/search/documents', authorize, documentsController.searchAllDocuments);
   app.delete('/api/v1/documents/:id', authorize, documentsController.deleteDocument);
 };

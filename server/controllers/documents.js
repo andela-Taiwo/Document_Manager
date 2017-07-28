@@ -1,6 +1,7 @@
 const Document = require('../models').Document;
 const Role = require('../models').Role;
 const verifyDocParams = require('../helper/profile.js').verifyDocParams;
+const Helper = require('../helper/pagination');
 
 module.exports = {
 
@@ -114,6 +115,42 @@ module.exports = {
     .catch((error) => {
       res.status(412).json({ msg: error.message });
     });
+  },
+  searchAllDocuments(req, res) {
+    console.log(req.query.q);
+    const searchTerm = req.query.q.trim();
+
+    const query = {
+      where: {
+        $or: [{
+          title: {
+            $iLike: `%${searchTerm}%`,
+          },
+          content: {
+            $iLike: `%${searchTerm}%`,
+          },
+        }],
+      },
+    };
+
+    query.limit = (req.query.limit > 0) ? req.query.limit : 10;
+    query.offset = (req.query.offset > 0) ? req.query.offset : 0;
+    query.order = ['createdAt'];
+    return Document
+      .findAndCountAll(query)
+      .then((documents) => {
+        const pagination = Helper.pagination(
+          query.limit, query.offset, documents.count
+        );
+        if (!documents.rows.length) {
+          return res.status(200).send({
+            message: 'Search term does not match any user',
+          });
+        }
+        res.status(200).send({
+          pagination, documents: documents.rows,
+        });
+      });
   },
   deleteDocument(req, res) {
     return Document
