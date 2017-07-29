@@ -75,7 +75,7 @@ module.exports = {
           .findAll({
             attributes: ['id', 'title', 'content', 'access', 'createdAt'],
             offset: (query.offset) || 0,
-            limit: query.limit || 0
+            limit: query.limit || 10
           })
           .then(documents => res.status(200).send(documents))
           .catch(() => res.status(400).send('Connection Error'));

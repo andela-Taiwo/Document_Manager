@@ -83,8 +83,13 @@ module.exports = {
     .catch(error => res.status(400).send(error));
   },
   getAllUsers(req, res) {
+    const query = req.query;
     return User
-    .all()
+    .findAll({
+      offset: (query.offset) || 0,
+      limit: query.limit || 10,
+      attributes: ['userName', 'email'],
+    })
     .then(users => res.status(200).send(users))
     .catch((error) => {
       res.status(412).json({ msg: error.message });
