@@ -2,6 +2,7 @@ const User = require('../models').User;
 const verifyUserParams = require('../helper/profile').verifyUserParams;
 const jwt = require('jsonwebtoken');
 const Helper = require('../helper/pagination');
+const bcrypt = require('bcrypt');
 
 module.exports = {
   addUser(req, res) {
@@ -17,26 +18,32 @@ module.exports = {
     .findOne({ where: { email: req.body.email } })
     .then((foundUser) => {
       if (!foundUser) {
-        User.create({
-          userName: req.body.userName,
-          password: req.body.password,
-          email: req.body.email,
-        })
-        .then((user) => {
-          const userId = user.id;
-          const userEmail = user.email;
-          const roleId = user.roleId;
-          const userDetails = {
-            userId,
-            userEmail,
-            roleId
-          };
-          const myToken = jwt.sign({ user: userDetails },
-            'DOC$-AP1$',
-            { expiresIn: 24 * 60 * 60 });
-          res.send(200, { token: myToken,
-            userId: user.id,
-            userName: user.userName });
+        bcrypt.hash(req.body.password, 10, (err, hash) => {
+          if (err) {
+            res.send(err);
+          }
+          const hashPassword = hash;
+          User.create({
+            userName: req.body.userName,
+            password: hashPassword,
+            email: req.body.email,
+          })
+          .then((user) => {
+            const userId = user.id;
+            const userEmail = user.email;
+            const roleId = user.roleId;
+            const userDetails = {
+              userId,
+              userEmail,
+              roleId
+            };
+            const myToken = jwt.sign({ user: userDetails },
+              'DOC$-AP1$',
+              { expiresIn: 24 * 60 * 60 });
+            res.send(200, { token: myToken,
+              userId: user.id,
+              userName: user.userName });
+          });
         });
       } else {
         res.status(404).json('user already exist!');
@@ -55,7 +62,7 @@ module.exports = {
       }
     })
     .then((user) => {
-      if (user.password === req.body.password) {
+      if (bcrypt.compare(req.body.password, user.password)) {
         const userId = user.id;
         const userEmail = user.email;
         const roleId = user.roleId;
@@ -94,7 +101,7 @@ module.exports = {
     return User
     .findOne({
       where: {
-        id: req.params.id
+        id: req.decoded.user.userId
       }
     })
     .then((user) => {
@@ -102,11 +109,11 @@ module.exports = {
         userName: req.body.userName,
         password: req.body.password,
         email: req.body.email,
-        roleId: 2
+        roleId: req.decoded.user.roleId
       }).then((userUpdate) => {
         const data = {
           error: 'false',
-          message: 'Updated contact successfully',
+          message: 'Update profile successfully',
           data: userUpdate
         };
         res.send(data);
@@ -155,7 +162,7 @@ module.exports = {
     return User
     .destroy({
       where: {
-        id: req.params.id
+        id: req.decoded.user.userId
       }
     }).then((user) => {
       const data = {
