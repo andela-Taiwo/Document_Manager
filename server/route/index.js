@@ -13,6 +13,6 @@ module.exports = (app) => {
   app.get('/api/v1/users', usersController.getAllUsers);
   app.post('/api/v1/users/login', usersController.logginUser);
   app.get('/api/v1/users/:id', usersController.getUser);
-  app.put('/api/v1/users/:id', usersController.updateUser);
-  app.delete('/api/v1/users/:id', usersController.deleteUser);
+  app.put('/api/v1/users', usersController.updateUser);
+  app.delete('/api/v1/users', usersController.deleteUser);
 };

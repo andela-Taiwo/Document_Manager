@@ -94,14 +94,14 @@ module.exports = {
     return User
     .findOne({
       where: {
-        id: req.params.id
+        id: req.decoded.user.userId
       }
     })
     .then((user) => {
       user.update({
-        userName: req.body.userName,
-        password: req.body.password,
-        email: req.body.email,
+        userName: req.body.userName || user.userName,
+        password: req.body.password || user.password,
+        email: req.body.email || user.email,
         roleId: 2
       }).then((userUpdate) => {
         const data = {
@@ -120,7 +120,7 @@ module.exports = {
     return User
     .destroy({
       where: {
-        id: req.params.id
+        id: req.decoded.user.userId
       }
     }).then((user) => {
       const data = {
