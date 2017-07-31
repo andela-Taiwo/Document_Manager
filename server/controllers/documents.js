@@ -92,6 +92,28 @@ module.exports = {
     });
   },
 
+  getUserDocuments(req, res) {
+    Role.findById(req.decoded.user.roleId)
+    .then((role) => {
+      if (req.decoded.user.roleId === 1) {
+        return Document
+          .findAll({
+            where: {
+              userId: req.params.id } })
+          .then(documents => res.status(200).send(documents))
+          .catch(err => res.status(400).send(err.toString()));
+      }
+      return Document
+        .findAll({
+          where: {
+            userId: req.params.id,
+            access: [role.roleType, 'public'] },
+          attributes: ['id', 'title', 'access', 'content', 'createdAt']
+        })
+        .then(documents => res.status(200).send(documents))
+        .catch(err => res.status(400).send(err.toString()));
+    });
+  },
   /**
    *@param {object} req
    * @param {object} res
