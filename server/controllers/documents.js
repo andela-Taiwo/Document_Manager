@@ -15,13 +15,11 @@ module.exports = {
     .then((result) => {
       const verifiedParams = result.mapped();
       const noErrors = result.isEmpty();
-      if (!noErrors) {
-        res.send(verifiedParams);
-        return {};
+      if (noErrors === false) {
+        return res.status(412).json({ message: verifiedParams });
       }
-    });
-    return Document
-      .create({
+      return Document
+      .bulkCreate({
         title: req.body.title,
         content: req.body.content,
         access: req.body.access,
@@ -29,11 +27,15 @@ module.exports = {
         roleId: req.decoded.user.roleId
       })
       .then((document) => {
-        res.status(201).send({ document });
+        return res.status(201).json({
+          title: document.title,
+          message: 'New Document created successfully',
+          ownerId: document.userId, });
       })
       .catch((error) => {
-        res.status(412).json({ msg: error.message });
+        return res.status(412).json({ msg: error });
       });
+    });
   },
   /**
    *@param {object} req
@@ -50,7 +52,7 @@ module.exports = {
           .catch(err => res.status(400).send(err.toString()));
       }
       return Document
-        .findAll({
+        .findOne({
           where: {
             id: req.params.id,
             access: [role.roleType, 'public'] },
@@ -68,18 +70,29 @@ module.exports = {
 
   getAllDocuments(req, res) {
     const query = req.query;
+    console.log(req.decoded)
     Role.findById(req.decoded.user.roleId)
     .then((role) => {
+                console.log('===================I got here222222222r=============', role);
       if (req.decoded.user.roleId === 1) {
+
         return Document
           .findAll({
             attributes: ['id', 'title', 'content', 'access', 'createdAt'],
             offset: (query.offset) || 0,
             limit: query.limit || 0
           })
-          .then(documents => res.status(200).send(documents))
+          .then((documents) => {
+            if (documents.length === 0) {
+              return res.status(404).send({
+                message: 'Document not found',
+              });
+            }
+            res.status(200).send(documents);
+          })
           .catch(() => res.status(400).send('Connection Error'));
       }
+      console.log('===================I got herer=============', role);
       return Document
         .findAll({
           where: { access: [role.roleType, 'public'] },
@@ -87,7 +100,14 @@ module.exports = {
           offset: (query.offset) || 0,
           limit: query.limit || 10
         })
-        .then(documents => res.status(200).send(documents))
+        .then((documents) => {
+          if (documents.length === 0) {
+            return res.status(404).send({
+              message: 'Document not found',
+            });
+          }
+          res.status(200).send(documents);
+        })
         .catch(err => res.status(400).send(err.toString()));
     });
   },
@@ -100,7 +120,14 @@ module.exports = {
           .findAll({
             where: {
               userId: req.params.id } })
-          .then(documents => res.status(200).send(documents))
+              .then((documents) => {
+                if (documents.length === 0) {
+                  return res.status(404).send({
+                    message: 'Document not found',
+                  });
+                }
+                res.status(200).send(documents);
+              })
           .catch(err => res.status(400).send(err.toString()));
       }
       return Document
