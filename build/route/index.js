@@ -14,6 +14,8 @@ module.exports = function (app) {
     });
   });
   app.post('/api/v1/roles', authorize, rolesController.create);
+  app.get('/api/v1/roles', authorize, rolesController.getAllRoles);
+  app.put('/api/v1/roles', authorize, rolesController.updateRole);
   app.post('/api/v1/users', usersController.addUser);
   app.get('/api/v1/users', authorize, usersController.getAllUsers);
   app.post('/api/v1/users/login', usersController.logginUser);
@@ -26,6 +28,6 @@ module.exports = function (app) {
   app.get('/api/v1/documents/:id', authorize, documentsController.getDocument);
   app.get('/api/v1/documents', authorize, documentsController.getAllDocuments);
   app.put('/api/v1/documents/:id', authorize, documentsController.updateDocument);
-  app.get('/api/v1/search/documents', authorize, documentsController.searchAllDocuments);
+  app.get('/api/v1/search/documents/', authorize, documentsController.searchAllDocuments);
   app.delete('/api/v1/documents/:id', authorize, documentsController.deleteDocument);
 };

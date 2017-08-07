@@ -19,7 +19,7 @@ module.exports = {
       if (noErrors === false) {
         return res.status(412).json({ message: verifiedParams });
       }
-      return Document.bulkCreate({
+      return Document.create({
         title: req.body.title,
         content: req.body.content,
         access: req.body.access,
@@ -45,20 +45,25 @@ module.exports = {
     Role.findById(req.decoded.user.roleId).then(function (role) {
       if (req.decoded.user.roleId === 1) {
         return Document.findById(req.params.id).then(function (documents) {
-          return res.status(200).send(documents);
+          return res.status(201).send(documents);
         }).catch(function (err) {
-          return res.status(400).send(err.toString());
+          return res.status(404).send(err.toString());
         });
       }
-      return Document.findAll({
+      return Document.findOne({
         where: {
           id: req.params.id,
           access: [role.roleType, 'public'] },
         attributes: ['id', 'title', 'access', 'content', 'createdAt']
       }).then(function (documents) {
-        return res.status(200).send(documents);
+        if (documents) {
+          res.status(201).send(documents);
+        }
       }).catch(function (err) {
-        return res.status(400).send(err.toString());
+        return res.status(404).send({
+          err: err.toString(),
+          message: 'No document found'
+        });
       });
     });
   },
@@ -71,27 +76,23 @@ module.exports = {
 
   getAllDocuments: function getAllDocuments(req, res) {
     var query = req.query;
-    console.log(req.decoded.user.roleId);
     Role.findById(req.decoded.user.roleId).then(function (role) {
-      console.log('===================I got here222222222r=============', role);
       if (req.decoded.user.roleId === 1) {
-
         return Document.findAll({
           attributes: ['id', 'title', 'content', 'access', 'createdAt'],
           offset: query.offset || 0,
-          limit: query.limit || 0
+          limit: query.limit || 10
         }).then(function (documents) {
           if (documents.length === 0) {
             return res.status(404).send({
               message: 'Document not found'
             });
           }
-          res.status(200).send(documents);
+          res.status(201).send(documents);
         }).catch(function () {
           return res.status(400).send('Connection Error');
         });
       }
-      console.log('===================I got herer=============', role);
       return Document.findAll({
         where: { access: [role.roleType, 'public'] },
         attributes: ['id', 'title', 'access', 'content', 'createdAt'],
@@ -103,7 +104,7 @@ module.exports = {
             message: 'Document not found'
           });
         }
-        res.status(200).send(documents);
+        res.status(201).send(documents);
       }).catch(function (err) {
         return res.status(400).send(err.toString());
       });
@@ -120,7 +121,7 @@ module.exports = {
               message: 'Document not found'
             });
           }
-          res.status(200).send(documents);
+          res.status(201).send(documents);
         }).catch(function (err) {
           return res.status(400).send(err.toString());
         });
@@ -131,9 +132,12 @@ module.exports = {
           access: [role.roleType, 'public'] },
         attributes: ['id', 'title', 'access', 'content', 'createdAt']
       }).then(function (documents) {
-        return res.status(200).send(documents);
+        return res.status(201).send(documents);
       }).catch(function (err) {
-        return res.status(400).send(err.toString());
+        return res.status(400).send({
+          err: err.toString(),
+          message: 'Invalid parameter, user id can only be integer'
+        });
       });
     });
   },
@@ -147,24 +151,26 @@ module.exports = {
   updateDocument: function updateDocument(req, res) {
     return Document.findOne({
       where: {
-        id: req.params.id,
-        userId: req.decoded.user.userId
+        userId: req.decoded.user.userId,
+        id: req.params.id
       }
     }).then(function (document) {
-      document.update({
-        title: req.body.title,
-        content: req.body.content,
-        userId: req.decoded.user.userId,
-        access: req.body.access,
-        roleId: req.decoded.user.roleId
-      }).then(function (documentUpdate) {
-        var updatedDocument = {
-          error: 'false',
-          message: 'Updated document successfully',
-          updatedDocument: documentUpdate
-        };
-        res.send(updatedDocument);
-      });
+      if (req.decoded.user.userId === document.userId) {
+        document.update({
+          title: req.body.title || document.title,
+          content: req.body.content || document.content,
+          userId: req.decoded.user.userId,
+          access: req.body.access || document.access,
+          roleId: req.decoded.user.roleId
+        }).then(function (documentUpdate) {
+          var updatedDocument = {
+            error: 'false',
+            message: 'Updated document successfully',
+            updatedDocument: documentUpdate
+          };
+          res.send(updatedDocument);
+        });
+      }
     }).catch(function (error) {
       res.status(412).json({ msg: error.message });
     });
@@ -195,11 +201,11 @@ module.exports = {
     return Document.findAndCountAll(query).then(function (documents) {
       var pagination = Helper.pagination(query.limit, query.offset, documents.count);
       if (!documents.rows.length) {
-        return res.status(200).send({
+        return res.status(404).send({
           message: 'Search term does not match any document'
         });
       }
-      res.status(200).send({
+      res.status(201).send({
         pagination: pagination, documents: documents.rows
       });
     }).catch(function (error) {
@@ -214,10 +220,19 @@ module.exports = {
    * @return {json}  document
    * */
   deleteDocument: function deleteDocument(req, res) {
-    return Document.destroy({
+    return Document.findOne({
       where: {
-        id: req.params.id,
-        userId: req.decoded.user.userId
+        userId: req.decoded.user.userId,
+        id: req.params.id
+      }
+    }).then(function (document) {
+      if (req.decoded.user.userId === document.userId) {
+        document.destroy({
+          where: {
+            id: req.params.id,
+            userId: req.decoded.user.userId
+          }
+        });
       }
     }).then(function (deleteDocument) {
       var deletedDocument = {

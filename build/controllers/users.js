@@ -5,7 +5,6 @@ var verifyUserParams = require('../helper/profile').verifyUserParams;
 var jwt = require('jsonwebtoken');
 var Helper = require('../helper/pagination');
 var bcrypt = require('bcrypt');
-var Role = require('../models').Role;
 
 module.exports = {
   addUser: function addUser(req, res) {
@@ -58,12 +57,11 @@ module.exports = {
     });
   },
   logginUser: function logginUser(req, res) {
-    return User.findAndCountAll({
+    return User.findOne({
       where: {
         email: req.body.email
       }
     }).then(function (user) {
-      console.log('I am a user user user user', user);
       if (bcrypt.compare(req.body.password, user.password)) {
         var userId = user.id;
         var userEmail = user.email;
@@ -105,9 +103,9 @@ module.exports = {
       }
     }).then(function (user) {
       user.update({
-        userName: req.body.userName,
-        password: req.body.password,
-        email: req.body.email,
+        userName: req.body.userName || user.userName,
+        password: req.body.password || user.password,
+        email: req.body.email || user.email,
         roleId: req.decoded.user.roleId
       }).then(function (userUpdate) {
         var data = {
@@ -123,14 +121,12 @@ module.exports = {
   },
   searchUsers: function searchUsers(req, res) {
     var searchTerm = req.query.q.trim();
+    console.log(searchTerm);
 
     var query = {
       where: {
         $or: [{
           userName: {
-            $iLike: '%' + searchTerm + '%'
-          },
-          email: {
             $iLike: '%' + searchTerm + '%'
           }
         }]
@@ -141,9 +137,10 @@ module.exports = {
     query.offset = req.query.offset > 0 ? req.query.offset : 0;
     query.order = ['createdAt'];
     return User.findAndCountAll(query).then(function (users) {
+      console.log(users);
       var pagination = Helper.pagination(query.limit, query.offset, users.count);
       if (!users.rows.length) {
-        return res.status(200).send({
+        return res.status(404).send({
           message: 'Search term does not match any user'
         });
       }
@@ -158,12 +155,18 @@ module.exports = {
         id: req.decoded.user.userId
       }
     }).then(function (user) {
-      var data = {
-        error: 'false',
-        message: 'Deleted user successfully',
-        data: user
-      };
-      res.send(data);
+      if (user !== 0) {
+        var data = {
+          error: 'false',
+          message: 'Deleted user successfully',
+          data: user
+        };
+        res.send(data);
+      } else {
+        res.status(403).send({
+          message: 'You are not authorize to delete another user data'
+        });
+      }
     }).catch(function (error) {
       res.status(412).json({ msg: error.message });
     });

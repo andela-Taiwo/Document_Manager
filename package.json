@@ -35,6 +35,8 @@
         "babel-register": "^6.24.1",
         "bcrypt": "^1.0.2",
         "body-parser": "^1.17.2",
+        "chai": "^4.1.0",
+        "dotenv": "^4.0.0",
         "express": "^4.15.3",
         "express-validator": "^3.2.1",
         "jsonwebtoken": "^7.4.1",
@@ -48,12 +50,11 @@
         "restify-validator": "^0.3.1",
         "sequelize": "^4.3.2",
         "sinon": "^2.4.1",
-        "util": "^0.10.3"
+        "util": "^0.10.3",
+        "supertest": "^3.0.0"
     },
     "devDependencies": {
         "babel-eslint": "^7.2.3",
-        "chai": "^4.1.0",
-        "dotenv": "^4.0.0",
         "eslint": "^3.19.0",
         "eslint-config-airbnb": "^15.0.2",
         "eslint-plugin-import": "^2.7.0",
@@ -67,7 +68,6 @@
         "gulp-jasmine-node": "^1.0.7",
         "gulp-nodemon": "^2.2.1",
         "local-storage": "^1.4.2",
-        "nodemon": "^1.11.0",
-        "supertest": "^3.0.0"
+        "nodemon": "^1.11.0"
     }
 }
