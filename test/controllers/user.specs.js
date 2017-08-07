@@ -1,25 +1,20 @@
 
-import jwt from 'jsonwebtoken';
-import { assert, expect } from 'chai';
+import { expect } from 'chai';
 import supertest from 'supertest';
-// import request from 'supertest';
 import 'babel-register';
 import auth from '../../server/helper/auth';
 
-import mockData from '../../mockData/mockData'
+import mockData from '../../mockData/mockData';
 
 const app = require('../../build/server');
-
-const adminToken = auth.setUserToken(mockData.admin);
 const User = require('../../build/models').User;
-const Document = require('../../build/models').Document;
 const Role = require('../../build/models').Role;
+
+// const adminToken = auth.setUserToken(mockData.admin);
+const anotherUserToken = auth.setUserToken(mockData.user);
+
 let regularToken;
 const request = supertest(app);
-
-let userId;
-let userName;
-let token;
 
 describe('When user', () => {
   describe('signs up', () => {
@@ -52,9 +47,13 @@ describe('When user', () => {
     }
   });
     });
-    it('should return a JSON object containing message and a token', (done) => {
+    it('should return a JSON object containing message and a token',
+    (done) => {
       request.post('/api/v1/users')
-    .send({ email: 'johnDoe@yahoo.com', password: 'humanity', userName: 'josh' })
+    .send({
+      email: 'johnDoe@yahoo.com',
+      password: 'humanity',
+      userName: 'josh' })
     .end((err, res) => {
       regularToken = res.body.token;
       expect(res.body.message).to.be.equal('User successfully signup');
@@ -79,7 +78,6 @@ describe('When user', () => {
       request.post('/api/v1/users')
     .send({ email: 'john@yahoo.com', password: 'humanity', userName: 'adeola' })
     .end((err, res) => {
-      // console.log('Im in user signup', res.body);
       expect((res.body.message)).to.be.equal('User successfully signup');
       expect((res.statusCode)).to.be.equal(201);
       done();
@@ -87,22 +85,20 @@ describe('When user', () => {
     });
   });
   describe('logs user in', () => {
-  it('should return an  object containing  a token', (done) => {
-    request.post('/api/v1/users/login')
-  .send({ email: 'john@yahoo.com', password: 'humanity' })
-  .end((err, res) => {
-    console.log(res.body);
-    expect(res.statusCode).to.be.equal(201);
-    regularToken = res.body.token;
-    done();
-  });
-  });
+    it('should return an  object containing  a token', (done) => {
+      request.post('/api/v1/users/login')
+    .send({ email: 'john@yahoo.com', password: 'humanity' })
+    .end((err, res) => {
+      expect(res.statusCode).to.be.equal(201);
+      regularToken = res.body.token;
+      done();
+    });
+    });
 
     it('should return an  object containing  all user', (done) => {
       request.get('/api/v1/users/')
     .set({ Authorization: regularToken })
     .end((err, res) => {
-      console.log(res.body);
       expect(res.statusCode).to.be.equal(200);
       done();
     });
@@ -112,10 +108,66 @@ describe('When user', () => {
       request.get('/api/v1/users/1')
     .set({ Authorization: regularToken })
     .end((err, res) => {
-      console.log(res.body);
       expect(res.statusCode).to.be.equal(201);
       done();
     });
+    });
+    it('should uodate user userName ', (done) => {
+      request.put('/api/v1/users')
+      .send({
+        userName: 'adeola'
+      })
+    .set({ Authorization: regularToken })
+    .end((err, res) => {
+      expect(res.statusCode).to.be.equal(200);
+      expect(res.body.message).to.be.equal('Update profile successfully');
+      done();
+    });
+    });
+
+    describe(' user search', () => {
+      it('should return a result that match the user query ', (done) => {
+        request.get('/api/v1/search/users/?q=adeola')
+      .set({ Authorization: regularToken })
+      .end((err, res) => {
+        expect(res.statusCode).to.be.equal(200);
+        done();
+      });
+      });
+
+      it('should return error message if no data matches the user query ',
+      (done) => {
+        request.get('/api/v1/search/users/?q=invalid username')
+      .set({ Authorization: regularToken })
+      .end((err, res) => {
+        expect(res.body.message)
+        .to.be.equal('Search term does not match any user');
+        expect(res.statusCode).to.be.equal(404);
+        done();
+      });
+      });
+    });
+
+    describe('Delete user', () => {
+      it('should not be able to delete another user account ', (done) => {
+        request.delete('/api/v1/users')
+      .set({ Authorization: anotherUserToken })
+      .end((err, res) => {
+        expect(res.body.message)
+        .to.be.equal('You are not authorize to delete another user data');
+        expect(res.statusCode).to.be.equal(403);
+        done();
+      });
+      });
+      it('should delete a user profile ', (done) => {
+        request.delete('/api/v1/users')
+      .set({ Authorization: regularToken })
+      .end((err, res) => {
+        expect(res.body.message).to.be.equal('Deleted user successfully');
+        expect(res.statusCode).to.be.equal(200);
+        done();
+      });
+      });
     });
   });
 });

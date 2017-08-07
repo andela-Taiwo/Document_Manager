@@ -19,7 +19,7 @@ module.exports = {
         return res.status(412).json({ message: verifiedParams });
       }
       return Document
-      .bulkCreate({
+      .create({
         title: req.body.title,
         content: req.body.content,
         access: req.body.access,
@@ -48,8 +48,8 @@ module.exports = {
       if (req.decoded.user.roleId === 1) {
         return Document
           .findById(req.params.id)
-          .then(documents => res.status(200).send(documents))
-          .catch(err => res.status(400).send(err.toString()));
+          .then(documents => res.status(201).send(documents))
+          .catch(err => res.status(404).send(err.toString()));
       }
       return Document
         .findOne({
@@ -58,8 +58,15 @@ module.exports = {
             access: [role.roleType, 'public'] },
           attributes: ['id', 'title', 'access', 'content', 'createdAt']
         })
-        .then(documents => res.status(200).send(documents))
-        .catch(err => res.status(400).send(err.toString()));
+        .then((documents) => {
+          if (documents) {
+            res.status(201).send(documents);
+          }
+        })
+        .catch(err => res.status(404).send({
+          err: err.toString(),
+          message: 'No document found'
+        }));
     });
   },
   /**
@@ -70,17 +77,14 @@ module.exports = {
 
   getAllDocuments(req, res) {
     const query = req.query;
-    console.log(req.decoded)
     Role.findById(req.decoded.user.roleId)
     .then((role) => {
-                console.log('===================I got here222222222r=============', role);
       if (req.decoded.user.roleId === 1) {
-
         return Document
           .findAll({
             attributes: ['id', 'title', 'content', 'access', 'createdAt'],
             offset: (query.offset) || 0,
-            limit: query.limit || 0
+            limit: query.limit || 10
           })
           .then((documents) => {
             if (documents.length === 0) {
@@ -88,11 +92,10 @@ module.exports = {
                 message: 'Document not found',
               });
             }
-            res.status(200).send(documents);
+            res.status(201).send(documents);
           })
           .catch(() => res.status(400).send('Connection Error'));
       }
-      console.log('===================I got herer=============', role);
       return Document
         .findAll({
           where: { access: [role.roleType, 'public'] },
@@ -106,7 +109,7 @@ module.exports = {
               message: 'Document not found',
             });
           }
-          res.status(200).send(documents);
+          res.status(201).send(documents);
         })
         .catch(err => res.status(400).send(err.toString()));
     });
@@ -126,7 +129,7 @@ module.exports = {
                     message: 'Document not found',
                   });
                 }
-                res.status(200).send(documents);
+                res.status(201).send(documents);
               })
           .catch(err => res.status(400).send(err.toString()));
       }
@@ -137,8 +140,11 @@ module.exports = {
             access: [role.roleType, 'public'] },
           attributes: ['id', 'title', 'access', 'content', 'createdAt']
         })
-        .then(documents => res.status(200).send(documents))
-        .catch(err => res.status(400).send(err.toString()));
+        .then(documents => res.status(201).send(documents))
+        .catch(err => res.status(400).send({
+          err: err.toString(),
+          message: 'Invalid parameter, user id can only be integer'
+        }));
     });
   },
   /**
@@ -151,25 +157,27 @@ module.exports = {
     return Document
     .findOne({
       where: {
+        userId: req.decoded.user.userId,
         id: req.params.id,
-        userId: req.decoded.user.userId
       }
     })
     .then((document) => {
-      document.update({
-        title: req.body.title,
-        content: req.body.content,
-        userId: req.decoded.user.userId,
-        access: req.body.access,
-        roleId: req.decoded.user.roleId
-      }).then((documentUpdate) => {
-        const updatedDocument = {
-          error: 'false',
-          message: 'Updated document successfully',
-          updatedDocument: documentUpdate
-        };
-        res.send(updatedDocument);
-      });
+      if (req.decoded.user.userId === document.userId) {
+        document.update({
+          title: req.body.title || document.title,
+          content: req.body.content || document.content,
+          userId: req.decoded.user.userId,
+          access: req.body.access || document.access,
+          roleId: req.decoded.user.roleId
+        }).then((documentUpdate) => {
+          const updatedDocument = {
+            error: 'false',
+            message: 'Updated document successfully',
+            updatedDocument: documentUpdate
+          };
+          res.send(updatedDocument);
+        });
+      }
     })
     .catch((error) => {
       res.status(412).json({ msg: error.message });
@@ -204,11 +212,11 @@ module.exports = {
           query.limit, query.offset, documents.count
         );
         if (!documents.rows.length) {
-          return res.status(200).send({
+          return res.status(404).send({
             message: 'Search term does not match any document',
           });
         }
-        res.status(200).send({
+        res.status(201).send({
           pagination, documents: documents.rows,
         });
       })
@@ -224,12 +232,22 @@ module.exports = {
    * */
   deleteDocument(req, res) {
     return Document
-    .destroy({
+    .findOne({
       where: {
+        userId: req.decoded.user.userId,
         id: req.params.id,
-        userId: req.decoded.user.userId
       }
-    }).then((deleteDocument) => {
+    }).then((document) => {
+      if (req.decoded.user.userId === document.userId) {
+        document.destroy({
+          where: {
+            id: req.params.id,
+            userId: req.decoded.user.userId
+          }
+        });
+      }
+    })
+    .then((deleteDocument) => {
       const deletedDocument = {
         error: 'false',
         message: 'Deleted document successfully',

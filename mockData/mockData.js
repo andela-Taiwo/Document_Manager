@@ -8,18 +8,15 @@ const mockData = {
     msg: '',
     value: 'Food' },
 
-  usersInDatabase: [{ id: 1, email: 'ajaps@yahoo.com', roleId: 1 },
-     { id: 2, email: 'ajaps1@yahoo.com', roleId: 2 },
-     { id: 4, email: 'framky0071@yahoo.com', roleId: 2 },
-     { id: 5, email: 'johnDoe@yahoo.com', roleId: 2 },
-     { id: 3, email: 'framky007@yahoo.com', roleId: 3 }],
 
   noToken: 'A token is requeired for authentication',
 
   badToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiZnJhbWt5Q',
 
-  admin: { userId: 1, email: 'adeolaoo7@andela.com', roleId: 1 },
+  admin: { userId: 2, email: 'adeolaoo7@andela.com', roleId: 1 },
   regularUser: { userId: 1, email: 'johnDoe@yahoo.com', roleId: 2 },
+  user: { userId: 4, email: 'yuussuf@andela.com', roleId: 3 },
+  regularUserData: { password: '12345', email: 'johnDoe@yahoo.com', roleId: 2, userName: 'adeola' },
 
   invalidTitle: { param: 'title',
     msg: '10 to 30 characters required'
@@ -44,7 +41,7 @@ const mockData = {
   },
   createdDoc: { message: 'New Document created successfully',
     title: 'history 211',
-    userId: 2
+    access: 'public',
   },
   getUser: { userId: 1, roleId: 2, email: 'kennysoft@yahoo.com' },
   getDocuments: [

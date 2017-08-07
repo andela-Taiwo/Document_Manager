@@ -7,9 +7,10 @@ var _dotenv2 = _interopRequireDefault(_dotenv);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var jwt = require('jsonwebtoken');
+
 _dotenv2.default.config();
 var SECRET_KEY = process.env.SECRET;
-console.log(SECRET_KEY);
+
 module.exports = {
   setUserToken: function setUserToken(user) {
     var userToken = jwt.sign({
@@ -22,7 +23,10 @@ module.exports = {
     if (token) {
       jwt.verify(token, process.env.SECRET, function (err, decoded) {
         if (err) {
-          return res.status(403).send(err);
+          var message = {
+            message: 'You are not signed in'
+          };
+          return res.status(403).send(message);
         }
         req.decoded = decoded;
         return next();
