@@ -58,6 +58,6 @@ gulp.task('coverage', (cb) => {
     });
 });
 
-gulp.task('default', ['dev', 'nodemon'], () => {
+gulp.task('default', ['dev'], () => {
   gulp.watch('server/**/*.js', ['dev']);
 });
