@@ -13,7 +13,7 @@ module.exports = {
     jwtSession: { session: false }
   },
   test: {
-    username: 'taiwo',
+    username: null,
     password: null,
     database: 'database_test',
     host: 'localhost',
