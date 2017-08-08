@@ -1,5 +1,8 @@
 
 [![Build Status](https://travis-ci.org/andela-Taiwo/Document_Manager.svg?branch=master)](https://travis-ci.org/andela-Taiwo/Document_Manager)
+[![Code Climate](https://codeclimate.com/github/andela-Taiwo/Document_Manager
+/badges/gpa.svg)](https://codeclimate.com/github/andela-Taiwo/Document_Manager
+)
 
 # Document Manager
 
