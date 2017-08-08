@@ -1,0 +1,9 @@
+engines:
+ duplication:
+   enabled: false
+   config:
+     languages:
+       javascript:
+         mass_threshold: 20
+         exclude_paths:
+           - "__tests__/"
