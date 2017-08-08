@@ -14,9 +14,17 @@ var SECRET_KEY = process.env.SECRET;
 module.exports = {
   setUserToken: function setUserToken(user) {
     var userToken = jwt.sign({
-      user: user }, process.env.SECRET, { expiresIn: '12h' });
+      user: user }, SECRET_KEY, { expiresIn: '12h' });
     return userToken;
   },
+
+
+  /**
+   *@param {object} req
+   * @param {object} res
+   * @param {object} next
+   * @return {json}  Document
+   * */
   authorize: function authorize(req, res, next) {
     var auth = req.headers.authorization;
     var token = req.body.token || req.headers['x-access-token'] || auth;

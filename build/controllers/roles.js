@@ -5,7 +5,6 @@ var User = require('../models').User;
 
 module.exports = {
   getAllRoles: function getAllRoles(req, res) {
-    // console
     var auth = req.decoded.user.roleId;
     if (auth === 1) {
       return Role.all().then(function (roles) {

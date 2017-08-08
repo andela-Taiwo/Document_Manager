@@ -35,6 +35,7 @@ module.exports = {
             res.send(err);
           }
           const hashPassword = hash;
+          console.log('this is the body', req.body);
           User.create({
             userName: req.body.userName,
             password: hashPassword,

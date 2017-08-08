@@ -1,12 +1,27 @@
 'use strict';
 
+var _dotenv = require('dotenv');
+
+var _dotenv2 = _interopRequireDefault(_dotenv);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 var User = require('../models').User;
 var verifyUserParams = require('../helper/profile').verifyUserParams;
 var jwt = require('jsonwebtoken');
 var Helper = require('../helper/pagination');
 var bcrypt = require('bcrypt');
 
+_dotenv2.default.config();
+
+var SECRET_KEY = process.env.SECRET;
+
 module.exports = {
+  /**
+   *@param {object} req
+   * @param {object} res
+   * @return {json}  user
+   * */
   addUser: function addUser(req, res) {
     verifyUserParams(req).then(function (result) {
       var verifiedParams = result.mapped();
@@ -23,6 +38,7 @@ module.exports = {
               res.send(err);
             }
             var hashPassword = hash;
+            console.log('this is the body', req.body);
             User.create({
               userName: req.body.userName,
               password: hashPassword,
@@ -36,7 +52,7 @@ module.exports = {
                 userEmail: userEmail,
                 roleId: roleId
               };
-              var myToken = jwt.sign({ user: userDetails }, 'DOC$-AP1$', { expiresIn: 24 * 60 * 60 });
+              var myToken = jwt.sign({ user: userDetails }, SECRET_KEY, { expiresIn: 24 * 60 * 60 });
               var data = {
                 userName: user.userName,
                 message: 'User successfully signup',
@@ -56,6 +72,14 @@ module.exports = {
       });
     });
   },
+
+
+  /**
+   *@param {object} req
+   * @param {object} res
+   * @param {object} next
+   * @return {json}  Document
+   * */
   logginUser: function logginUser(req, res) {
     return User.findOne({
       where: {
@@ -71,7 +95,7 @@ module.exports = {
           userEmail: userEmail,
           roleId: roleId
         };
-        var myToken = jwt.sign({ user: userDetails }, 'DOC$-AP1$', { expiresIn: 24 * 60 * 60 });
+        var myToken = jwt.sign({ user: userDetails }, SECRET_KEY, { expiresIn: 24 * 60 * 60 });
         res.status(201).send({ token: myToken });
       }
     }).catch(function (error) {
@@ -89,6 +113,14 @@ module.exports = {
       return res.status(400).send(error);
     });
   },
+
+
+  /**
+   *@param {object} req
+   * @param {object} res
+   * @param {object} next
+   * @return {json}  Document
+   * */
   getAllUsers: function getAllUsers(req, res) {
     return User.all().then(function (users) {
       return res.status(200).send(users);
@@ -119,9 +151,15 @@ module.exports = {
       res.status(412).json({ msg: error.message });
     });
   },
+
+
+  /**
+   *@param {object} req
+   * @param {object} res
+   * @return {json}  user
+   * */
   searchUsers: function searchUsers(req, res) {
     var searchTerm = req.query.q.trim();
-    console.log(searchTerm);
 
     var query = {
       where: {
@@ -137,7 +175,6 @@ module.exports = {
     query.offset = req.query.offset > 0 ? req.query.offset : 0;
     query.order = ['createdAt'];
     return User.findAndCountAll(query).then(function (users) {
-      console.log(users);
       var pagination = Helper.pagination(query.limit, query.offset, users.count);
       if (!users.rows.length) {
         return res.status(404).send({
@@ -149,6 +186,14 @@ module.exports = {
       });
     });
   },
+
+
+  /**
+   *@param {object} req
+   * @param {object} res
+   * @param {object} next
+   * @return {json}  status and message
+   * */
   deleteUser: function deleteUser(req, res) {
     return User.destroy({
       where: {

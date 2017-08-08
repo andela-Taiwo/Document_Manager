@@ -29,6 +29,12 @@ gulp.task('dev', () => gulp.src('server/**/*.js')
   }))
   .pipe(gulp.dest('build')));
 
+gulp.task('production', () => gulp.src('server/**/*.js')
+  .pipe(babel({
+    presets: ['es2015', 'stage-2']
+  }))
+  .pipe(gulp.dest('build')));
+
 gulp.task('test', () => {
   gulp.src('test/controlle/*.js')
     .pipe(babel())
