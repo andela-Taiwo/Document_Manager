@@ -1,5 +1,4 @@
-
-[![Build Status](https://travis-ci.org/andela-Taiwo/Document_Manager.svg?branch=master](https://travis-ci.org/andela-Taiwo/Document_Manager)
+[![Build Status](https://travis-ci.org/andela-Taiwo/Document_Manager.svg?branch=master)](https://travis-ci.org/andela-Taiwo/Document_Manager)
 
 # Document Manager
 
