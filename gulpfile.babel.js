@@ -1,6 +1,7 @@
 import gulp from 'gulp';
 import nodemon from 'gulp-nodemon';
 import babel from 'gulp-babel';
+import coveralls from 'gulp-coveralls';
 import jasmineNode from 'gulp-jasmine-node';
 import istanbul from 'gulp-istanbul';
 import injectModules from 'gulp-inject-modules';
@@ -56,6 +57,10 @@ gulp.task('coverage', (cb) => {
         .on('end', cb)
         .pipe(exit());
     });
+});
+gulp.task('coveralls', () => {
+  return gulp.src('./coverage/lcov')
+    .pipe(coveralls());
 });
 
 gulp.task('default', ['dev'], () => {
