@@ -62,6 +62,11 @@ module.exports = {
             res.status(201).json(data);
           });
         });
+      } else {
+        res.status(403).json({
+          message: 'email already exist',
+
+        });
       }
     })
     .catch(() => {
