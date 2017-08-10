@@ -54,6 +54,7 @@ module.exports = {
       return Document
         .findOne({
           where: {
+            id: req.params.id,
             $or: [
              { access: 'public' },
              { access: role.roleType },
