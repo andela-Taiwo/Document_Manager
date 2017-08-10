@@ -65,10 +65,6 @@ supertest - to run endpoint test
 - dotenv - To protect secret ID
 - Express - Express is Node.js web application framework
 - path - to get paths during production
-Installation
-
-- clone the project to new folder, copy and paste the commands below on your terminal
-
 
 -install dependencies
 $ npm install
