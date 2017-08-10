@@ -105,9 +105,9 @@ module.exports = {
         .findAll({
           where: {
             $or: [
-              { access: 'public' },
-              { access: role.roleType },
-              { $and: [{ access: 'private' }, { userId: req.decoded.user.userId }] }
+             { access: 'public' },
+             { access: role.roleType },
+             { $and: [{ access: 'private' }, { userId: req.decoded.user.userId }] }
             ]
           },
           attributes: ['id', 'title', 'access', 'content', 'createdAt'],
