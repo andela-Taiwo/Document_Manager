@@ -68,7 +68,7 @@ supertest - to run endpoint test
 Installation
 
 - clone the project to new folder, copy and paste the commands below on your terminal
-$ git clone https://github.com/omedale/DOCME-CP2.git
+
 
 -install dependencies
 $ npm install
