@@ -36,7 +36,7 @@ describe(' Document', () => {
       .then((err) => {
         if (!err) {
           Role.bulkCreate([
-            { roleType: 'Super Admin' },
+            { roleType: 'super admin' },
             { roleType: 'admin' },
             { roleType: 'user' }
           ]).then(() => {
