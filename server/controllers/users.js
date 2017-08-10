@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 
 const User = require('../models').User;
 const verifyUserParams = require('../helper/profile').verifyUserParams;
+const verifLoginParams = require('../helper/profile').verifyloginParams;
 const jwt = require('jsonwebtoken');
 const Helper = require('../helper/pagination');
 const bcrypt = require('bcrypt');
@@ -30,24 +31,16 @@ module.exports = {
     .findOne({ where: { email: req.body.email } })
     .then((foundUser) => {
       if (!foundUser) {
-        bcrypt.hash(req.body.password, 10, (err, hash) => {
-          if (err) {
-            res.send(err);
-          }
-          const hashPassword = hash;
-          console.log('this is the body', req.body);
-          User.create({
-            userName: req.body.userName,
-            password: hashPassword,
-            email: req.body.email,
-          })
+        User.create({
+          userName: req.body.userName,
+          password: req.body.password,
+          email: req.body.email,
+        })
           .then((user) => {
             const userId = user.id;
-            const userEmail = user.email;
             const roleId = user.roleId;
             const userDetails = {
               userId,
-              userEmail,
               roleId
             };
             const myToken = jwt.sign({ user: userDetails },
@@ -61,7 +54,7 @@ module.exports = {
             };
             res.status(201).json(data);
           });
-        });
+        // });
       }
     })
     .catch(() => {
@@ -81,29 +74,40 @@ module.exports = {
    * @return {json}  Document
    * */
   logginUser(req, res) {
-    return User
-    .findOne({
-      where: {
-        email: req.body.email,
-      },
-    })
-    .then((user) => {
-      if (bcrypt.compare(req.body.password, user.password)) {
-        const userId = user.id;
-        const userEmail = user.email;
-        const roleId = user.roleId;
-        const userDetails = {
-          userId,
-          userEmail,
-          roleId
-        };
-        const myToken = jwt.sign({ user: userDetails },
-          SECRET_KEY,
-          { expiresIn: 24 * 60 * 60 });
-        res.status(201).send({ token: myToken });
+    verifLoginParams(req)
+    .then((result) => {
+      const verifiedParams = result.mapped();
+      const noErrors = result.isEmpty();
+      if (!noErrors) {
+        res.send(verifiedParams);
+        return {};
       }
-    })
-    .catch(error => res.status(400).send(error));
+      const password = req.body.password;
+      return User
+      .findOne({
+        where: {
+          email: req.body.email,
+        },
+      })
+      .then((user) => {
+        if (bcrypt.compareSync(password, user.password)) {
+          const userId = user.id;
+          const roleId = user.roleId;
+          const userDetails = {
+            userId,
+            roleId
+          };
+          const myToken = jwt.sign({ user: userDetails },
+            SECRET_KEY,
+            { expiresIn: 24 * 60 * 60 });
+          res.status(201).send({ token: myToken });
+        } else {
+          res.sendStatus(401);
+        }
+        // res.sendStatus(401);
+      })
+      .catch(error => res.status(400).send(error));
+    });
   },
   getUser(req, res) {
     return User
