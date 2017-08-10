@@ -54,8 +54,12 @@ module.exports = {
       return Document
         .findOne({
           where: {
-            id: req.params.id,
-            access: [role.roleType, 'public'] },
+            $or: [
+             { access: 'public' },
+             { access: role.roleType },
+             { $and: [{ access: 'private' }, { userId: req.decoded.user.userId }] }
+            ]
+          },
           attributes: ['id', 'title', 'access', 'content', 'createdAt']
         })
         .then((documents) => {
@@ -98,7 +102,13 @@ module.exports = {
       }
       return Document
         .findAll({
-          where: { access: [role.roleType, 'public'] },
+          where: {
+            $or: [
+             { access: 'public' },
+             { access: role.roleType },
+             { $and: [{ access: 'private' }, { userId: req.decoded.user.userId }] }
+            ]
+          },
           attributes: ['id', 'title', 'access', 'content', 'createdAt'],
           offset: (query.offset) || 0,
           limit: query.limit || 10
