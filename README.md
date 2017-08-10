@@ -30,7 +30,6 @@
 - Navigate into the cloned project directory.
 - Type npm start
 - Click [here](http://localhost:3000) to launch the app locally
-- Login with your google account
 
 ## Usage
 Click [here](https://document-manager-ap.herokuapp.com) to access the API
@@ -64,12 +63,6 @@ supertest - to run endpoint test
 - dotenv - To protect secret ID
 - Express - Express is Node.js web application framework
 - path - to get paths during production
-
--install dependencies
-$ npm install
-
--start the project
-$ npm start
 
 
 # Tests
