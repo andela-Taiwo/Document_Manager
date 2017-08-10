@@ -43,6 +43,7 @@ module.exports = {
    * @return {json}  document
    * */
   getDocument(req, res) {
+
     Role.findById(req.decoded.user.roleId)
     .then((role) => {
       if (req.decoded.user.roleId === 1) {
@@ -141,7 +142,10 @@ module.exports = {
                 }
                 res.status(201).send(documents);
               })
-          .catch(err => res.status(400).send(err.toString()));
+              .catch(err => res.status(400).send({
+                err: err.toString(),
+                message: 'Invalid parameter, user id can only be integer'
+              }));
       }
       return Document
         .findAll({
