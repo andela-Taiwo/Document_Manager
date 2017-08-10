@@ -64,7 +64,6 @@ supertest - to run endpoint test
 - dotenv - To protect secret ID
 - Express - Express is Node.js web application framework
 - path - to get paths during production
-Installation
 
 -install dependencies
 $ npm install
