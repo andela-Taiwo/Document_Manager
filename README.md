@@ -36,10 +36,6 @@
 Click [here](https://document-manager-ap.herokuapp.com) to access the API
 
 
-* Endpoints
-
-Please click here to view endpoints documentaion
-
 # System Dependecies
 
 __What you need to run this app:__
@@ -69,9 +65,6 @@ supertest - to run endpoint test
 - Express - Express is Node.js web application framework
 - path - to get paths during production
 Installation
-
-- clone the project to new folder, copy and paste the commands below on your terminal
-$ git clone https://github.com/omedale/DOCME-CP2.git
 
 -install dependencies
 $ npm install
