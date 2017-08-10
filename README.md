@@ -1,5 +1,8 @@
 [![Build Status](https://travis-ci.org/andela-Taiwo/Document_Manager.svg?branch=master)](https://travis-ci.org/andela-Taiwo/Document_Manager)
 
+[![Code Climate](https://codeclimate.com/github/andela-Taiwo/Document_Manager/badges/gpa.svg)](https://codeclimate.com/github/andela-Taiwo/Document_Manager)
+[![Coverage Status](https://coveralls.io/repos/github/andela-Taiwo/Document_Manager/badge.svg?branch=master)](https://coveralls.io/github/andela-Taiwo/Document_Manager?branch=master)
+
 # Document Manager
 
 
@@ -27,15 +30,10 @@
 - Navigate into the cloned project directory.
 - Type npm start
 - Click [here](http://localhost:3000) to launch the app locally
-- Login with your google account
 
 ## Usage
 Click [here](https://document-manager-ap.herokuapp.com) to access the API
 
-
-* Endpoints
-
-Please click here to view endpoints documentaion
 
 # System Dependecies
 
@@ -65,12 +63,6 @@ supertest - to run endpoint test
 - dotenv - To protect secret ID
 - Express - Express is Node.js web application framework
 - path - to get paths during production
-
--install dependencies
-$ npm install
-
--start the project
-$ npm start
 
 
 # Tests
