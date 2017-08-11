@@ -27,7 +27,7 @@ module.exports = {
         roleId: req.decoded.user.roleId
       })
       .then((document) => {
-        return res.status(201).json({
+        return res.status(200).json({
           title: document.title,
           message: 'New Document created successfully',
           ownerId: document.userId, });
@@ -43,24 +43,29 @@ module.exports = {
    * @return {json}  document
    * */
   getDocument(req, res) {
+
     Role.findById(req.decoded.user.roleId)
     .then((role) => {
       if (req.decoded.user.roleId === 1) {
         return Document
           .findById(req.params.id)
-          .then(documents => res.status(201).send(documents))
+          .then(documents => res.status(200).send(documents))
           .catch(err => res.status(404).send(err.toString()));
       }
       return Document
         .findOne({
           where: {
-            id: req.params.id,
-            access: [role.roleType, 'public'] },
+            $or: [
+             { access: 'public' },
+             { access: role.roleType },
+             { $and: [{ access: 'private' }, { userId: req.decoded.user.userId }] }
+            ]
+          },
           attributes: ['id', 'title', 'access', 'content', 'createdAt']
         })
         .then((documents) => {
           if (documents) {
-            res.status(201).send(documents);
+            res.status(200).send(documents);
           }
         })
         .catch(err => res.status(404).send({
@@ -100,11 +105,11 @@ module.exports = {
         .findAll({
           where: {
             $or: [
-              { access: 'public' },
-              { access: role.roleType },
-              { $and: [{ access: 'private' }, { userId: req.decoded.user.userId }] }
-          ]
-        },
+             { access: 'public' },
+             { access: role.roleType },
+             { $and: [{ access: 'private' }, { userId: req.decoded.user.userId }] }
+            ]
+          },
           attributes: ['id', 'title', 'access', 'content', 'createdAt'],
           offset: (query.offset) || 0,
           limit: query.limit || 10
@@ -137,7 +142,10 @@ module.exports = {
                 }
                 res.status(201).send(documents);
               })
-          .catch(err => res.status(400).send(err.toString()));
+              .catch(err => res.status(400).send({
+                err: err.toString(),
+                message: 'Invalid parameter, user id can only be integer'
+              }));
       }
       return Document
         .findAll({
@@ -222,7 +230,7 @@ module.exports = {
             message: 'Search term does not match any document',
           });
         }
-        res.status(201).send({
+        res.status(200).send({
           pagination, documents: documents.rows,
         });
       })

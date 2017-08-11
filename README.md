@@ -3,21 +3,27 @@
 [![Code Climate](https://codeclimate.com/github/andela-Taiwo/Document_Manager/badges/gpa.svg)](https://codeclimate.com/github/andela-Taiwo/Document_Manager)
 [![Coverage Status](https://coveralls.io/repos/github/andela-Taiwo/Document_Manager/badge.svg?branch=master)](https://coveralls.io/github/andela-Taiwo/Document_Manager?branch=master)
 
-# Document Manager
+# RELIABLE-DOCS API
+  Reliable-Docs API is an API  developed to enable user to track, manage and store documents.
+  The end points can be accessed with Postman or alternate API toolchain.
 
 
 
 
-# Features of Document Manager
+# Features of RELIABLE-DOCS API
 - super admin can add roles
 - super admin can update role
 - super admin can delete roles
+- super admin can update the users role
 - User can register
 - user can login with email and password
-- user delete personal profile
-- user update personal profile
-- user  create documents
+- user can delete personal profile
+- user can update personal profile
+- user can create documents
 - user access other users documents based on access
+- user can search for other users
+- user can search for documents
+- user can view other user profile
 - user can update personal documents
 - user can delete personal documents
 - Links to news on the source's site.
