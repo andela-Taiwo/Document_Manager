@@ -30,6 +30,7 @@ module.exports = {
 
   updateRole(req, res) {
     const auth = (req.decoded.user.roleId);
+    console.log(auth);
     const newRoleId = parseInt(req.body.roleId, 10);
     if (auth === 1) {
       return User

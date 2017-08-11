@@ -22,7 +22,7 @@ module.exports = {
       const verifiedParams = result.mapped();
       const noErrors = result.isEmpty();
       if (!noErrors) {
-        res.send(verifiedParams);
+        res.status(401).send(verifiedParams);
         return {};
       }
       const email = req.body.email;
@@ -35,7 +35,6 @@ module.exports = {
             res.send(err);
           }
           const hashPassword = hash;
-          console.log('this is the body', req.body);
           User.create({
             userName: req.body.userName,
             password: hashPassword,
