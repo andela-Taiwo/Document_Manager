@@ -67,7 +67,7 @@ describe(' Document', () => {
       request.post('/api/v1/users/login')
       .send({ email: 'john@yahoo.com', password: 'humanity' })
       .end((err, res) => {
-        expect(res.statusCode).to.be.equal(201);
+        expect(res.statusCode).to.be.equal(200);
         regularToken = res.body.token;
         done();
       });
@@ -104,7 +104,7 @@ describe(' Document', () => {
       request.get('/api/v1/documents/')
     .set({ Authorization: regularToken })
     .end((err, res) => {
-      expect(res.statusCode).to.be.equal(201);
+      expect(res.statusCode).to.be.equal(200);
       done();
     });
     });
@@ -113,7 +113,7 @@ describe(' Document', () => {
       request.get('/api/v1/documents/1')
     .set({ Authorization: regularToken })
     .end((err, res) => {
-      expect(res.status).to.be.equal(201);
+      expect(res.status).to.be.equal(200);
       done();
     });
     });
@@ -124,7 +124,7 @@ describe(' Document', () => {
        request.get('/api/v1/documents')
             .set({ Authorization: adminToken })
             .end((err, res) => {
-              expect(res.status).to.be.equal(201);
+              expect(res.status).to.be.equal(200);
               done();
             });
      });
@@ -135,7 +135,7 @@ describe(' Document', () => {
         request.get('/api/v1/documents/1')
              .set({ Authorization: adminToken })
              .end((err, res) => {
-               expect(res.status).to.be.equal(201);
+               expect(res.status).to.be.equal(200);
                done();
              });
       });
@@ -157,7 +157,7 @@ describe(' Document', () => {
         request.get('/api/v1/users/1/documents')
              .set({ Authorization: adminToken })
              .end((err, res) => {
-               expect(res.status).to.be.equal(201);
+               expect(res.status).to.be.equal(200);
                done();
              });
       });
@@ -167,7 +167,7 @@ describe(' Document', () => {
         request.get('/api/v1/users/1/documents')
              .set({ Authorization: regularToken })
              .end((err, res) => {
-               expect(res.status).to.be.equal(201);
+               expect(res.status).to.be.equal(200);
                done();
              });
       });
@@ -227,7 +227,7 @@ describe(' Document', () => {
           request.get('/api/v1/search/documents/?q=update my doc')
                .set({ Authorization: adminToken })
                .end((err, res) => {
-                 expect(res.status).to.be.equal(201);
+                 expect(res.status).to.be.equal(200);
                  done();
                });
         });
@@ -282,7 +282,7 @@ describe(' Document', () => {
           request.get('/api/v1/documents/1')
                .set({ Authorization: adminToken })
                .end((err, res) => {
-                 expect(res.status).to.be.equal(201);
+                 expect(res.status).to.be.equal(200);
                  done();
                });
         });
