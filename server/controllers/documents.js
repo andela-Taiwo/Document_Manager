@@ -27,7 +27,7 @@ module.exports = {
         roleId: req.decoded.user.roleId
       })
       .then((document) => {
-        return res.status(200).json({
+        return res.status(201).json({
           title: document.title,
           message: 'New Document created successfully',
           ownerId: document.userId, });
@@ -97,7 +97,7 @@ module.exports = {
                 message: 'Document not found',
               });
             }
-            res.status(201).send(documents);
+            res.status(200).send(documents);
           })
           .catch(() => res.status(400).send('Connection Error'));
       }
@@ -120,7 +120,7 @@ module.exports = {
               message: 'Document not found',
             });
           }
-          res.status(201).send(documents);
+          res.status(200).send(documents);
         })
         .catch(err => res.status(400).send(err.toString()));
     });
@@ -140,7 +140,7 @@ module.exports = {
                     message: 'Document not found',
                   });
                 }
-                res.status(201).send(documents);
+                res.status(200).send(documents);
               })
               .catch(err => res.status(400).send({
                 err: err.toString(),
@@ -154,7 +154,7 @@ module.exports = {
             access: [role.roleType, 'public'] },
           attributes: ['id', 'title', 'access', 'content', 'createdAt']
         })
-        .then(documents => res.status(201).send(documents))
+        .then(documents => res.status(200).send(documents))
         .catch(err => res.status(400).send({
           err: err.toString(),
           message: 'Invalid parameter, user id can only be integer'

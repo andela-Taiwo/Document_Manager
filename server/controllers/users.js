@@ -104,7 +104,7 @@ module.exports = {
         const myToken = jwt.sign({ user: userDetails },
           SECRET_KEY,
           { expiresIn: 24 * 60 * 60 });
-        res.status(201).send({ token: myToken });
+        res.status(200).send({ token: myToken });
       }
     })
     .catch(error => res.status(400).send(error));
@@ -116,7 +116,7 @@ module.exports = {
         id: req.params.id
       }
     })
-    .then(user => res.status(201).send(user))
+    .then(user => res.status(200).send(user))
     .catch(error => res.status(400).send(error));
   },
 
@@ -153,7 +153,7 @@ module.exports = {
           message: 'Update profile successfully',
           data: userUpdate
         };
-        res.send(data);
+        res.status(200).send(data);
       });
     })
     .catch((error) => {
