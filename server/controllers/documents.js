@@ -107,7 +107,9 @@ module.exports = {
             $or: [
              { access: 'public' },
              { access: role.roleType },
-             { $and: [{ access: 'private' }, { userId: req.decoded.user.userId }] }
+              {
+                $and: [{ access: 'private' }, { userId: req.decoded.user.userId }]
+              }
             ]
           },
           attributes: ['id', 'title', 'access', 'content', 'createdAt'],
@@ -127,6 +129,12 @@ module.exports = {
   },
 
   getUserDocuments(req, res) {
+    const ownerId = parseInt(req.params.id, 10);
+    if (isNaN(ownerId)) {
+      return res.status(400).send({
+        message: 'Invalid parameter, user id can only be integer'
+      });
+    }
     Role.findById(req.decoded.user.roleId)
     .then((role) => {
       if (req.decoded.user.roleId === 1) {
@@ -148,13 +156,24 @@ module.exports = {
               }));
       }
       return Document
-        .findAll({
-          where: {
-            userId: req.params.id,
-            access: [role.roleType, 'public'] },
-          attributes: ['id', 'title', 'access', 'content', 'createdAt']
-        })
-        .then(documents => res.status(200).send(documents))
+      .findAll({
+        where: {
+          $or: [
+           { access: 'public' },
+           { access: role.roleType },
+           { $and: [{ access: 'private' }, { userId: req.decoded.user.userId }] }
+          ]
+        },
+        attributes: ['id', 'title', 'access', 'content', 'createdAt']
+      })
+      .then((documents) => {
+        if (documents.length === 0) {
+          return res.status(404).send({
+            message: 'Document not found',
+          });
+        }
+        res.status(200).send(documents);
+      })
         .catch(err => res.status(400).send({
           err: err.toString(),
           message: 'Invalid parameter, user id can only be integer'
@@ -219,24 +238,56 @@ module.exports = {
     query.limit = (req.query.limit > 0) ? req.query.limit : 10;
     query.offset = (req.query.offset > 0) ? req.query.offset : 0;
     query.order = ['createdAt'];
-    return Document
-      .findAndCountAll(query)
-      .then((documents) => {
-        const pagination = Helper.pagination(
-          query.limit, query.offset, documents.count
-        );
-        if (!documents.rows.length) {
-          return res.status(404).send({
-            message: 'Search term does not match any document',
+    Role.findById(req.decoded.user.roleId)
+    .then((role) => {
+      if (req.decoded.user.roleId === 1) {
+        return Document
+        .findAndCountAll(query)
+        .then((documents) => {
+          const pagination = Helper.pagination(
+            query.limit, query.offset, documents.count
+          );
+          if (!documents.rows.length) {
+            return res.status(404).send({
+              message: 'Search term does not match any document',
+            });
+          }
+          res.status(200).send({
+            pagination, documents: documents.rows,
           });
-        }
-        res.status(200).send({
-          pagination, documents: documents.rows,
         });
-      })
-      .catch((error) => {
-        res.status(412).json({ msg: error.message });
-      });
+      }
+      return Document
+        .findAndCountAll({
+          where: {
+            title: {
+              $iLike: `%${searchTerm}%`,
+            },
+            $or: [
+             { access: 'public' },
+             { access: role.roleType },
+             { $and: [{ access: 'private' }, { userId: req.decoded.user.userId }] }
+            ]
+          },
+          attributes: ['id', 'title', 'access', 'content', 'createdAt']
+        })
+        .then((documents) => {
+          const pagination = Helper.pagination(
+            query.limit, query.offset, documents.count
+          );
+          if (!documents.rows.length) {
+            return res.status(404).send({
+              message: 'Search term does not match any document',
+            });
+          }
+          res.status(200).send({
+            pagination, documents: documents.rows,
+          });
+        })
+        .catch((error) => {
+          res.status(412).json({ msg: error.message });
+        });
+    });
   },
 
   /**
