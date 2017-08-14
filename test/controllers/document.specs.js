@@ -2,13 +2,13 @@
 import { expect } from 'chai';
 import supertest from 'supertest';
 import 'babel-register';
-import auth from '../../server/helper/Auth';
-
+import auth from '../../server/helper/auth';
+import models from '../../build/models';
 import mockData from '../../mockData/mockData';
+import app from '../../build/server';
 
-const app = require('../../build/server');
-const Role = require('../../build/models').Role;
-const User = require('../../build/models').User;
+const Role = models.Role;
+const User = models.User;
 
 const adminToken = auth.setUserToken(mockData.admin);
 const badToken = mockData.badToken;

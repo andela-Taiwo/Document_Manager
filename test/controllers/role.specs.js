@@ -1,19 +1,21 @@
 import request from 'supertest';
 import { expect } from 'chai';
 import mockData from '../../mockData/mockData';
-import auth from '../../server/helper/Auth';
+import auth from '../../server/helper/auth';
+import models from '../../build/models';
+import app from '../../build/server';
+
 
 const dotenv = require('dotenv');
 
 dotenv.config();
 
-const User = require('../../server/models').User;
-const Role = require('../../server/models').Role;
+const User = models.User;
+const Role = models.Role;
 
 const adminToken = auth.setUserToken(mockData.admin);
 const regularToken = auth.setUserToken(mockData.regularUser);
 const noToken = auth.setUserToken(mockData.noToken);
-const app = require('../../build/app');
 
 describe('Role Endpoints', () => {
   beforeEach((done) => {

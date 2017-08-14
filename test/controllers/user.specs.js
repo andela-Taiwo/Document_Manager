@@ -2,7 +2,7 @@
 import { expect } from 'chai';
 import supertest from 'supertest';
 import 'babel-register';
-import auth from '../../server/helper/Auth';
+import auth from '../../server/helper/auth';
 import models from '../../build/models';
 import app from '../../build/server';
 import mockData from '../../mockData/mockData';
@@ -10,7 +10,6 @@ import mockData from '../../mockData/mockData';
 const User = models.User;
 const Role = models.Role;
 
-// const adminToken = auth.setUserToken(mockData.admin);
 const anotherUserToken = auth.setUserToken(mockData.user);
 
 let regularToken;
