@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { expect } from 'chai';
 import mockData from '../../mockData/mockData';
-import auth from '../../server/helper/auth';
+import auth from '../../server/helper/Auth';
 
 const dotenv = require('dotenv');
 
@@ -12,6 +12,7 @@ const Role = require('../../server/models').Role;
 
 const adminToken = auth.setUserToken(mockData.admin);
 const regularToken = auth.setUserToken(mockData.regularUser);
+const noToken = auth.setUserToken(mockData.noToken);
 const app = require('../../build/app');
 
 describe('Role Endpoints', () => {
@@ -86,7 +87,7 @@ describe('Role Endpoints', () => {
     it('should reject the request when not signed in', (done) => {
       request(app)
         .get('/api/v1/roles/')
-        .set('Authorization', regularToken)
+        .set('Authorization', noToken)
         .end((err, res) => {
           if (!err) {
             expect(res.status).to.equal(403);

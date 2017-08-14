@@ -2,7 +2,7 @@
 import { expect } from 'chai';
 import supertest from 'supertest';
 import 'babel-register';
-import auth from '../../server/helper/auth';
+import auth from '../../server/helper/Auth';
 
 import mockData from '../../mockData/mockData';
 
