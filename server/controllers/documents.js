@@ -1,7 +1,7 @@
-const Document = require('../models').Document;
-const Role = require('../models').Role;
-const verifyDocParams = require('../helper/profile.js').verifyDocParams;
-const Helper = require('../helper/pagination');
+
+import models from '../models';
+import Validator from '../helper/Validator';
+import Helper from '../helper/Helper';
 
 module.exports = {
 
@@ -11,14 +11,14 @@ module.exports = {
    * @return {json}  Document
    * */
   addDocument(req, res) {
-    verifyDocParams(req)
+    Validator.verifyDocParams(req)
     .then((result) => {
       const verifiedParams = result.mapped();
       const noErrors = result.isEmpty();
       if (noErrors === false) {
         return res.status(412).json({ message: verifiedParams });
       }
-      return Document
+      return models.Document
       .create({
         title: req.body.title,
         content: req.body.content,
@@ -44,15 +44,15 @@ module.exports = {
    * */
   getDocument(req, res) {
 
-    Role.findById(req.decoded.user.roleId)
+    models.Role.findById(req.decoded.user.roleId)
     .then((role) => {
       if (req.decoded.user.roleId === 1) {
-        return Document
+        return models.Document
           .findById(req.params.id)
           .then(documents => res.status(200).send(documents))
           .catch(err => res.status(404).send(err.toString()));
       }
-      return Document
+      return models.Document
         .findOne({
           where: {
             $or: [
@@ -82,10 +82,10 @@ module.exports = {
 
   getAllDocuments(req, res) {
     const query = req.query;
-    Role.findById(req.decoded.user.roleId)
+    models.Role.findById(req.decoded.user.roleId)
     .then((role) => {
       if (req.decoded.user.roleId === 1) {
-        return Document
+        return models.Document
           .findAll({
             attributes: ['id', 'title', 'content', 'access', 'createdAt'],
             offset: (query.offset) || 0,
@@ -101,7 +101,7 @@ module.exports = {
           })
           .catch(() => res.status(400).send('Connection Error'));
       }
-      return Document
+      return models.Document
         .findAll({
           where: {
             $or: [
@@ -135,10 +135,10 @@ module.exports = {
         message: 'Invalid parameter, user id can only be integer'
       });
     }
-    Role.findById(req.decoded.user.roleId)
+    models.Role.findById(req.decoded.user.roleId)
     .then((role) => {
       if (req.decoded.user.roleId === 1) {
-        return Document
+        return models.Document
           .findAll({
             where: {
               userId: req.params.id } })
@@ -155,7 +155,7 @@ module.exports = {
                 message: 'Invalid parameter, user id can only be integer'
               }));
       }
-      return Document
+      return models.Document
       .findAll({
         where: {
           $or: [
@@ -187,7 +187,7 @@ module.exports = {
    * */
 
   updateDocument(req, res) {
-    return Document
+    return models.Document
     .findOne({
       where: {
         userId: req.decoded.user.userId,
@@ -238,10 +238,10 @@ module.exports = {
     query.limit = (req.query.limit > 0) ? req.query.limit : 10;
     query.offset = (req.query.offset > 0) ? req.query.offset : 0;
     query.order = ['createdAt'];
-    Role.findById(req.decoded.user.roleId)
+    models.Role.findById(req.decoded.user.roleId)
     .then((role) => {
       if (req.decoded.user.roleId === 1) {
-        return Document
+        return models.Document
         .findAndCountAll(query)
         .then((documents) => {
           const pagination = Helper.pagination(
@@ -257,7 +257,7 @@ module.exports = {
           });
         });
       }
-      return Document
+      return models.Document
         .findAndCountAll({
           where: {
             title: {
@@ -296,7 +296,7 @@ module.exports = {
    * @return {json}  document
    * */
   deleteDocument(req, res) {
-    return Document
+    return models.Document
     .findOne({
       where: {
         userId: req.decoded.user.userId,

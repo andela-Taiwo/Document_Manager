@@ -1,14 +1,11 @@
 import dotenv from 'dotenv';
-
-const User = require('../models').User;
-const verifyUserParams = require('../helper/profile').verifyUserParams;
-const verifLoginParams = require('../helper/profile').verifyloginParams;
-const jwt = require('jsonwebtoken');
-const Helper = require('../helper/pagination');
-const bcrypt = require('bcrypt');
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import models from '../models';
+import Validator from '../helper/Validator';
+import Helper from '../helper/Helper';
 
 dotenv.config();
-
 const SECRET_KEY = process.env.SECRET;
 
 module.exports = {
@@ -18,8 +15,7 @@ module.exports = {
    * @return {json}  user
    * */
   addUser(req, res) {
-    console.log(req.body);
-    verifyUserParams(req)
+    Validator.verifyUserParams(req)
     .then((result) => {
       const verifiedParams = result.mapped();
       const noErrors = result.isEmpty();
@@ -28,11 +24,11 @@ module.exports = {
         return {};
       }
       const email = req.body.email;
-      return User
+      return models.User
     .findOne({ where: { email: req.body.email } })
     .then((foundUser) => {
       if (!foundUser) {
-        User.create({
+        models.User.create({
           userName: req.body.userName,
           password: req.body.password,
           email: req.body.email,
@@ -81,7 +77,7 @@ module.exports = {
    * @return {json}  Document
    * */
   logginUser(req, res) {
-    verifLoginParams(req)
+    Validator.verifyLoginParams(req)
     .then((result) => {
       const verifiedParams = result.mapped();
       const noErrors = result.isEmpty();
@@ -90,7 +86,7 @@ module.exports = {
         return {};
       }
       const password = req.body.password;
-      return User
+      return models.User
       .findOne({
         where: {
           email: req.body.email,
@@ -117,7 +113,7 @@ module.exports = {
     });
   },
   getUser(req, res) {
-    return User
+    return models.User
     .find({
       where: {
         id: req.params.id
@@ -134,7 +130,7 @@ module.exports = {
    * @return {json}  Document
    * */
   getAllUsers(req, res) {
-    return User
+    return models.User
     .all()
     .then(users => res.status(200).send(users))
     .catch((error) => {
@@ -142,7 +138,7 @@ module.exports = {
     });
   },
   updateUser(req, res) {
-    return User
+    return models.User
     .findOne({
       where: {
         id: req.decoded.user.userId
@@ -190,7 +186,7 @@ module.exports = {
     query.limit = (req.query.limit > 0) ? req.query.limit : 10;
     query.offset = (req.query.offset > 0) ? req.query.offset : 0;
     query.order = ['createdAt'];
-    return User
+    return models.User
       .findAndCountAll(query)
       .then((users) => {
         const pagination = Helper.pagination(
@@ -214,7 +210,7 @@ module.exports = {
    * @return {json}  status and message
    * */
   deleteUser(req, res) {
-    return User
+    return models.User
     .destroy({
       where: {
         id: req.decoded.user.userId

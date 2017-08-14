@@ -1,11 +1,11 @@
-const Role = require('../models').Role;
-const User = require('../models').User;
+
+import models from '../models';
 
 module.exports = {
   getAllRoles(req, res) {
     const auth = (req.decoded.user.roleId);
     if (auth === 1) {
-      return Role
+      return models.Role
       .all()
       .then(roles => res.status(200).send(roles))
       .catch((error) => {
@@ -18,7 +18,7 @@ module.exports = {
   create(req, res) {
     const auth = (req.decoded.user.roleId);
     if (auth === 1) {
-      return Role
+      return models.Role
         .create({
           roleType: req.body.roleType,
         })
@@ -30,10 +30,9 @@ module.exports = {
 
   updateRole(req, res) {
     const auth = (req.decoded.user.roleId);
-    console.log(auth);
     const newRoleId = parseInt(req.body.roleId, 10);
     if (auth === 1) {
-      return User
+      return models.User
       .findOne({
         where: {
           email: req.body.email
@@ -42,7 +41,7 @@ module.exports = {
       })
       .then(() => {
         if (!isNaN(newRoleId)) {
-          User.update({ roleId: newRoleId },
+          models.User.update({ roleId: newRoleId },
                 { where: { email: req.body.email } })
                 .then((userUpdate) => {
                   const data = {
