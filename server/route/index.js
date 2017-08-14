@@ -1,7 +1,7 @@
 import Users from '../controllers/users';
 import Roles from '../controllers/roles';
 import Documents from '../controllers/documents';
-import Auth from '../helper/Auth';
+import Auth from '../helper/auth';
 
 const usersController = Users;
 const rolesController = Roles;
