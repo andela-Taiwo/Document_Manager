@@ -107,7 +107,6 @@ module.exports = {
         } else {
           res.sendStatus(401);
         }
-        // res.sendStatus(401);
       })
       .catch(error => res.status(400).send(error));
     });
