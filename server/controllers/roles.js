@@ -4,7 +4,7 @@ import models from '../models';
 module.exports = {
   getAllRoles(req, res) {
     const auth = (req.decoded.user.roleId);
-    if (auth === 1) {
+    if (auth) {
       return models.Role
       .all()
       .then(roles => res.status(200).send(roles))
