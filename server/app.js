@@ -32,7 +32,7 @@ app.use(expressValidator({
 require('./route')(app);
 
 app.get('*', (req, res) => res.status(200).send({
-  message: 'Welcome to the beginning of nothingness.',
+  message: 'Welcome to Reliable-Docs API.',
 }));
 
 module.exports = app;

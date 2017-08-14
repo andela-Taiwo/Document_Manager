@@ -1,9 +1,9 @@
-import roles from './roles';
-import users from './users';
-import documents from './documents';
+import Roles from './Roles';
+import Users from './Users';
+import Documents from './Documents';
 
 module.exports = {
-  roles,
-  users,
-  documents
+  Roles,
+  Users,
+  Documents
 };

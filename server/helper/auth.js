@@ -23,7 +23,7 @@ module.exports = {
     const auth = req.headers.authorization;
     const token = req.body.token || req.headers['x-access-token'] || auth;
     if (token) {
-      jwt.verify(token, process.env.SECRET, (err, decoded) => {
+      jwt.verify(token, SECRET_KEY, (err, decoded) => {
         if (err) {
           const message = {
             message: 'You are not signed in'

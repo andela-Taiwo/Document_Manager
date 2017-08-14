@@ -27,13 +27,13 @@ module.exports = {
         roleId: req.decoded.user.roleId
       })
       .then((document) => {
-        return res.status(201).json({
+        res.status(201).json({
           title: document.title,
           message: 'New Document created successfully',
           ownerId: document.userId, });
       })
       .catch((error) => {
-        return res.status(412).json({ msg: error });
+        res.status(412).json({ msg: error });
       });
     });
   },
