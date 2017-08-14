@@ -43,7 +43,6 @@ module.exports = {
    * @return {json}  document
    * */
   getDocument(req, res) {
-
     models.Role.findById(req.decoded.user.roleId)
     .then((role) => {
       if (req.decoded.user.roleId === 1) {
