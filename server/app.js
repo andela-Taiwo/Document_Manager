@@ -1,8 +1,12 @@
-
-const express = require('express');
-const logger = require('morgan');
-const bodyParser = require('body-parser');
-const expressValidator = require('express-validator');
+import express from 'express';
+import logger from 'morgan';
+import bodyParser from 'body-parser';
+import expressValidator from 'express-validator';
+import path from 'path';
+// const express = require('express');
+// const logger = require('morgan');
+// const bodyParser = require('body-parser');
+// const expressValidator = require('express-validator');
 
 const app = express();
 
@@ -27,12 +31,18 @@ app.use(expressValidator({
     };
   }
 }));
+app.use(express.static('client'));
 
 // Require our routes into the application.
 require('./route')(app);
 
+app.get('/*', (req, res) => {
+  res.sendFile(path.join(__dirname, '/index.html'));
+});
+
 app.get('*', (req, res) => res.status(200).send({
   message: 'Welcome to Reliable-Docs API.',
 }));
+
 
 module.exports = app;

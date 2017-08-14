@@ -59,7 +59,7 @@ Reliable-Docs  API is a document management system API, complete with roles and 
 * To run tests, run the command `npm test`.
 
 ## Usage
-Click [here](https://document-manager-ap.herokuapp.com) to access the API
+Click [here](https://reliable-docs-api.herokuapp.com) to access the API
 
 
 # System Dependecies
