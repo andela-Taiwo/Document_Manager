@@ -1,6 +1,6 @@
-import Users from '../controllers/Users';
-import Roles from '../controllers/Roles';
-import Documents from '../controllers/Documents';
+import Users from '../controllers/users';
+import Roles from '../controllers/roles';
+import Documents from '../controllers/documents';
 import Auth from '../helper/Auth';
 
 const usersController = Users;
