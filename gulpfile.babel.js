@@ -53,15 +53,14 @@ gulp.task('coverage', (cb) => {
         .pipe(injectModules())
         .pipe(jasmineNode())
         .pipe(istanbul.writeReports())
-        .pipe(istanbul.enforceThresholds({ thresholds: { global: 6 } }))
+        .pipe(istanbul.enforceThresholds({ thresholds: { global: 30 } }))
         .on('end', cb)
         .pipe(exit());
     });
 });
-gulp.task('coveralls', () => {
-  return gulp.src('./coverage/lcov')
-    .pipe(coveralls());
-});
+gulp.task('coveralls', () => gulp.src('./coverage/lcov')
+    .pipe(coveralls())
+);
 
 gulp.task('default', ['dev'], () => {
   gulp.watch('server/**/*.js', ['dev']);

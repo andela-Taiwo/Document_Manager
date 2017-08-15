@@ -3,14 +3,13 @@ import { expect } from 'chai';
 import supertest from 'supertest';
 import 'babel-register';
 import auth from '../../server/helper/auth';
-
+import models from '../../build/models';
+import app from '../../build/server';
 import mockData from '../../mockData/mockData';
 
-const app = require('../../build/server');
-const User = require('../../build/models').User;
-const Role = require('../../build/models').Role;
+const User = models.User;
+const Role = models.Role;
 
-// const adminToken = auth.setUserToken(mockData.admin);
 const anotherUserToken = auth.setUserToken(mockData.user);
 
 let regularToken;
@@ -89,7 +88,7 @@ describe('When user', () => {
       request.post('/api/v1/users/login')
     .send({ email: 'john@yahoo.com', password: 'humanity' })
     .end((err, res) => {
-      expect(res.statusCode).to.be.equal(201);
+      expect(res.statusCode).to.be.equal(200);
       regularToken = res.body.token;
       done();
     });
@@ -108,7 +107,7 @@ describe('When user', () => {
       request.get('/api/v1/users/1')
     .set({ Authorization: regularToken })
     .end((err, res) => {
-      expect(res.statusCode).to.be.equal(201);
+      expect(res.statusCode).to.be.equal(200);
       done();
     });
     });

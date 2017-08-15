@@ -1,7 +1,7 @@
-const Document = require('../models').Document;
-const Role = require('../models').Role;
-const verifyDocParams = require('../helper/profile.js').verifyDocParams;
-const Helper = require('../helper/pagination');
+
+import models from '../models';
+import Validator from '../helper/Validator';
+import Helper from '../helper/Helper';
 
 module.exports = {
 
@@ -11,14 +11,14 @@ module.exports = {
    * @return {json}  Document
    * */
   addDocument(req, res) {
-    verifyDocParams(req)
+    Validator.verifyDocParams(req)
     .then((result) => {
       const verifiedParams = result.mapped();
       const noErrors = result.isEmpty();
       if (noErrors === false) {
         return res.status(412).json({ message: verifiedParams });
       }
-      return Document
+      return models.Document
       .create({
         title: req.body.title,
         content: req.body.content,
@@ -27,13 +27,13 @@ module.exports = {
         roleId: req.decoded.user.roleId
       })
       .then((document) => {
-        return res.status(201).json({
+        res.status(201).json({
           title: document.title,
           message: 'New Document created successfully',
           ownerId: document.userId, });
       })
       .catch((error) => {
-        return res.status(412).json({ msg: error });
+        res.status(412).json({ msg: error });
       });
     });
   },
@@ -43,24 +43,28 @@ module.exports = {
    * @return {json}  document
    * */
   getDocument(req, res) {
-    Role.findById(req.decoded.user.roleId)
+    models.Role.findById(req.decoded.user.roleId)
     .then((role) => {
       if (req.decoded.user.roleId === 1) {
-        return Document
+        return models.Document
           .findById(req.params.id)
-          .then(documents => res.status(201).send(documents))
+          .then(documents => res.status(200).send(documents))
           .catch(err => res.status(404).send(err.toString()));
       }
-      return Document
+      return models.Document
         .findOne({
           where: {
-            id: req.params.id,
-            access: [role.roleType, 'public'] },
+            $or: [
+             { access: 'public' },
+             { access: role.roleType },
+             { $and: [{ access: 'private' }, { userId: req.decoded.user.userId }] }
+            ]
+          },
           attributes: ['id', 'title', 'access', 'content', 'createdAt']
         })
         .then((documents) => {
           if (documents) {
-            res.status(201).send(documents);
+            res.status(200).send(documents);
           }
         })
         .catch(err => res.status(404).send({
@@ -77,10 +81,10 @@ module.exports = {
 
   getAllDocuments(req, res) {
     const query = req.query;
-    Role.findById(req.decoded.user.roleId)
+    models.Role.findById(req.decoded.user.roleId)
     .then((role) => {
       if (req.decoded.user.roleId === 1) {
-        return Document
+        return models.Document
           .findAll({
             attributes: ['id', 'title', 'content', 'access', 'createdAt'],
             offset: (query.offset) || 0,
@@ -92,19 +96,21 @@ module.exports = {
                 message: 'Document not found',
               });
             }
-            res.status(201).send(documents);
+            res.status(200).send(documents);
           })
           .catch(() => res.status(400).send('Connection Error'));
       }
-      return Document
+      return models.Document
         .findAll({
           where: {
             $or: [
-              { access: 'public' },
-              { access: role.roleType },
-              { $and: [{ access: 'private' }, { userId: req.decoded.user.userId }] }
-          ]
-        },
+             { access: 'public' },
+             { access: role.roleType },
+              {
+                $and: [{ access: 'private' }, { userId: req.decoded.user.userId }]
+              }
+            ]
+          },
           attributes: ['id', 'title', 'access', 'content', 'createdAt'],
           offset: (query.offset) || 0,
           limit: query.limit || 10
@@ -115,17 +121,23 @@ module.exports = {
               message: 'Document not found',
             });
           }
-          res.status(201).send(documents);
+          res.status(200).send(documents);
         })
         .catch(err => res.status(400).send(err.toString()));
     });
   },
 
   getUserDocuments(req, res) {
-    Role.findById(req.decoded.user.roleId)
+    const ownerId = parseInt(req.params.id, 10);
+    if (isNaN(ownerId)) {
+      return res.status(400).send({
+        message: 'Invalid parameter, user id can only be integer'
+      });
+    }
+    models.Role.findById(req.decoded.user.roleId)
     .then((role) => {
       if (req.decoded.user.roleId === 1) {
-        return Document
+        return models.Document
           .findAll({
             where: {
               userId: req.params.id } })
@@ -135,18 +147,32 @@ module.exports = {
                     message: 'Document not found',
                   });
                 }
-                res.status(201).send(documents);
+                res.status(200).send(documents);
               })
-          .catch(err => res.status(400).send(err.toString()));
+              .catch(err => res.status(400).send({
+                err: err.toString(),
+                message: 'Invalid parameter, user id can only be integer'
+              }));
       }
-      return Document
-        .findAll({
-          where: {
-            userId: req.params.id,
-            access: [role.roleType, 'public'] },
-          attributes: ['id', 'title', 'access', 'content', 'createdAt']
-        })
-        .then(documents => res.status(201).send(documents))
+      return models.Document
+      .findAll({
+        where: {
+          $or: [
+           { access: 'public' },
+           { access: role.roleType },
+           { $and: [{ access: 'private' }, { userId: req.decoded.user.userId }] }
+          ]
+        },
+        attributes: ['id', 'title', 'access', 'content', 'createdAt']
+      })
+      .then((documents) => {
+        if (documents.length === 0) {
+          return res.status(404).send({
+            message: 'Document not found',
+          });
+        }
+        res.status(200).send(documents);
+      })
         .catch(err => res.status(400).send({
           err: err.toString(),
           message: 'Invalid parameter, user id can only be integer'
@@ -160,7 +186,7 @@ module.exports = {
    * */
 
   updateDocument(req, res) {
-    return Document
+    return models.Document
     .findOne({
       where: {
         userId: req.decoded.user.userId,
@@ -211,24 +237,56 @@ module.exports = {
     query.limit = (req.query.limit > 0) ? req.query.limit : 10;
     query.offset = (req.query.offset > 0) ? req.query.offset : 0;
     query.order = ['createdAt'];
-    return Document
-      .findAndCountAll(query)
-      .then((documents) => {
-        const pagination = Helper.pagination(
-          query.limit, query.offset, documents.count
-        );
-        if (!documents.rows.length) {
-          return res.status(404).send({
-            message: 'Search term does not match any document',
+    models.Role.findById(req.decoded.user.roleId)
+    .then((role) => {
+      if (req.decoded.user.roleId === 1) {
+        return models.Document
+        .findAndCountAll(query)
+        .then((documents) => {
+          const pagination = Helper.pagination(
+            query.limit, query.offset, documents.count
+          );
+          if (!documents.rows.length) {
+            return res.status(404).send({
+              message: 'Search term does not match any document',
+            });
+          }
+          res.status(200).send({
+            pagination, documents: documents.rows,
           });
-        }
-        res.status(201).send({
-          pagination, documents: documents.rows,
         });
-      })
-      .catch((error) => {
-        res.status(412).json({ msg: error.message });
-      });
+      }
+      return models.Document
+        .findAndCountAll({
+          where: {
+            title: {
+              $iLike: `%${searchTerm}%`,
+            },
+            $or: [
+             { access: 'public' },
+             { access: role.roleType },
+             { $and: [{ access: 'private' }, { userId: req.decoded.user.userId }] }
+            ]
+          },
+          attributes: ['id', 'title', 'access', 'content', 'createdAt']
+        })
+        .then((documents) => {
+          const pagination = Helper.pagination(
+            query.limit, query.offset, documents.count
+          );
+          if (!documents.rows.length) {
+            return res.status(404).send({
+              message: 'Search term does not match any document',
+            });
+          }
+          res.status(200).send({
+            pagination, documents: documents.rows,
+          });
+        })
+        .catch((error) => {
+          res.status(412).json({ msg: error.message });
+        });
+    });
   },
 
   /**
@@ -237,7 +295,7 @@ module.exports = {
    * @return {json}  document
    * */
   deleteDocument(req, res) {
-    return Document
+    return models.Document
     .findOne({
       where: {
         userId: req.decoded.user.userId,
