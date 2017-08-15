@@ -139,7 +139,7 @@ describe('When user', () => {
         request.get('/api/v1/search/users/?q=invalid username')
       .set({ Authorization: regularToken })
       .end((err, res) => {
-        expect(res.body.message)
+        expect(res.body.errorMessage)
         .to.be.equal('Search term does not match any user');
         expect(res.statusCode).to.be.equal(404);
         done();
@@ -152,7 +152,7 @@ describe('When user', () => {
         request.delete('/api/v1/users')
       .set({ Authorization: anotherUserToken })
       .end((err, res) => {
-        expect(res.body.message)
+        expect(res.body.errorMessage)
         .to.be.equal('You are not authorize to delete another user data');
         expect(res.statusCode).to.be.equal(403);
         done();
@@ -162,7 +162,7 @@ describe('When user', () => {
         request.delete('/api/v1/users')
       .set({ Authorization: regularToken })
       .end((err, res) => {
-        expect(res.body.message).to.be.equal('Deleted user successfully');
+        expect(res.body.errorMessage).to.be.equal('Deleted user successfully');
         expect(res.statusCode).to.be.equal(200);
         done();
       });

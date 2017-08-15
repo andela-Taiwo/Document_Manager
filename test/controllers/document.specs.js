@@ -178,7 +178,7 @@ describe(' Document', () => {
              .set({ Authorization: regularToken })
              .end((err, res) => {
                expect(res.status).to.be.equal(400);
-               expect(res.body.message).to
+               expect(res.body.errorMessage).to
                .be.equal('Invalid parameter, user id can only be integer');
                done();
              });
@@ -190,7 +190,7 @@ describe(' Document', () => {
                .set({ Authorization: adminToken })
                .end((err, res) => {
                  expect(res.status).to.be.equal(404);
-                 expect(res.body.message).to.be.equal('Document not found');
+                 expect(res.body.errorMessage).to.be.equal('Document not found');
                  done();
                });
         });
@@ -282,7 +282,7 @@ describe(' Document', () => {
           request.get('/api/v1/documents/1')
                .set({ Authorization: adminToken })
                .end((err, res) => {
-                 expect(res.status).to.be.equal(200);
+                 expect(res.status).to.be.equal(404);
                  done();
                });
         });

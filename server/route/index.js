@@ -8,8 +8,6 @@ const rolesController = Roles;
 const documentsController = Documents;
 const authorize = Auth.authorize;
 
-// const headers['x-access-token'] = [jwt-token]
-
 module.exports = (app) => {
   app.get('/api/v1', (req, res) => res.status(200).send({
     message: 'Welcome to the Document Manager API!',
