@@ -105,7 +105,9 @@ module.exports = {
                   res.sendStatus(401);
                 }
               })
-              .catch(error => res.status(400).send(error));
+              .catch(error => res.status(400).send({
+                errorMessage: `${error} invalid parameter`
+              }));
       });
   },
   getUser(req, res) {
@@ -115,8 +117,18 @@ module.exports = {
             id: req.params.id
           }
         })
-        .then(user => res.status(200).send(user))
-        .catch(error => res.status(400).send(error));
+        .then((user) => {
+          if (user) {
+            res.status(200).send(user);
+          } else {
+            res.status(404).send({
+              errorMessage: 'user does not exist'
+            });
+          }
+        })
+        .catch(error => res.status(400).send({
+          errorMessage: `${error} invalid parameter`
+        }));
   },
 
   /**
@@ -130,7 +142,7 @@ module.exports = {
         .all()
         .then(users => res.status(200).send(users))
         .catch((error) => {
-          res.status(412).json({ msg: error.message });
+          res.status(412).json({ errorMessage: error.message });
         });
   },
   updateUser(req, res) {
@@ -148,7 +160,6 @@ module.exports = {
           roleId: req.decoded.user.roleId
         }).then((userUpdate) => {
           const data = {
-            error: 'false',
             message: 'Update profile successfully',
             data: userUpdate
           };
@@ -156,7 +167,7 @@ module.exports = {
         });
       })
       .catch((error) => {
-        res.status(412).json({ msg: error.message });
+        res.status(412).json({ errorMessage: error.message });
       });
   },
 
@@ -190,12 +201,12 @@ module.exports = {
         );
         if (!users.rows.length) {
           return res.status(404).send({
-            message: 'Search term does not match any user',
+            errorMessage: 'Search term does not match any user',
           });
         }
         res.status(200).send({
-          pagination,
           users: users.rows,
+          pagination,
         });
       });
   },
@@ -215,19 +226,18 @@ module.exports = {
         }).then((user) => {
           if (user !== 0) {
             const data = {
-              error: 'false',
-              message: 'Deleted user successfully',
+              errorMessage: 'Deleted user successfully',
               data: user
             };
             res.send(data);
           } else {
             res.status(403).send({
-              message: 'You are not authorize to delete another user data'
+              errorMessage: 'You are not authorize to delete another user data'
             });
           }
         })
         .catch((error) => {
-          res.status(412).json({ msg: error.message });
+          res.status(412).json({ errorMessage: error.message });
         });
   }
 };

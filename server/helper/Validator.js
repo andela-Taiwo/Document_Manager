@@ -7,6 +7,7 @@
  */
 const verifyUserParams = (request) => {
   request.assert('userName', 'userName field is required').notEmpty();
+  request.assert('password', '6 to 15 characters required').len(6, 15);
   request.assert('password', 'password field is required').notEmpty();
   request.assert('email', 'email field is required').notEmpty();
   request.assert('email', 'valid email address is required').isEmail();
@@ -22,13 +23,23 @@ const verifyDocParams = (request) => {
 
 const verifyLoginParams = (request) => {
   request.assert('email', 'title field is required').notEmpty();
-  request.assert('password', '10 to 30 characters required').len(6, 20);
+  request.assert('password', '6 to 15 characters required').len(6, 15);
   request.assert('password', 'password content cannot be empty').notEmpty();
   return request.getValidationResult();
+};
+
+const verifyId = (request) => {
+  if (isNaN(request)) {
+    return {
+      errorMessage: 'Invalid parameter, document id can only be integer'
+    };
+  }
+  return true;
 };
 
 module.exports = {
   verifyUserParams,
   verifyDocParams,
-  verifyLoginParams
+  verifyLoginParams,
+  verifyId
 };
