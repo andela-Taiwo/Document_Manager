@@ -4,7 +4,7 @@ import supertest from 'supertest';
 import 'babel-register';
 import auth from '../../server/helper/auth';
 import models from '../../build/models';
-import mockData from '../../mockData/mockData';
+import mockData from '../mockData/mockData';
 import app from '../../build/server';
 
 const Role = models.Role;
@@ -99,7 +99,7 @@ describe(' Document', () => {
       });
     });
   });
-  describe('user get documents', () => {
+  describe('fetches documents', () => {
     it('should return an  object containing  all documents', (done) => {
       request.get('/api/v1/documents/')
     .set({ Authorization: regularToken })
@@ -118,8 +118,7 @@ describe(' Document', () => {
     });
     });
 
-    it(`should return all documents
-      for documents user when user has logged in `,
+    it('should return all documents for super admin ',
      (done) => {
        request.get('/api/v1/documents')
             .set({ Authorization: adminToken })
@@ -129,8 +128,7 @@ describe(' Document', () => {
             });
      });
 
-    it(`should return a document that matched the id supplied
-       by the user when user has logged in `,
+    it('should return a document that matched the id for super admin ',
       (done) => {
         request.get('/api/v1/documents/1')
              .set({ Authorization: adminToken })
@@ -200,7 +198,7 @@ describe(' Document', () => {
       request.put('/api/v1/documents/1')
       .send({ title: 'update my doc',
         content: 'Updating document ',
-        access: 'user' })
+        access: 'role' })
       .set({ Authorization: `${regularToken}` })
       .end((err, res) => {
         expect(res.body.message).to.be.equal('Updated document successfully');
@@ -212,7 +210,7 @@ describe(' Document', () => {
       request.put('/api/v1/documents/1')
       .send({ title: 'update my doc',
         content: 'Updating document ',
-        access: 'user' })
+        access: 'role' })
       .set({ Authorization: `${adminToken}` })
       .end((err, res) => {
         expect(res.statusCode).to.be.equal(412);

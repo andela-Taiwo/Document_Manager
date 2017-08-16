@@ -1,6 +1,6 @@
-import Roles from './Roles';
-import Users from './Users';
-import Documents from './Documents';
+import Roles from './roles';
+import Users from './users';
+import Documents from './documents';
 
 module.exports = {
   Roles,
