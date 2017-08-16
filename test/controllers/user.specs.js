@@ -5,7 +5,7 @@ import 'babel-register';
 import auth from '../../server/helper/auth';
 import models from '../../build/models';
 import app from '../../build/server';
-import mockData from '../../mockData/mockData';
+import mockData from '../mockData/mockData';
 
 const User = models.User;
 const Role = models.Role;
@@ -62,8 +62,7 @@ describe('When user', () => {
     });
     });
 
-    it(`should return "johnDoe@yahoo.com already exist" and status 409,
-    when user tries to signup with an existing email`, (done) => {
+    it('should return error message for missing parameter ', (done) => {
       request.post('/api/v1/users')
     .send({ email: 'johnDoe@yahoo.com', password: 'humanity' })
     .end((err, res) => {
@@ -72,8 +71,7 @@ describe('When user', () => {
     });
     });
 
-    it(`should return "User successfully signup" and status 201,
-    when user tries to signup with valid data`, (done) => {
+    it('should return "User successfully signup" and status 201', (done) => {
       request.post('/api/v1/users')
     .send({ email: 'john@yahoo.com', password: 'humanity', userName: 'adeola' })
     .end((err, res) => {
@@ -83,7 +81,7 @@ describe('When user', () => {
     });
     });
   });
-  describe('logs user in', () => {
+  describe('when user  login', () => {
     it('should return an  object containing  a token', (done) => {
       request.post('/api/v1/users/login')
     .send({ email: 'john@yahoo.com', password: 'humanity' })
@@ -93,8 +91,9 @@ describe('When user', () => {
       done();
     });
     });
-
-    it('should return an  object containing  all user', (done) => {
+  });
+  describe('when user fetches ', () => {
+    it('should return an  object containing  all users', (done) => {
       request.get('/api/v1/users/')
     .set({ Authorization: regularToken })
     .end((err, res) => {
@@ -111,20 +110,23 @@ describe('When user', () => {
       done();
     });
     });
-    it('should uodate user userName ', (done) => {
-      request.put('/api/v1/users')
-      .send({
-        userName: 'adeola'
-      })
-    .set({ Authorization: regularToken })
-    .end((err, res) => {
-      expect(res.statusCode).to.be.equal(200);
-      expect(res.body.message).to.be.equal('Update profile successfully');
-      done();
-    });
+    describe('when user update profile', () => {
+      it('should update user userName ', (done) => {
+        request.put('/api/v1/users')
+        .send({
+          userName: 'adeola'
+        })
+      .set({ Authorization: regularToken })
+      .end((err, res) => {
+        expect(res.statusCode).to.be.equal(200);
+        expect(res.body.message).to.be.equal('Update profile successfully');
+        done();
+      });
+      });
     });
 
-    describe(' user search', () => {
+
+    describe(' when user search', () => {
       it('should return a result that match the user query ', (done) => {
         request.get('/api/v1/search/users/?q=adeola')
       .set({ Authorization: regularToken })
@@ -147,13 +149,13 @@ describe('When user', () => {
       });
     });
 
-    describe('Delete user', () => {
+    describe('When user delete profile', () => {
       it('should not be able to delete another user account ', (done) => {
         request.delete('/api/v1/users')
       .set({ Authorization: anotherUserToken })
       .end((err, res) => {
         expect(res.body.errorMessage)
-        .to.be.equal('You are not authorize to delete another user data');
+        .to.be.equal('You are not authorized to delete another user account');
         expect(res.statusCode).to.be.equal(403);
         done();
       });

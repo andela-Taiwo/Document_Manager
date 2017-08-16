@@ -37,12 +37,19 @@ module.exports = {
     });
   },
 
+
   /**
    * @param {object} req
    * @param {object} res
    * @return {json}  document
    * */
   getDocument(req, res) {
+    const ownerId = parseInt(req.params.id, 10);
+    if (isNaN(ownerId)) {
+      return res.status(400).send({
+        errorMessage: 'Invalid parameter, document id can only be integer'
+      });
+    }
     if (req.decoded.user.roleId === 1) {
       return models.Document
         .findById(req.params.id)
@@ -82,55 +89,78 @@ module.exports = {
         errorMessage: err.toString(),
       }));
   },
+
+
   /**
    * @param {object} req
    * @param {object} res
    * @return {json}  Document
    * */
   getAllDocuments(req, res) {
-    const query = req.query;
+    const query = {
+      where: {
+        $or: [
+         { access: 'public' },
+         { access: 'role', roleId: req.decoded.user.roleId },
+          {
+            $and: [{ access: 'private' }, { userId: req.decoded.user.userId }]
+          }
+        ]
+      },
+      attributes: ['id', 'title', 'access', 'content', 'createdAt'],
+    };
+
+    query.limit = (req.query.limit > 0) ? req.query.limit : 10;
+
+    query.offset = (req.query.offset > 0) ? req.query.offset : 0;
+    query.order = ['createdAt'];
+
     if (req.decoded.user.roleId === 1) {
       return models.Document
-        .findAll({
+        .findAndCountAll({
+          offset: query.offset,
+          limit: query.limit,
+          order: query.order,
           attributes: ['id', 'title', 'content', 'access', 'createdAt'],
-          offset: (query.offset) || 0,
-          limit: query.limit || 10
         })
         .then((documents) => {
-          if (documents.length === 0) {
+          const pagination = Helper.pagination(
+            query.limit, query.offset, documents.count
+          );
+          if (!documents.rows.length) {
             return res.status(404).send({
-              errorMessage: 'Document not found',
+              errorMessage: 'No document found',
             });
           }
-          res.status(200).send(documents);
+          res.status(200).send({
+            documents: documents.rows,
+            pagination,
+          });
         })
-        .catch(() => res.status(400).send('Connection Error'));
+        .catch(err => res.status(400).send({
+          errorMessage: err.toString()
+        }));
     }
+
     return models.Document
-      .findAll({
-        where: {
-          $or: [
-           { access: 'public' },
-           { access: 'role', roleId: req.decoded.user.roleId },
-            {
-              $and: [{ access: 'private' }, { userId: req.decoded.user.userId }]
-            }
-          ]
-        },
-        attributes: ['id', 'title', 'access', 'content', 'createdAt'],
-        offset: (query.offset) || 0,
-        limit: query.limit || 10
-      })
+      .findAndCountAll(query)
       .then((documents) => {
-        if (documents.length === 0) {
+        const pagination = Helper.pagination(
+          query.limit, query.offset, documents.count
+        );
+        if (!documents.rows.length) {
           return res.status(404).send({
-            errorMessage: 'Document not found',
+            errorMessage: 'No document found',
           });
         }
-        res.status(200).send(documents);
+        res.status(200).send({
+          documents: documents.rows,
+          pagination,
+        });
       })
       .catch(err => res.status(400).send(err.toString()));
   },
+
 
   getUserDocuments(req, res) {
     const ownerId = parseInt(req.params.id, 10);
@@ -158,6 +188,7 @@ module.exports = {
               errorMessage: 'Invalid parameter, user id can only be integer'
             }));
     }
+
     return models.Document
     .findAll({
       where: {
@@ -182,6 +213,8 @@ module.exports = {
         errorMessage: 'Invalid parameter, user id can only be integer'
       }));
   },
+
+
   /**
    *@param {object} req
    * @param {object} res
@@ -189,6 +222,12 @@ module.exports = {
    * */
 
   updateDocument(req, res) {
+    const ownerId = parseInt(req.params.id, 10);
+    if (isNaN(ownerId)) {
+      return res.status(400).send({
+        errorMessage: 'Invalid parameter, document id can only be integer'
+      });
+    }
     return models.Document
     .findOne({
       where: {
@@ -217,6 +256,7 @@ module.exports = {
       res.status(412).json({ msg: error.message });
     });
   },
+
 
   /**
    *@param {object} req
@@ -295,7 +335,7 @@ module.exports = {
    * @return {json}  document
    * */
   deleteDocument(req, res) {
-    Validator.verifyId(req.params.id);
+    // Validator.verifyId(req.params.id);
     return models.Document
     .findOne({
       where: {

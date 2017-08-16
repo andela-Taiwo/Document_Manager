@@ -37,7 +37,7 @@ gulp.task('production', () => gulp.src('server/**/*.js')
   .pipe(gulp.dest('build')));
 
 gulp.task('test', () => {
-  gulp.src('test/controlle/*.js')
+  gulp.src('test/controllers/*.js')
     .pipe(babel())
     .pipe(jasmineNode(jasmineNodeOpts))
     .pipe(exit());

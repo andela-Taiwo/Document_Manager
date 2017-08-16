@@ -111,6 +111,12 @@ module.exports = {
       });
   },
   getUser(req, res) {
+    const ownerId = parseInt(req.params.id, 10);
+    if (isNaN(ownerId)) {
+      return res.status(400).send({
+        errorMessage: 'Invalid parameter, user id can only be integer'
+      });
+    }
     return models.User
         .find({
           where: {
@@ -138,9 +144,23 @@ module.exports = {
    * @return {json}  Document
    * */
   getAllUsers(req, res) {
+    const query = { };
+    query.limit = (req.query.limit > 0) ? req.query.limit : 10;
+
+    query.offset = (req.query.offset > 0) ? req.query.offset : 0;
+    query.order = ['createdAt'];
+
     return models.User
-        .all()
-        .then(users => res.status(200).send(users))
+        .findAndCountAll(query)
+        .then((users) => {
+          const pagination = Helper.pagination(
+            query.limit, query.offset, users.count
+          );
+          res.status(200).send({
+            users: users.rows,
+            pagination,
+          });
+        })
         .catch((error) => {
           res.status(412).json({ errorMessage: error.message });
         });
@@ -232,7 +252,8 @@ module.exports = {
             res.send(data);
           } else {
             res.status(403).send({
-              errorMessage: 'You are not authorize to delete another user data'
+              errorMessage:
+              'You are not authorized to delete another user account'
             });
           }
         })
