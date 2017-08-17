@@ -15,7 +15,7 @@ const verifyUserParams = (request) => {
 };
 const verifyDocParams = (request) => {
   request.assert('title', 'title field is required').notEmpty();
-  request.assert('title', '10 to 30 characters required').len(10, 30);
+  request.assert('title', '4 to 50 characters required').len(10, 30);
   request.assert('content', 'Document content cannot be empty').notEmpty();
   request.assert('access', 'Document access type is required').notEmpty();
   return request.getValidationResult();
@@ -29,10 +29,9 @@ const verifyLoginParams = (request) => {
 };
 
 const verifyId = (request) => {
-  if (isNaN(request)) {
-    return {
-      errorMessage: 'Invalid parameter, document id can only be integer'
-    };
+  const id = parseInt(request, 10);
+  if (isNaN(id)) {
+    return false;
   }
   return true;
 };

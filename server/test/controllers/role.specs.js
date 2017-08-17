@@ -1,9 +1,9 @@
 import request from 'supertest';
 import { expect } from 'chai';
 import mockData from '../mockData/mockData';
-import auth from '../../server/helper/auth';
-import models from '../../build/models';
-import app from '../../build/server';
+import auth from '../../helper/auth';
+import models from '../../../build/models';
+import app from '../../../build/server';
 
 
 const dotenv = require('dotenv');

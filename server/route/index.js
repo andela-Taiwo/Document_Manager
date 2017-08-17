@@ -9,9 +9,13 @@ const documentsController = Documents;
 const authorize = Auth.authorize;
 
 module.exports = (app) => {
+  // index routes
   app.get('/api/v1', (req, res) => res.status(200).send({
-    message: 'Welcome to the Document Manager API!',
+    message: 'Welcome to the Reliable-Docs API!',
   }));
+
+
+  // User routes
   app.post('/api/v1/roles', authorize, rolesController.create);
   app.get('/api/v1/roles', authorize, rolesController.getAllRoles);
   app.put('/api/v1/roles', authorize, rolesController.updateRole);
@@ -22,7 +26,10 @@ module.exports = (app) => {
   app.put('/api/v1/users', authorize, usersController.updateUser);
   app.get('/api/v1/search/users/', authorize,
       usersController.searchUsers);
-  app.delete('/api/v1/users', authorize, usersController.deleteUser);
+  app.delete('/api/v1/users/:id', authorize, usersController.deleteUser);
+
+
+  // Document routes
   app.post('/api/v1/documents', authorize, documentsController.addDocument);
   app.get('/api/v1/users/:id/documents', authorize,
       documentsController.getUserDocuments);
@@ -36,4 +43,18 @@ module.exports = (app) => {
       documentsController.searchAllDocuments);
   app.delete('/api/v1/documents/:id', authorize,
       documentsController.deleteDocument);
+
+  // Invalid end point
+  app.get('*', (req, res) => res.status(200).send({
+    message: 'Welcome to invalid end point!',
+  }));
+  app.post('*', (req, res) => res.status(200).send({
+    message: 'Welcome to invalid end point!',
+  }));
+  app.put('*', (req, res) => res.status(200).send({
+    message: 'Invalid end point!',
+  }));
+  app.delete('*', (req, res) => res.status(200).send({
+    message: 'Welcome to invalid end point!',
+  }));
 };

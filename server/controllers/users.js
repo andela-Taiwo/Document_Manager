@@ -44,16 +44,15 @@ module.exports = {
                       const myToken = jwt.sign({ user: userDetails },
                           SECRET_KEY, { expiresIn: 24 * 60 * 60 });
                       const data = {
-                        userName: user.userName,
-                        message: 'User successfully signup',
-                        token: myToken,
+                        message: `${user.userName} successfully signed up`,
                         userId: user.id,
+                        token: myToken,
                       };
                       res.status(201).json(data);
                     });
               } else {
                 res.status(403).json({
-                  message: 'email already exist',
+                  errorMessage: 'email already exist',
 
                 });
               }
@@ -100,9 +99,14 @@ module.exports = {
                   };
                   const myToken = jwt.sign({ user: userDetails },
                       SECRET_KEY, { expiresIn: 24 * 60 * 60 });
-                  res.status(200).send({ token: myToken });
+                  res.status(200).send({
+                    message: `You are logged in ${user.userName} `,
+                    token: myToken
+                  });
                 } else {
-                  res.sendStatus(401);
+                  res.status(401).send({
+                    errorMessage: 'Invalid email or password'
+                  });
                 }
               })
               .catch(error => res.status(400).send({
@@ -121,11 +125,15 @@ module.exports = {
         .find({
           where: {
             id: req.params.id
-          }
+          },
+          attributes: ['id', 'userName', 'email']
         })
         .then((user) => {
           if (user) {
-            res.status(200).send(user);
+            res.status(200).send({
+              message: 'User successfully retrieved',
+              user,
+            });
           } else {
             res.status(404).send({
               errorMessage: 'user does not exist'
@@ -144,7 +152,9 @@ module.exports = {
    * @return {json}  Document
    * */
   getAllUsers(req, res) {
-    const query = { };
+    const query = {
+      attributes: ['userName', 'email']
+    };
     query.limit = (req.query.limit > 0) ? req.query.limit : 10;
 
     query.offset = (req.query.offset > 0) ? req.query.offset : 0;
@@ -157,6 +167,7 @@ module.exports = {
             query.limit, query.offset, users.count
           );
           res.status(200).send({
+            message: 'Users successfully retrieved',
             users: users.rows,
             pagination,
           });
@@ -199,15 +210,16 @@ module.exports = {
    * */
   searchUsers(req, res) {
     const searchTerm = req.query.q.trim();
+    console.log(searchTerm);
 
     const query = {
       where: {
-        $or: [{
-          userName: {
-            $iLike: `%${searchTerm}%`,
-          },
-        }],
+
+        userName: {
+          $iLike: `%${searchTerm}%`,
+        },
       },
+      attributes: ['userName', 'email']
     };
 
     query.limit = (req.query.limit > 0) ? req.query.limit : 10;
@@ -216,6 +228,7 @@ module.exports = {
     return models.User
       .findAndCountAll(query)
       .then((users) => {
+        console.log('I\'m in in search users ', users);
         const pagination = Helper.pagination(
           query.limit, query.offset, users.count
         );
@@ -225,6 +238,7 @@ module.exports = {
           });
         }
         res.status(200).send({
+          message: 'successfully retrieved user(s)',
           users: users.rows,
           pagination,
         });
@@ -238,27 +252,46 @@ module.exports = {
    * @return {json}  status and message
    * */
   deleteUser(req, res) {
-    return models.User
-        .destroy({
-          where: {
-            id: req.decoded.user.userId
-          }
-        }).then((user) => {
-          if (user !== 0) {
-            const data = {
-              errorMessage: 'Deleted user successfully',
-              data: user
-            };
-            res.send(data);
-          } else {
-            res.status(403).send({
-              errorMessage:
-              'You are not authorized to delete another user account'
-            });
-          }
-        })
-        .catch((error) => {
-          res.status(412).json({ errorMessage: error.message });
+    if (req.decoded.user.roleId === 1) {
+      return models.User
+          .destroy({
+            where: {
+              id: req.params.id
+            }
+          }).then((user) => {
+            if (user !== 0) {
+              const data = {
+                message: 'Deleted user successfully',
+                data: user
+              };
+              res.send(data);
+            }
+          })
+          .catch((error) => {
+            res.status(412).json({ errorMessage: error.message });
+          });
+    }
+
+    return models.User.destroy({
+      where: {
+        $and: [{ id: req.params.id }, { id: req.decoded.user.userId }]
+      }
+    }).then((user) => {
+      if (user !== 0) {
+        const data = {
+          message: 'Deleted user successfully',
+          data: user
+        };
+        res.send(data);
+      } else {
+        res.status(403).send({
+          errorMessage:
+          'You are not authorized to delete another user account'
         });
+      }
+    })
+  .catch((error) => {
+    res.status(412).json({ errorMessage: error.message });
+  });
   }
 };

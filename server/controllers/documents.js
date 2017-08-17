@@ -12,28 +12,46 @@ module.exports = {
   addDocument(req, res) {
     Validator.verifyDocParams(req)
     .then((result) => {
+      const accessType = ['role', 'public', 'private'];
       const verifiedParams = result.mapped();
       const noErrors = result.isEmpty();
       if (noErrors === false) {
         return res.status(412).json({ errorMessage: verifiedParams });
       }
+
       return models.Document
-      .create({
-        title: req.body.title,
-        content: req.body.content,
-        access: req.body.access,
-        userId: req.decoded.user.userId,
-        roleId: req.decoded.user.roleId
-      })
-      .then((document) => {
-        res.status(201).json({
-          title: document.title,
-          message: 'New Document created successfully',
-          ownerId: document.userId, });
-      })
-      .catch((err) => {
-        res.status(412).json({ errorMessage: err });
-      });
+        .findOne({ where: { title: req.body.title } })
+        .then((foundDoc) => {
+          if (!foundDoc) {
+            if (accessType.indexOf((req.body.access).toLowerCase()) === -1) {
+              res.status(400).send({
+                errorMessage: 'Invalid access parameter'
+              });
+            } else {
+              models.Document.create({
+                title: req.body.title,
+                content: req.body.content,
+                access: req.body.access,
+                userId: req.decoded.user.userId,
+                roleId: req.decoded.user.roleId
+              })
+          .then((document) => {
+            res.status(201).json({
+              message: 'New Document created successfully',
+              title: document.title,
+              content: document.content,
+              ownerId: document.userId, });
+          })
+          .catch((err) => {
+            res.status(412).json({ errorMessage: err });
+          });
+            }
+          } else {
+            res.status(400).send({
+              errorMessage: 'Document already exist'
+            });
+          }
+        });
     });
   },
 
@@ -80,8 +98,8 @@ module.exports = {
         if (document) {
           res.status(200).send(document);
         } else {
-          res.status(404).send({
-            errorMessage: 'Document not found'
+          res.status(403).send({
+            errorMessage: 'You are not authorized to view this document'
           });
         }
       })
@@ -107,7 +125,7 @@ module.exports = {
           }
         ]
       },
-      attributes: ['id', 'title', 'access', 'content', 'createdAt'],
+      attributes: ['id', 'title', 'access', 'content', 'createdAt', 'userId'],
     };
 
     query.limit = (req.query.limit > 0) ? req.query.limit : 10;
@@ -192,6 +210,7 @@ module.exports = {
     return models.Document
     .findAll({
       where: {
+        userId: req.params.id,
         $or: [
          { access: 'public' },
          { access: 'role', roleId: req.decoded.user.roleId },
@@ -335,33 +354,40 @@ module.exports = {
    * @return {json}  document
    * */
   deleteDocument(req, res) {
-    // Validator.verifyId(req.params.id);
-    return models.Document
-    .findOne({
-      where: {
-        userId: req.decoded.user.userId,
-        id: req.params.id,
-      }
-    }).then((document) => {
-      if (req.decoded.user.userId === document.userId) {
-        document.destroy({
-          where: {
-            id: req.params.id,
-            userId: req.decoded.user.userId
-          }
-        });
-      }
-    })
-    .then((deleteDocument) => {
-      const deletedDocument = {
-
-        message: 'Deleted document successfully',
-        deletedDocument: deleteDocument
-      };
-      res.send(deletedDocument);
-    })
-    .catch((error) => {
-      res.status(412).json({ msg: error.message });
+    if (Validator.verifyId(req.params.id)) {
+      return models.Document
+      .findOne({
+        where: {
+          userId: req.decoded.user.userId,
+          id: req.params.id,
+        }
+      }).then((document) => {
+        if (document === null) {
+          return res.status(404).send({
+            errorMessage: 'Can not delete a document that  does not exist'
+          });
+        }
+        if (req.decoded.user.userId === document.userId) {
+          document.destroy({
+            where: {
+              id: req.params.id,
+              userId: req.decoded.user.userId
+            }
+          })
+          .then(() => {
+            const deletedDocument = {
+              message: 'Document deleted successfully',
+            };
+            res.send(deletedDocument);
+          })
+          .catch((error) => {
+            res.status(412).json({ msg: error.message });
+          });
+        }
+      });
+    }
+    res.status(400).send({
+      errorMessage: 'the id can must be an integer'
     });
   }
 };

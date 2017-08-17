@@ -58,8 +58,8 @@ Reliable-Docs  API is a document management system API, complete with roles and 
  * Run the command `npm start:dev` to start the application.
 * To run tests, run the command `npm test`.
 
-## Usage
-Click [here](https://reliable-docs-api.herokuapp.com) to access the API
+## Documentation
+Click [here](https://reliable-docs-api.herokuapp.com) to access the documentation
 
 
 # System Dependecies
@@ -91,17 +91,6 @@ eslint - This is a javascript syntax highlighter used to highlight syntax error 
 gulp-nodemon - to watch the files in the directory for any files change
 supertest - to run endpoint test
 
-# Dependencies
-
-- babel-core - It compiles es6 used in the app to es5
-- babel-eslint - Used with ESlint to lint syntax errors
-- Babel-register - This framework helps to compile from es6 to es5
-- bcrypt - Used to hash user's password
-- coveralls - Display test coverage
-- dotenv - To protect secret ID
-- Express - Express is Node.js web application framework
-- path - to get paths during production
-
 
 # Tests
 
@@ -113,23 +102,12 @@ They are run using the coverage tool in order to generate test coverage reports.
 
   $ npm test
 
-# Coding Style
-- Airbnb
-
-# Language
-- Javascript
-
 # Contributing
 - Fork this repository.
 - Clone it.
 - Create your feature branch on your local machine.
 - Push your changes to your remote branch.
 - Open a pull request to the master branch.
-
-
-# Limitations
-- This api resources are hosted on ElephantSQL, so speed depends on the database.
-- There is no front-end;
 
 
 # License
