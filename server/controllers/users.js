@@ -244,6 +244,42 @@ module.exports = {
       });
   },
 
+  updateUserRole(req, res) {
+    const auth = (req.decoded.user.roleId);
+    const userEmail = req.body.email;
+    const newRoleId = parseInt(req.body.roleId, 10);
+    if (auth === 1) {
+      return models.User
+      .findOne({
+        where: {
+          email: userEmail
+        },
+        attributes: ['roleId']
+      })
+      .then(() => {
+        if (!isNaN(newRoleId)) {
+          models.User.update(
+            { roleId: newRoleId },
+            { where: { email: req.body.email }
+            })
+                .then((userUpdate) => {
+                  const data = {
+                    message: 'Update profile successfully',
+                    data: userUpdate
+                  };
+                  res.send(data);
+                });
+        } else {
+          res.status(412).json({ msg: 'invalid role ID' });
+        }
+      })
+      .catch((error) => {
+        res.status(412).json({ msg: error.message });
+      });
+    }
+    res.status(403).send({ message: 'You do not have access to set role' });
+  },
+
   /**
    *@param {object} req
    * @param {object} res
