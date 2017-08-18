@@ -6,14 +6,12 @@
  *@return {json} response
  */
 const verifyUserParams = (request) => {
-  request.assert('userName', 'firstName field is required').notEmpty();
+  request.assert('userName', 'userName field is required').notEmpty();
   request.assert('password', 'password field is required').notEmpty();
   request.assert('email', 'email field is required').notEmpty();
   request.assert('email', 'valid email address is required').isEmail();
   return request.getValidationResult();
 };
-
-
 const verifyDocParams = (request) => {
   request.assert('title', 'title field is required').notEmpty();
   request.assert('title', '10 to 30 characters required').len(10, 30);

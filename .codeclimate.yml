@@ -1,0 +1,29 @@
+# engines:
+#  duplication:
+#    enabled: false
+#    config:
+#      languages:
+#        javascript:
+#          mass_threshold: 20
+#          exclude_paths:
+#            - "__tests__/"
+engines:
+  eslint:
+    enabled: true
+    config:
+      config: .eslintrc
+  duplication:
+    enabled: false
+    config:
+      languages:
+      - javascript
+  fixme:
+    enabled: true
+ratings:
+  paths:
+  - "**.es6"
+  - "**.js"
+  - "**.jsx"
+exclude_paths:
+- node_modules/**/*
+- test/*

@@ -29,7 +29,7 @@ app.use(expressValidator({
 }));
 
 // Require our routes into the application.
-require('./server/route')(app);
+require('./route')(app);
 
 app.get('*', (req, res) => res.status(200).send({
   message: 'Welcome to the beginning of nothingness.',
