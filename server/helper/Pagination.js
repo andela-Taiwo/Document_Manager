@@ -3,21 +3,20 @@
  *
  * @class Helper
  */
-class Helper {
+class Pagination {
   /**
    * @static
    * @param {integer} limit
    * @param {integer} offset
    * @param {integer} count
    * @returns {Object} - Returns Pagination Result
+   * totalCount : total number of records based on query
+   * pageCount : total number of pages
+   * currentPage : current page of the query result based on limit and offset
+   * pageSize : number of records per page (based on limit)
    * @memberOf ControllerHelper
    */
-  static pagination(limit, offset, count) {
-    /** totalCount : total number of records based on query
-     * pageCount : total number of pages
-     * currentPage : current page of the query result based on limit and offset
-     * pageSize : number of records per page (based on limit)
-     */
+  static pages(limit, offset, count) {
     const result = {};
     limit = limit > count ? count : limit;
     offset = offset > count ? count : offset;
@@ -34,4 +33,4 @@ class Helper {
   }
 }
 
-module.exports = Helper;
+module.exports = Pagination;
