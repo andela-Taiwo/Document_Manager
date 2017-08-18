@@ -20,7 +20,15 @@ const verifyDocParams = (request) => {
   return request.getValidationResult();
 };
 
+const verifyloginParams = (request) => {
+  request.assert('email', 'title field is required').notEmpty();
+  request.assert('password', '10 to 30 characters required').len(6, 20);
+  request.assert('password', 'password content cannot be empty').notEmpty();
+  return request.getValidationResult();
+};
+
 module.exports = {
   verifyUserParams,
-  verifyDocParams
+  verifyDocParams,
+  verifyloginParams
 };
