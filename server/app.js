@@ -3,10 +3,6 @@ import logger from 'morgan';
 import bodyParser from 'body-parser';
 import expressValidator from 'express-validator';
 import path from 'path';
-// const express = require('express');
-// const logger = require('morgan');
-// const bodyParser = require('body-parser');
-// const expressValidator = require('express-validator');
 
 const app = express();
 

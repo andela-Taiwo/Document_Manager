@@ -1,6 +1,6 @@
 import models from '../models';
 import Validator from '../helper/Validator';
-import Helper from '../helper/Helper';
+import Pagination from '../helper/Pagination';
 
 module.exports = {
 
@@ -62,12 +62,6 @@ module.exports = {
    * @return {json}  document
    * */
   getDocument(req, res) {
-    // const ownerId = parseInt(req.params.id, 10);
-    // if (isNaN(ownerId)) {
-    //   return res.status(400).send({
-    //     errorMessage: 'Invalid parameter, document id can only be integer'
-    //   });
-    // }
     if (Validator.verifyId(req.params.id)) {
       if (req.decoded.user.roleId === 1) {
         return models.Document
@@ -150,7 +144,7 @@ module.exports = {
           attributes: ['id', 'title', 'content', 'access', 'createdAt'],
         })
         .then((documents) => {
-          const pagination = Helper.pagination(
+          const pagination = Pagination.pages(
             query.limit, query.offset, documents.count
           );
           if (!documents.rows.length) {
@@ -172,7 +166,7 @@ module.exports = {
     return models.Document
       .findAndCountAll(query)
       .then((documents) => {
-        const pagination = Helper.pagination(
+        const pagination = Pagination.pages(
           query.limit, query.offset, documents.count
         );
         if (!documents.rows.length) {
@@ -190,6 +184,25 @@ module.exports = {
 
 
   getUserDocuments(req, res) {
+    const query = {
+      where: {
+        userId: req.params.id,
+        $or: [
+         { access: 'public' },
+         { access: 'role', roleId: req.decoded.user.roleId },
+          {
+            $and: [{ access: 'private' }, { userId: req.decoded.user.userId }]
+          }
+        ]
+      },
+      attributes: ['id', 'title', 'access', 'content', 'createdAt', 'userId'],
+    };
+
+    query.limit = (req.query.limit > 0) ? req.query.limit : 10;
+
+    query.offset = (req.query.offset > 0) ? req.query.offset : 0;
+    query.order = ['createdAt'];
+
     const ownerId = parseInt(req.params.id, 10);
     if (isNaN(ownerId)) {
       return res.status(400).send({
@@ -199,18 +212,22 @@ module.exports = {
 
     if (req.decoded.user.roleId === 1) {
       return models.Document
-        .findAll({
+        .findAndCountAll({
           where: {
             userId: req.params.id } })
             .then((documents) => {
-              if (documents.length === 0) {
+              const pagination = Pagination.pages(
+                query.limit, query.offset, documents.count
+              );
+              if (!documents.rows.length) {
                 return res.status(404).send({
-                  errorMessage: 'Document not found',
+                  errorMessage: 'No user found',
                 });
               }
               res.status(200).send({
                 message: 'Retrieved documents successfully',
-                documents
+                documents,
+                pagination
               });
             })
             .catch(err => res.status(400).send({
@@ -220,7 +237,7 @@ module.exports = {
     }
 
     return models.Document
-    .findAll({
+    .findAndCountAll({
       where: {
         userId: req.params.id,
         $or: [
@@ -232,12 +249,19 @@ module.exports = {
       attributes: ['id', 'title', 'access', 'content', 'createdAt']
     })
     .then((documents) => {
-      if (documents.length === 0) {
+      const pagination = Pagination.pages(
+        query.limit, query.offset, documents.count
+      );
+      if (!documents.rows.length) {
         return res.status(404).send({
-          errorMessage: 'Document not found',
+          errorMessage: 'No user found',
         });
       }
-      res.status(200).send(documents);
+      res.status(200).send({
+        message: 'Retrieved documents successfully',
+        documents,
+        pagination
+      });
     })
       .catch(err => res.status(400).send({
         err: err.toString(),
@@ -314,12 +338,12 @@ module.exports = {
       return models.Document
       .findAndCountAll(query)
       .then((documents) => {
-        const pagination = Helper.pagination(
+        const pagination = Pagination.pages(
           query.limit, query.offset, documents.count
         );
         if (!documents.rows.length) {
           return res.status(404).send({
-            error: 'Search term does not match any document',
+            error: 'Search term did not match any document',
           });
         }
         res.status(200).send({
@@ -344,7 +368,7 @@ module.exports = {
         attributes: ['id', 'title', 'access', 'content', 'createdAt']
       })
       .then((documents) => {
-        const pagination = Helper.pagination(
+        const pagination = Pagination.pages(
           query.limit, query.offset, documents.count
         );
         if (!documents.rows.length) {

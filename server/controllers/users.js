@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import models from '../models';
 import Validator from '../helper/Validator';
-import Helper from '../helper/Helper';
+import Pagination from '../helper/Pagination';
 
 dotenv.config();
 const SECRET_KEY = process.env.SECRET;
@@ -164,7 +164,7 @@ module.exports = {
     return models.User
         .findAndCountAll(query)
         .then((users) => {
-          const pagination = Helper.pagination(
+          const pagination = Pagination.pages(
             query.limit, query.offset, users.count
           );
           res.status(200).send({
@@ -228,7 +228,7 @@ module.exports = {
     return models.User
       .findAndCountAll(query)
       .then((users) => {
-        const pagination = Helper.pagination(
+        const pagination = Pagination.pages(
           query.limit, query.offset, users.count
         );
         if (!users.rows.length) {
