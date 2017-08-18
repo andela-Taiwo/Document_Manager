@@ -62,50 +62,58 @@ module.exports = {
    * @return {json}  document
    * */
   getDocument(req, res) {
-    const ownerId = parseInt(req.params.id, 10);
-    if (isNaN(ownerId)) {
-      return res.status(400).send({
-        errorMessage: 'Invalid parameter, document id can only be integer'
-      });
-    }
-    if (req.decoded.user.roleId === 1) {
+    // const ownerId = parseInt(req.params.id, 10);
+    // if (isNaN(ownerId)) {
+    //   return res.status(400).send({
+    //     errorMessage: 'Invalid parameter, document id can only be integer'
+    //   });
+    // }
+    if (Validator.verifyId(req.params.id)) {
+      if (req.decoded.user.roleId === 1) {
+        return models.Document
+          .findById(req.params.id)
+          .then((document) => {
+            if (document === null || document.length === 0) {
+              res.status(404).send({
+                errorMessage: 'Document not found'
+              });
+            } else {
+              res.status(200).send(document);
+            }
+          })
+          .catch(err => res.status(404).send(err.toString()));
+      }
       return models.Document
-        .findById(req.params.id)
+        .findOne({
+          where: {
+            id: req.params.id,
+            $or: [
+             { access: 'public' },
+             { access: 'role', roleId: req.decoded.user.roleId },
+              {
+                $and: [{ access: 'private' },
+                { userId: req.decoded.user.userId }]
+              }
+            ]
+          },
+          attributes: ['id', 'title', 'access', 'content', 'createdAt']
+        })
         .then((document) => {
           if (document) {
             res.status(200).send(document);
           } else {
-            res.status(404).send({
-              errorMessage: 'Document not found'
+            res.status(403).send({
+              errorMessage: 'You are not authorized to view this document'
             });
           }
         })
-        .catch(err => res.status(404).send(err.toString()));
+        .catch(err => res.status(400).send({
+          errorMessage: err.toString(),
+        }));
     }
-    return models.Document
-      .findOne({
-        where: {
-          id: req.params.id,
-          $or: [
-           { access: 'public' },
-           { access: 'role', roleId: req.decoded.user.roleId },
-           { $and: [{ access: 'private' }, { userId: req.decoded.user.userId }] }
-          ]
-        },
-        attributes: ['id', 'title', 'access', 'content', 'createdAt']
-      })
-      .then((document) => {
-        if (document) {
-          res.status(200).send(document);
-        } else {
-          res.status(403).send({
-            errorMessage: 'You are not authorized to view this document'
-          });
-        }
-      })
-      .catch(err => res.status(400).send({
-        errorMessage: err.toString(),
-      }));
+    return res.status(400).send({
+      errorMessage: 'Invalid parameter, document id can only be integer'
+    });
   },
 
 
@@ -151,6 +159,7 @@ module.exports = {
             });
           }
           res.status(200).send({
+            message: 'Documents retrieved succesfully',
             documents: documents.rows,
             pagination,
           });
@@ -199,7 +208,10 @@ module.exports = {
                   errorMessage: 'Document not found',
                 });
               }
-              res.status(200).send(documents);
+              res.status(200).send({
+                message: 'Retrieved documents successfully',
+                documents
+              });
             })
             .catch(err => res.status(400).send({
               err: err.toString(),
@@ -311,7 +323,9 @@ module.exports = {
           });
         }
         res.status(200).send({
-          pagination, documents: documents.rows,
+          message: 'Retrieved documents successfully',
+          documents: documents.rows,
+          pagination
         });
       });
     }
@@ -339,6 +353,7 @@ module.exports = {
           });
         }
         res.status(200).send({
+          message: 'Retrieved documents successfully',
           documents: documents.rows,
           pagination
         });
@@ -358,36 +373,38 @@ module.exports = {
       return models.Document
       .findOne({
         where: {
-          userId: req.decoded.user.userId,
           id: req.params.id,
         }
       }).then((document) => {
-        if (document === null) {
+        if (document === null || document.length === 0) {
           return res.status(404).send({
             errorMessage: 'Can not delete a document that  does not exist'
           });
         }
-        if (req.decoded.user.userId === document.userId) {
+        if ((req.decoded.user.userId === document.userId) || req.decoded.user.roleId === 1) {
           document.destroy({
             where: {
               id: req.params.id,
-              userId: req.decoded.user.userId
             }
           })
           .then(() => {
             const deletedDocument = {
               message: 'Document deleted successfully',
             };
-            res.send(deletedDocument);
+            return res.send(deletedDocument);
           })
           .catch((error) => {
             res.status(412).json({ msg: error.message });
+          });
+        } else {
+          res.status(403).send({
+            errorMessage: 'You can not delete other user document'
           });
         }
       });
     }
     res.status(400).send({
-      errorMessage: 'the id can must be an integer'
+      errorMessage: 'the document id must be an integer'
     });
   }
 };

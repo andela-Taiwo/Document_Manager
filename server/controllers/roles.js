@@ -4,10 +4,13 @@ import models from '../models';
 module.exports = {
   getAllRoles(req, res) {
     const auth = (req.decoded.user.roleId);
-    if (auth) {
+    if (auth === 1 || auth === 2) {
       return models.Role
       .all()
-      .then(roles => res.status(200).send(roles))
+      .then(roles => res.status(200).send({
+        message: 'Retrieved roles successfully',
+        roles
+      }))
       .catch((error) => {
         res.status(412).json({ msg: error.message });
       });
@@ -22,7 +25,10 @@ module.exports = {
         .create({
           roleType: req.body.roleType,
         })
-        .then(role => res.status(201).send(role))
+        .then(role => res.status(201).send({
+          message: 'successfully created role',
+          role
+        }))
         .catch(error => res.status(400).send(error));
     }
     res.status(403).send({ message: 'unauthorize user cannot  set role' });

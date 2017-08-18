@@ -3,82 +3,23 @@ import { expect } from 'chai';
 import supertest from 'supertest';
 import 'babel-register';
 import auth from '../../helper/auth';
-import models from '../../../build/models';
 import mockData from '../mockData/mockData';
 import app from '../../../build/server';
-
-const Role = models.Role;
-const User = models.User;
 
 const adminToken = auth.setUserToken(mockData.admin);
 const badToken = mockData.badToken;
 
-let regularToken;
+const regularToken = auth.setUserToken(mockData.user);
 const request = supertest(app);
 
 describe(' Document', () => {
-  describe('user', () => {
-    beforeEach((done) => {
-      User.destroy({
-        where: {},
-        truncate: true,
-        cascade: true,
-        restartIdentity: true
-      })
-  .then((err) => {
-    if (!err) {
-      Role.destroy({
-        where: {},
-        truncate: true,
-        cascade: true,
-        restartIdentity: true
-      })
-      .then((err) => {
-        if (!err) {
-          Role.bulkCreate([
-            { roleType: 'super admin' },
-            { roleType: 'admin' },
-            { roleType: 'user' }
-          ]).then(() => {
-            done();
-          });
-        }
-      });
-    }
-  });
-    });
-
-    describe('user signup', () => {
-      it(`should return "User successfully signup" and status 201,
-      when user tries to signup with valid data`, (done) => {
-        request.post('/api/v1/users')
-      .send({ email: 'john@yahoo.com', password: 'humanity', userName: 'adeola' })
-      .end((err, res) => {
-        expect((res.body.message)).to.be.equal('User successfully signup');
-        expect((res.statusCode)).to.be.equal(201);
-        done();
-      });
-      });
-    });
-  });
-
-  describe(' Documents user in', () => {
-    it('should return an  object containing  a token', (done) => {
-      request.post('/api/v1/users/login')
-      .send({ email: 'john@yahoo.com', password: 'humanity' })
-      .end((err, res) => {
-        expect(res.statusCode).to.be.equal(200);
-        regularToken = res.body.token;
-        done();
-      });
-    });
-
-
+  describe('create documents', () => {
     it('should return a message document created successfully', (done) => {
       request.post('/api/v1/documents')
       .send({ title: 'johnDoe@yahoo.com',
         content: 'humanity',
-        access: 'public' })
+        access: 'public' }
+      )
       .set({ Authorization: `${regularToken}` })
       .end((err, res) => {
         expect(res.body.message).to
@@ -110,7 +51,7 @@ describe(' Document', () => {
     });
 
     it('should return an  object containing  a single document', (done) => {
-      request.get('/api/v1/documents/1')
+      request.get('/api/v1/documents/9')
     .set({ Authorization: regularToken })
     .end((err, res) => {
       expect(res.status).to.be.equal(200);
@@ -118,9 +59,21 @@ describe(' Document', () => {
     });
     });
 
+    it('should return forbidden error message when user access private document'
+    , (done) => {
+      request.get('/api/v1/documents/1')
+    .set({ Authorization: regularToken })
+    .end((err, res) => {
+      expect(res.status).to.be.equal(403);
+      expect(res.body.errorMessage).to.be
+      .equal('You are not authorized to view this document');
+      done();
+    });
+    });
+
     it('should return all documents for super admin ',
      (done) => {
-       request.get('/api/v1/documents')
+       request.get('/api/v1/documents/?limit=5&offset=0')
             .set({ Authorization: adminToken })
             .end((err, res) => {
               expect(res.status).to.be.equal(200);
@@ -134,6 +87,18 @@ describe(' Document', () => {
              .set({ Authorization: adminToken })
              .end((err, res) => {
                expect(res.status).to.be.equal(200);
+               done();
+             });
+      });
+
+    it('should return error message for invalid parameter',
+      (done) => {
+        request.get('/api/v1/documents/eeyey')
+             .set({ Authorization: adminToken })
+             .end((err, res) => {
+               expect(res.status).to.be.equal(400);
+               expect(res.body.errorMessage).to.be
+               .equal('Invalid parameter, document id can only be integer');
                done();
              });
       });
@@ -188,14 +153,26 @@ describe(' Document', () => {
                .set({ Authorization: adminToken })
                .end((err, res) => {
                  expect(res.status).to.be.equal(404);
-                 expect(res.body.errorMessage).to.be.equal('Document not found');
+                 expect(res.body.errorMessage).to.be
+                 .equal('Document not found');
+                 done();
+               });
+        });
+    it('should return all 404 error if user id doesnot exist ',
+        (done) => {
+          request.get('/api/v1/users/6/documents')
+               .set({ Authorization: regularToken })
+               .end((err, res) => {
+                 expect(res.status).to.be.equal(404);
+                 expect(res.body.errorMessage).to.be
+                 .equal('Document not found');
                  done();
                });
         });
   });
   describe('update documents', () => {
     it('should return a message document updated successfully', (done) => {
-      request.put('/api/v1/documents/1')
+      request.put('/api/v1/documents/8')
       .send({ title: 'update my doc',
         content: 'Updating document ',
         access: 'role' })
@@ -207,9 +184,9 @@ describe(' Document', () => {
       });
     });
     it('should return error message ', (done) => {
-      request.put('/api/v1/documents/1')
-      .send({ title: 'update my doc',
-        content: 'Updating document ',
+      request.put('/api/v1/documents/8')
+      .send({ title: 'update my another user doc',
+        content: 'Should not update ',
         access: 'role' })
       .set({ Authorization: `${adminToken}` })
       .end((err, res) => {
@@ -230,6 +207,28 @@ describe(' Document', () => {
                });
         });
 
+    it('should return all documents that match the search term with pagination ',
+        (done) => {
+          request
+          .get('/api/v1/search/documents/?q=update my doc&limit=4&offset=0')
+               .set({ Authorization: adminToken })
+               .end((err, res) => {
+                 expect(res.status).to.be.equal(200);
+                 done();
+               });
+        });
+    it(`should return all documents that match the search term \n
+        with pagination for user `,
+        (done) => {
+          request
+          .get('/api/v1/search/documents/?q=update my doc&limit=4&offset=0')
+               .set({ Authorization: regularToken })
+               .end((err, res) => {
+                 expect(res.status).to.be.equal(200);
+                 done();
+               });
+        });
+
     it('should return 404 error when no document matches the search term  ',
         (done) => {
           request.get('/api/v1/search/documents/?q=history')
@@ -242,42 +241,67 @@ describe(' Document', () => {
   });
 
   describe(' Delete  document', () => {
-    it(`should return 404 error when no
-       document matches the id parameter supplied`,
+    it('should delete the document',
         (done) => {
-          request.delete('/api/v1/documents/1')
+          request.delete('/api/v1/documents/9')
                .set({ Authorization: adminToken })
                .end((err, res) => {
-                 expect(res.status).to.be.equal(412);
+                 expect(res.status).to.be.equal(200);
+                 expect(res.body.message).to.be
+                 .equal('Document deleted successfully');
                  done();
                });
         });
 
     it('should return error message for unauthorize deletion ',
         (done) => {
-          request.delete('/api/v1/documents/5')
+          request.delete('/api/v1/documents/1')
                .set({ Authorization: regularToken })
                .end((err, res) => {
-                 expect(res.status).to.be.equal(412);
+                 expect(res.status).to.be.equal(403);
+                 expect(res.body.errorMessage).to.be
+                 .equal('You can not delete other user document');
                  done();
                });
         });
 
     it('should return  a message when a document is deleted  ',
         (done) => {
-          request.delete('/api/v1/documents/1')
+          request.delete('/api/v1/documents/7')
                .set({ Authorization: regularToken })
                .end((err, res) => {
                  expect(res.status).to.be.equal(200);
                  expect(res.body.message).to
-                 .be.equal('Deleted document successfully');
+                 .be.equal('Document deleted successfully');
+                 done();
+               });
+        });
+    it('should return  error message for non existence id ',
+        (done) => {
+          request.delete('/api/v1/documents/100')
+               .set({ Authorization: adminToken })
+               .end((err, res) => {
+                 expect(res.status).to.be.equal(404);
+                 expect(res.body.errorMessage).to
+                 .be.equal('Can not delete a document that  does not exist');
+                 done();
+               });
+        });
+    it('should return  error message for invalid parameter id ',
+        (done) => {
+          request.delete('/api/v1/documents/eds')
+               .set({ Authorization: adminToken })
+               .end((err, res) => {
+                 expect(res.status).to.be.equal(400);
+                 expect(res.body.errorMessage).to
+                 .be.equal('the document id must be an integer');
                  done();
                });
         });
 
     it('should return 404 error when user try to access deleted document  ',
         (done) => {
-          request.get('/api/v1/documents/1')
+          request.get('/api/v1/documents/9')
                .set({ Authorization: adminToken })
                .end((err, res) => {
                  expect(res.status).to.be.equal(404);

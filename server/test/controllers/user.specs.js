@@ -11,6 +11,7 @@ const User = models.User;
 const Role = models.Role;
 
 const anotherUserToken = auth.setUserToken(mockData.user);
+const badToken = mockData.badToken;
 
 let regularToken;
 const request = supertest(app);
@@ -55,7 +56,7 @@ describe('When user', () => {
       userName: 'josh' })
     .end((err, res) => {
       regularToken = res.body.token;
-      expect(res.body.message).to.be.equal('User successfully signup');
+      expect(res.body.message).to.be.equal(`${res.body.userName} successfully signed up`);
       expect(regularToken).to.have.lengthOf.above(20);
       expect(res.statusCode).to.be.equal(201);
       done();
@@ -75,7 +76,7 @@ describe('When user', () => {
       request.post('/api/v1/users')
     .send({ email: 'john@yahoo.com', password: 'humanity', userName: 'adeola' })
     .end((err, res) => {
-      expect((res.body.message)).to.be.equal('User successfully signup');
+      expect((res.body.message)).to.be.equal(`${res.body.userName} successfully signed up`);
       expect((res.statusCode)).to.be.equal(201);
       done();
     });
@@ -126,7 +127,7 @@ describe('When user', () => {
     });
 
 
-    describe(' when user search', () => {
+    describe('search', () => {
       it('should return a result that match the user query ', (done) => {
         request.get('/api/v1/search/users/?q=adeola')
       .set({ Authorization: regularToken })
@@ -151,20 +152,21 @@ describe('When user', () => {
 
     describe('When user delete profile', () => {
       it('should not be able to delete another user account ', (done) => {
-        request.delete('/api/v1/users')
+        request.delete('/api/v1/users/1')
       .set({ Authorization: anotherUserToken })
       .end((err, res) => {
+        expect(res.statusCode).to.be.equal(403);
         expect(res.body.errorMessage)
         .to.be.equal('You are not authorized to delete another user account');
-        expect(res.statusCode).to.be.equal(403);
+        // expect(res.statusCode).to.be.equal(403);
         done();
       });
       });
       it('should delete a user profile ', (done) => {
-        request.delete('/api/v1/users')
+        request.delete('/api/v1/users/1')
       .set({ Authorization: regularToken })
       .end((err, res) => {
-        expect(res.body.errorMessage).to.be.equal('Deleted user successfully');
+        expect(res.body.message).to.be.equal('Deleted user successfully');
         expect(res.statusCode).to.be.equal(200);
         done();
       });
