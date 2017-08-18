@@ -36,7 +36,7 @@ app.use(express.static('documentation'));
 // Require our routes into the application.
 require('./route')(app);
 
-app.get('/', (req, res) => {
+app.get('/*', (req, res) => {
   res.sendFile(path.join(__dirname, '/index.html'));
 });
 
