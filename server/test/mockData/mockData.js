@@ -13,9 +13,9 @@ const mockData = {
 
   badToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiZnJhbWt5Q',
 
-  admin: { userId: 2, email: 'adeolaoo7@andela.com', roleId: 1 },
+  admin: { userId: 1, roleId: 1 },
   regularUser: { userId: 1, email: 'johnDoe@yahoo.com', roleId: 2 },
-  user: { userId: 4, email: 'yuussuf@andela.com', roleId: 3 },
+  user: { userId: 3, roleId: 3 },
   regularUserData: { password: '12345', email: 'johnDoe@yahoo.com', roleId: 2, userName: 'adeola' },
 
   invalidTitle: { param: 'title',

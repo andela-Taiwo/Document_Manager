@@ -44,6 +44,7 @@ module.exports = {
                       const myToken = jwt.sign({ user: userDetails },
                           SECRET_KEY, { expiresIn: 24 * 60 * 60 });
                       const data = {
+                        userName: user.userName,
                         message: `${user.userName} successfully signed up`,
                         userId: user.id,
                         token: myToken,
@@ -210,7 +211,6 @@ module.exports = {
    * */
   searchUsers(req, res) {
     const searchTerm = req.query.q.trim();
-    console.log(searchTerm);
 
     const query = {
       where: {
@@ -228,7 +228,6 @@ module.exports = {
     return models.User
       .findAndCountAll(query)
       .then((users) => {
-        console.log('I\'m in in search users ', users);
         const pagination = Helper.pagination(
           query.limit, query.offset, users.count
         );
@@ -262,9 +261,13 @@ module.exports = {
             if (user !== 0) {
               const data = {
                 message: 'Deleted user successfully',
-                data: user
+                usersDeleted: user
               };
               res.send(data);
+            } else {
+              res.status(404).send({
+                errorMessage: 'user id is not found'
+              });
             }
           })
           .catch((error) => {
