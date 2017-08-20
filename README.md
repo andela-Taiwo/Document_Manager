@@ -104,6 +104,8 @@ They are run using the coverage tool in order to generate test coverage reports.
 
 # Contributing
 [Click here for Contribution Guide](https://github.com/andela-Taiwo/Document_Manager/wiki/Contribution)
+
+
 [Click here for Pull Request Guide](https://github.com/andela-Taiwo/Document_Manager/wiki/PR-Naming-Convention)
 
 
