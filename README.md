@@ -1,14 +1,19 @@
-[![Build Status](https://travis-ci.org/andela-Taiwo/Document_Manager.svg?branch=master)](https://travis-ci.org/andela-Taiwo/Document_Manager)
+[![Build Status](https://travis-ci.org/andela-Taiwo/Document_Manager.svg?branch=final-feedback-implementation)](https://travis-ci.org/andela-Taiwo/Document_Manager)
 
 [![Code Climate](https://codeclimate.com/github/andela-Taiwo/Document_Manager/badges/gpa.svg)](https://codeclimate.com/github/andela-Taiwo/Document_Manager)
-[![Coverage Status](https://coveralls.io/repos/github/andela-Taiwo/Document_Manager/badge.svg?branch=master)](https://coveralls.io/github/andela-Taiwo/Document_Manager?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/andela-Taiwo/Document_Manager/badge.svg?branch=final-feedback-implementation)](https://coveralls.io/github/andela-Taiwo/Document_Manager?branch=final-feedback-implementation)
 
 # RELIABLE-DOCS API
   Reliable-Docs API is an API  developed to enable user to track, manage and store documents.
   The end points can be accessed with Postman or alternate API toolchain.
 
+  This API has the following features.
 
+  #### Authentication
 
+  * JSON Web Token (JWT) is used to authenticate users.
+  * The API creates a token everytime a user logs in.
+  * The user supplies the token created, which is verified by the API before the user can access certain protected endpoints.
 
 Reliable-Docs  API is a document management system API, complete with roles and privileges. Each document defines access rights; the document defines which roles can access it. Also, each document specifies the date it was published. Users are categorized by roles. Each user must have a role defined for them.
 

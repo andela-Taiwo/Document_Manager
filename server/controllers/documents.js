@@ -5,9 +5,10 @@ import Pagination from '../helper/Pagination';
 module.exports = {
 
   /**
-   *@param {object} req
-   * @param {object} res
-   * @return {json}  Document
+   * Represents create book function
+   * @param {object} req - the request
+   * @param {object} res - the response
+   * @return {json}  Document - expected return object
    * */
   addDocument(req, res) {
     Validator.verifyDocParams(req)
@@ -22,19 +23,19 @@ module.exports = {
       return models.Document
         .findOne({ where: { title: req.body.title } })
         .then((foundDoc) => {
+          if (accessType.indexOf((req.body.access).toLowerCase()) === -1) {
+            return res.status(400).send({
+              errorMessage: 'Invalid access parameter'
+            });
+          }
           if (!foundDoc) {
-            if (accessType.indexOf((req.body.access).toLowerCase()) === -1) {
-              res.status(400).send({
-                errorMessage: 'Invalid access parameter'
-              });
-            } else {
-              models.Document.create({
-                title: req.body.title,
-                content: req.body.content,
-                access: req.body.access,
-                userId: req.decoded.user.userId,
-                roleId: req.decoded.user.roleId
-              })
+            models.Document.create({
+              title: req.body.title,
+              content: req.body.content,
+              access: req.body.access,
+              userId: req.decoded.user.userId,
+              roleId: req.decoded.user.roleId
+            })
           .then((document) => {
             res.status(201).json({
               message: 'New Document created successfully',
@@ -45,7 +46,6 @@ module.exports = {
           .catch((err) => {
             res.status(412).json({ errorMessage: err });
           });
-            }
           } else {
             res.status(400).send({
               errorMessage: 'Document already exist'
@@ -57,9 +57,10 @@ module.exports = {
 
 
   /**
-   * @param {object} req
-   * @param {object} res
-   * @return {json}  document
+   * Represents get a single document function
+   * @param {object} req - the request
+   * @param {object} res - the response
+   * @return {json}  Document - expected return object
    * */
   getDocument(req, res) {
     if (Validator.verifyId(req.params.id)) {
@@ -110,11 +111,11 @@ module.exports = {
     });
   },
 
-
   /**
-   * @param {object} req
-   * @param {object} res
-   * @return {json}  Document
+   * Represents get  all documents function
+   * @param {object} req - the request
+   * @param {object} res - the response
+   * @return {json}  Documents - expected return object
    * */
   getAllDocuments(req, res) {
     const query = {
@@ -182,7 +183,12 @@ module.exports = {
       .catch(err => res.status(400).send(err.toString()));
   },
 
-
+  /**
+   * Represents get all documents that belong to a user
+   * @param {object} req - the request
+   * @param {object} res - the response
+   * @return {json}  Document - expected return object
+   * */
   getUserDocuments(req, res) {
     const query = {
       where: {
@@ -269,13 +275,12 @@ module.exports = {
       }));
   },
 
-
   /**
-   *@param {object} req
-   * @param {object} res
-   * @return {json}  document
+   * Represents update a single document function
+   * @param {object} req - the request
+   * @param {object} res - the response
+   * @return {json}  Document - expected return object
    * */
-
   updateDocument(req, res) {
     const ownerId = parseInt(req.params.id, 10);
     if (isNaN(ownerId)) {
@@ -314,9 +319,10 @@ module.exports = {
 
 
   /**
-   *@param {object} req
-   * @param {object} res
-   * @return {json}  documents
+   * Represents search for occurence of a title in all documents function
+   * @param {object} req - the request
+   * @param {object} res - the response
+   * @return {json}  Document - expected return object
    * */
 
   searchAllDocuments(req, res) {
@@ -388,9 +394,10 @@ module.exports = {
   },
 
   /**
-   *@param {object} req
-   * @param {object} res
-   * @return {json}  document
+   * Represents delet a single document function
+   * @param {object} req - the request
+   * @param {object} res - the response
+   * @return {json}  Document - expected return object
    * */
   deleteDocument(req, res) {
     if (Validator.verifyId(req.params.id)) {
@@ -405,7 +412,8 @@ module.exports = {
             errorMessage: 'Can not delete a document that  does not exist'
           });
         }
-        if ((req.decoded.user.userId === document.userId) || req.decoded.user.roleId === 1) {
+        if ((req.decoded.user.userId === document.userId)
+        || req.decoded.user.roleId === 1) {
           document.destroy({
             where: {
               id: req.params.id,

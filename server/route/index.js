@@ -3,9 +3,6 @@ import Roles from '../controllers/roles';
 import Documents from '../controllers/documents';
 import Auth from '../helper/auth';
 
-const usersController = Users;
-const rolesController = Roles;
-const documentsController = Documents;
 const authorize = Auth.authorize;
 
 module.exports = (app) => {
@@ -15,10 +12,14 @@ module.exports = (app) => {
   }));
 
 
-  // User routes
+  // Role routes
   app.post('/api/v1/roles', authorize, Roles.create);
   app.get('/api/v1/roles', authorize, Roles.getAllRoles);
-  app.put('/api/v1/roles', authorize, Roles.updateRole);
+  app.put('/api/v1/roles/:id', authorize, Roles.updateRole);
+  app.delete('/api/v1/roles/:id', authorize, Roles.deleteRole);
+
+
+  // User routes
   app.post('/api/v1/users', Users.addUser);
   app.get('/api/v1/users', authorize, Users.getAllUsers);
   app.post('/api/v1/users/login', Users.logginUser);
@@ -26,6 +27,7 @@ module.exports = (app) => {
   app.put('/api/v1/users', authorize, Users.updateUser);
   app.get('/api/v1/search/users/', authorize,
       Users.searchUsers);
+  app.put('/api/v1/users/roles', authorize, Users.updateUserRole);
   app.delete('/api/v1/users/:id', authorize, Users.deleteUser);
 
 

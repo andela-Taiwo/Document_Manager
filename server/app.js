@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 app.use(expressValidator({
-  errorFormatter: (param, msg, value) => {
+  errorFormatter: (param, errorMessage, value) => {
     const namespace = param.split('.');
     const root = namespace.shift();
     let formParam = root;
@@ -22,7 +22,7 @@ app.use(expressValidator({
     }
     return {
       param: formParam,
-      msg,
+      errorMessage,
       value
     };
   }

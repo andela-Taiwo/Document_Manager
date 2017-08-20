@@ -9,10 +9,12 @@ dotenv.config();
 const SECRET_KEY = process.env.SECRET;
 
 module.exports = {
-    /**
-   *@param {object} req
-   * @param {object} res
-   * @return {json}  user
+
+  /**
+   * Represents create a user function
+   * @param {object} req - the request
+   * @param {object} res - the response
+   * @return {json}  user - expected return object
    * */
   addUser(req, res) {
     Validator.verifyUserParams(req)
@@ -69,10 +71,10 @@ module.exports = {
   },
 
   /**
-   *@param {object} req
-   * @param {object} res
-   * @param {object} next
-   * @return {json}  Document
+   * Represents sign in  function
+   * @param {object} req - the request
+   * @param {object} res - the response
+   * @return {json}  User - expected return object
    * */
   logginUser(req, res) {
     Validator.verifyLoginParams(req)
@@ -115,13 +117,14 @@ module.exports = {
               }));
       });
   },
+
+  /**
+   * Represents get a single user function
+   * @param {object} req - the request
+   * @param {object} res - the response
+   * @return {json}  User - expected return object
+   * */
   getUser(req, res) {
-    const ownerId = parseInt(req.params.id, 10);
-    if (isNaN(ownerId)) {
-      return res.status(400).send({
-        errorMessage: 'Invalid parameter, user id can only be integer'
-      });
-    }
     return models.User
         .find({
           where: {
@@ -137,20 +140,20 @@ module.exports = {
             });
           } else {
             res.status(404).send({
-              errorMessage: 'user does not exist'
+              errorMessage: 'user id does not exist'
             });
           }
         })
         .catch(error => res.status(400).send({
-          errorMessage: `${error} invalid parameter`
+          errorMessage: `${error.message} invalid parameter`
         }));
   },
 
   /**
-   *@param {object} req
-   * @param {object} res
-   * @param {object} next
-   * @return {json}  Document
+   * Represents get all users function
+   * @param {object} req - the request
+   * @param {object} res - the response
+   * @return {json}  Users - expected return object
    * */
   getAllUsers(req, res) {
     const query = {
@@ -205,9 +208,10 @@ module.exports = {
 
 
   /**
-   *@param {object} req
-   * @param {object} res
-   * @return {json}  user
+   * Represents search for instance of a user function
+   * @param {object} req - the request
+   * @param {object} res - the response
+   * @return {json}  User - expected return object
    * */
   searchUsers(req, res) {
     const searchTerm = req.query.q.trim();
@@ -245,10 +249,52 @@ module.exports = {
   },
 
   /**
-   *@param {object} req
-   * @param {object} res
-   * @param {object} next
-   * @return {json}  status and message
+   * Represents update a single user role function
+   * @param {object} req - the request
+   * @param {object} res - the response
+   * @return {json}  User - expected return object
+   * */
+  updateUserRole(req, res) {
+    const auth = (req.decoded.user.roleId);
+    const userEmail = req.body.email;
+    const newRoleId = parseInt(req.body.roleId, 10);
+    if (auth === 1) {
+      return models.User
+      .findOne({
+        where: {
+          email: userEmail
+        },
+        attributes: ['roleId']
+      })
+      .then((user) => {
+        if (!isNaN(newRoleId)) {
+          models.User.update(
+            { roleId: newRoleId },
+            { where: { email: user.email }
+            })
+                .then((userUpdate) => {
+                  const data = {
+                    message: 'Update profile successfully',
+                    data: userUpdate
+                  };
+                  res.send(data);
+                });
+        } else {
+          res.status(400).json({ errorMessage: 'invalid role ID' });
+        }
+      })
+      .catch((error) => {
+        res.status(412).json({ errorMessage: error.message });
+      });
+    }
+    res.status(403).send({ errorMessage: 'You do not have access to set role' });
+  },
+
+  /**
+   * Represents delete a single user function
+   * @param {object} req - the request
+   * @param {object} res - the response
+   * @return {json}  user - expected return object
    * */
   deleteUser(req, res) {
     if (req.decoded.user.roleId === 1) {
@@ -271,7 +317,7 @@ module.exports = {
             }
           })
           .catch((error) => {
-            res.status(412).json({ errorMessage: error.message });
+            res.status(412).json({ errorMessage: error.message.toString() });
           });
     }
 
