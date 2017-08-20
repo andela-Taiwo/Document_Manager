@@ -116,12 +116,6 @@ module.exports = {
       });
   },
   getUser(req, res) {
-    const ownerId = parseInt(req.params.id, 10);
-    if (isNaN(ownerId)) {
-      return res.status(400).send({
-        errorMessage: 'Invalid parameter, user id can only be integer'
-      });
-    }
     return models.User
         .find({
           where: {
@@ -137,12 +131,12 @@ module.exports = {
             });
           } else {
             res.status(404).send({
-              errorMessage: 'user does not exist'
+              errorMessage: 'user id does not exist'
             });
           }
         })
         .catch(error => res.status(400).send({
-          errorMessage: `${error} invalid parameter`
+          errorMessage: `${error.message} invalid parameter`
         }));
   },
 
@@ -256,11 +250,11 @@ module.exports = {
         },
         attributes: ['roleId']
       })
-      .then(() => {
+      .then((user) => {
         if (!isNaN(newRoleId)) {
           models.User.update(
             { roleId: newRoleId },
-            { where: { email: req.body.email }
+            { where: { email: user.email }
             })
                 .then((userUpdate) => {
                   const data = {
@@ -270,14 +264,14 @@ module.exports = {
                   res.send(data);
                 });
         } else {
-          res.status(412).json({ msg: 'invalid role ID' });
+          res.status(400).json({ errorMessage: 'invalid role ID' });
         }
       })
       .catch((error) => {
-        res.status(412).json({ msg: error.message });
+        res.status(412).json({ errorMessage: error.message });
       });
     }
-    res.status(403).send({ message: 'You do not have access to set role' });
+    res.status(403).send({ errorMessage: 'You do not have access to set role' });
   },
 
   /**
@@ -307,7 +301,7 @@ module.exports = {
             }
           })
           .catch((error) => {
-            res.status(412).json({ errorMessage: error.message });
+            res.status(412).json({ errorMessage: error.message.toString() });
           });
     }
 

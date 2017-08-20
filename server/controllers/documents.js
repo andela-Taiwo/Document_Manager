@@ -22,19 +22,19 @@ module.exports = {
       return models.Document
         .findOne({ where: { title: req.body.title } })
         .then((foundDoc) => {
+          if (accessType.indexOf((req.body.access).toLowerCase()) === -1) {
+            return res.status(400).send({
+              errorMessage: 'Invalid access parameter'
+            });
+          }
           if (!foundDoc) {
-            if (accessType.indexOf((req.body.access).toLowerCase()) === -1) {
-              res.status(400).send({
-                errorMessage: 'Invalid access parameter'
-              });
-            } else {
-              models.Document.create({
-                title: req.body.title,
-                content: req.body.content,
-                access: req.body.access,
-                userId: req.decoded.user.userId,
-                roleId: req.decoded.user.roleId
-              })
+            models.Document.create({
+              title: req.body.title,
+              content: req.body.content,
+              access: req.body.access,
+              userId: req.decoded.user.userId,
+              roleId: req.decoded.user.roleId
+            })
           .then((document) => {
             res.status(201).json({
               message: 'New Document created successfully',
@@ -45,7 +45,6 @@ module.exports = {
           .catch((err) => {
             res.status(412).json({ errorMessage: err });
           });
-            }
           } else {
             res.status(400).send({
               errorMessage: 'Document already exist'
