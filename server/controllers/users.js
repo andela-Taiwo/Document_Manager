@@ -9,10 +9,12 @@ dotenv.config();
 const SECRET_KEY = process.env.SECRET;
 
 module.exports = {
-    /**
-   *@param {object} req
-   * @param {object} res
-   * @return {json}  user
+
+  /**
+   * Represents create a user function
+   * @param {object} req - the request
+   * @param {object} res - the response
+   * @return {json}  user - expected return object
    * */
   addUser(req, res) {
     Validator.verifyUserParams(req)
@@ -69,10 +71,10 @@ module.exports = {
   },
 
   /**
-   *@param {object} req
-   * @param {object} res
-   * @param {object} next
-   * @return {json}  Document
+   * Represents sign in  function
+   * @param {object} req - the request
+   * @param {object} res - the response
+   * @return {json}  User - expected return object
    * */
   logginUser(req, res) {
     Validator.verifyLoginParams(req)
@@ -115,6 +117,13 @@ module.exports = {
               }));
       });
   },
+
+  /**
+   * Represents get a single user function
+   * @param {object} req - the request
+   * @param {object} res - the response
+   * @return {json}  User - expected return object
+   * */
   getUser(req, res) {
     return models.User
         .find({
@@ -141,10 +150,10 @@ module.exports = {
   },
 
   /**
-   *@param {object} req
-   * @param {object} res
-   * @param {object} next
-   * @return {json}  Document
+   * Represents get all users function
+   * @param {object} req - the request
+   * @param {object} res - the response
+   * @return {json}  Users - expected return object
    * */
   getAllUsers(req, res) {
     const query = {
@@ -199,9 +208,10 @@ module.exports = {
 
 
   /**
-   *@param {object} req
-   * @param {object} res
-   * @return {json}  user
+   * Represents search for instance of a user function
+   * @param {object} req - the request
+   * @param {object} res - the response
+   * @return {json}  User - expected return object
    * */
   searchUsers(req, res) {
     const searchTerm = req.query.q.trim();
@@ -238,6 +248,12 @@ module.exports = {
       });
   },
 
+  /**
+   * Represents update a single user role function
+   * @param {object} req - the request
+   * @param {object} res - the response
+   * @return {json}  User - expected return object
+   * */
   updateUserRole(req, res) {
     const auth = (req.decoded.user.roleId);
     const userEmail = req.body.email;
@@ -275,10 +291,10 @@ module.exports = {
   },
 
   /**
-   *@param {object} req
-   * @param {object} res
-   * @param {object} next
-   * @return {json}  status and message
+   * Represents delete a single user function
+   * @param {object} req - the request
+   * @param {object} res - the response
+   * @return {json}  user - expected return object
    * */
   deleteUser(req, res) {
     if (req.decoded.user.roleId === 1) {

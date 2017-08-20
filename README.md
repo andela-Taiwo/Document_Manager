@@ -1,7 +1,7 @@
-[![Build Status](https://travis-ci.org/andela-Taiwo/Document_Manager.svg?branch=master)](https://travis-ci.org/andela-Taiwo/Document_Manager)
+[![Build Status](https://travis-ci.org/andela-Taiwo/Document_Manager.svg?branch=final-feedback-implementation)](https://travis-ci.org/andela-Taiwo/Document_Manager)
 
 [![Code Climate](https://codeclimate.com/github/andela-Taiwo/Document_Manager/badges/gpa.svg)](https://codeclimate.com/github/andela-Taiwo/Document_Manager)
-[![Coverage Status](https://coveralls.io/repos/github/andela-Taiwo/Document_Manager/badge.svg?branch=master)](https://coveralls.io/github/andela-Taiwo/Document_Manager?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/andela-Taiwo/Document_Manager/badge.svg?branch=final-feedback-implementation)](https://coveralls.io/github/andela-Taiwo/Document_Manager?branch=final-feedback-implementation)
 
 # RELIABLE-DOCS API
   Reliable-Docs API is an API  developed to enable user to track, manage and store documents.

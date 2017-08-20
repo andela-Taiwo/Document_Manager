@@ -6,6 +6,11 @@ dotenv.config();
 const SECRET_KEY = process.env.SECRET;
 
 module.exports = {
+  /**
+   * Represents generate the user token function
+   * @param {object} user - user details
+   * @return {json}  userToken - expected token for authorization
+   * */
   setUserToken(user) {
     const userToken = jwt.sign({
       user }, SECRET_KEY, { expiresIn: '12h' },
@@ -14,10 +19,11 @@ module.exports = {
   },
 
   /**
-   *@param {object} req
-   * @param {object} res
+   * Represents verify the user token function
+   * @param {object} req - the request
+   * @param {object} res - the response
    * @param {object} next
-   * @return {json}  Document
+   * @return {json}  Document - expected return object
    * */
   authorize(req, res, next) {
     const auth = req.headers.authorization;

@@ -2,6 +2,12 @@
 import models from '../models';
 
 module.exports = {
+  /**
+   * Represents get all roles function
+   * @param {object} req - the request
+   * @param {object} res - the response
+   * @return {json}  Roles - expected return object
+   * */
   getAllRoles(req, res) {
     const auth = (req.decoded.user.roleId);
     if (auth === 1 || auth === 2) {
@@ -18,6 +24,12 @@ module.exports = {
     res.status(403).send({ message: 'You are not authorized to view roles' });
   },
 
+  /**
+   * Represents create a role function
+   * @param {object} req - the request
+   * @param {object} res - the response
+   * @return {json}  Role - expected return object
+   * */
   create(req, res) {
     const auth = (req.decoded.user.roleId);
     if (auth === 1) {
@@ -36,6 +48,12 @@ module.exports = {
     res.status(403).send({ message: 'unauthorize user cannot  set role' });
   },
 
+  /**
+   * Represents update a single role function
+   * @param {object} req - the request
+   * @param {object} res - the response
+   * @return {json}  Role - expected return object
+   * */
   updateRole(req, res) {
     const auth = (req.decoded.user.roleId);
     const newRoleType = req.body.roleType;
@@ -69,6 +87,12 @@ module.exports = {
     res.status(403).send({ message: 'You do not have access to set role' });
   },
 
+  /**
+   * Represents delete a single role function
+   * @param {object} req - the request
+   * @param {object} res - the response
+   * @return {json}  Role - expected return object
+   * */
   deleteRole(req, res) {
     if (req.decoded.user.roleId === 1) {
       return models.Role
