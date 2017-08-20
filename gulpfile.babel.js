@@ -37,7 +37,7 @@ gulp.task('production', () => gulp.src('server/**/*.js')
   .pipe(gulp.dest('build')));
 
 gulp.task('test', () => {
-  gulp.src('test/controlle/*.js')
+  gulp.src('server/test/controllers/*.js')
     .pipe(babel())
     .pipe(jasmineNode(jasmineNodeOpts))
     .pipe(exit());
@@ -48,7 +48,7 @@ gulp.task('coverage', (cb) => {
     .pipe(istanbul())
     .pipe(istanbul.hookRequire())
     .on('finish', () => {
-      gulp.src('test/**/*.js')
+      gulp.src('server/test/**/*.js')
         .pipe(babel())
         .pipe(injectModules())
         .pipe(jasmineNode())

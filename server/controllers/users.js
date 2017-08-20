@@ -3,16 +3,18 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import models from '../models';
 import Validator from '../helper/Validator';
-import Helper from '../helper/Helper';
+import Pagination from '../helper/Pagination';
 
 dotenv.config();
 const SECRET_KEY = process.env.SECRET;
 
 module.exports = {
-    /**
-   *@param {object} req
-   * @param {object} res
-   * @return {json}  user
+
+  /**
+   * Represents create a user function
+   * @param {object} req - the request
+   * @param {object} res - the response
+   * @return {json}  user - expected return object
    * */
   addUser(req, res) {
     Validator.verifyUserParams(req)
@@ -45,15 +47,15 @@ module.exports = {
                           SECRET_KEY, { expiresIn: 24 * 60 * 60 });
                       const data = {
                         userName: user.userName,
-                        message: 'User successfully signup',
-                        token: myToken,
+                        message: `${user.userName} successfully signed up`,
                         userId: user.id,
+                        token: myToken,
                       };
                       res.status(201).json(data);
                     });
               } else {
                 res.status(403).json({
-                  message: 'email already exist',
+                  errorMessage: 'email already exist',
 
                 });
               }
@@ -69,10 +71,10 @@ module.exports = {
   },
 
   /**
-   *@param {object} req
-   * @param {object} res
-   * @param {object} next
-   * @return {json}  Document
+   * Represents sign in  function
+   * @param {object} req - the request
+   * @param {object} res - the response
+   * @return {json}  User - expected return object
    * */
   logginUser(req, res) {
     Validator.verifyLoginParams(req)
@@ -100,37 +102,82 @@ module.exports = {
                   };
                   const myToken = jwt.sign({ user: userDetails },
                       SECRET_KEY, { expiresIn: 24 * 60 * 60 });
-                  res.status(200).send({ token: myToken });
+                  res.status(200).send({
+                    message: `You are logged in ${user.userName} `,
+                    token: myToken
+                  });
                 } else {
-                  res.sendStatus(401);
+                  res.status(401).send({
+                    errorMessage: 'Invalid email or password'
+                  });
                 }
               })
-              .catch(error => res.status(400).send(error));
+              .catch(error => res.status(400).send({
+                errorMessage: `${error} invalid parameter`
+              }));
       });
   },
+
+  /**
+   * Represents get a single user function
+   * @param {object} req - the request
+   * @param {object} res - the response
+   * @return {json}  User - expected return object
+   * */
   getUser(req, res) {
     return models.User
         .find({
           where: {
             id: req.params.id
+          },
+          attributes: ['id', 'userName', 'email']
+        })
+        .then((user) => {
+          if (user) {
+            res.status(200).send({
+              message: 'User successfully retrieved',
+              user,
+            });
+          } else {
+            res.status(404).send({
+              errorMessage: 'user id does not exist'
+            });
           }
         })
-        .then(user => res.status(200).send(user))
-        .catch(error => res.status(400).send(error));
+        .catch(error => res.status(400).send({
+          errorMessage: `${error.message} invalid parameter`
+        }));
   },
 
   /**
-   *@param {object} req
-   * @param {object} res
-   * @param {object} next
-   * @return {json}  Document
+   * Represents get all users function
+   * @param {object} req - the request
+   * @param {object} res - the response
+   * @return {json}  Users - expected return object
    * */
   getAllUsers(req, res) {
+    const query = {
+      attributes: ['userName', 'email']
+    };
+    query.limit = (req.query.limit > 0) ? req.query.limit : 10;
+
+    query.offset = (req.query.offset > 0) ? req.query.offset : 0;
+    query.order = ['createdAt'];
+
     return models.User
-        .all()
-        .then(users => res.status(200).send(users))
+        .findAndCountAll(query)
+        .then((users) => {
+          const pagination = Pagination.pages(
+            query.limit, query.offset, users.count
+          );
+          res.status(200).send({
+            message: 'Users successfully retrieved',
+            users: users.rows,
+            pagination,
+          });
+        })
         .catch((error) => {
-          res.status(412).json({ msg: error.message });
+          res.status(412).json({ errorMessage: error.message });
         });
   },
   updateUser(req, res) {
@@ -148,7 +195,6 @@ module.exports = {
           roleId: req.decoded.user.roleId
         }).then((userUpdate) => {
           const data = {
-            error: 'false',
             message: 'Update profile successfully',
             data: userUpdate
           };
@@ -156,27 +202,28 @@ module.exports = {
         });
       })
       .catch((error) => {
-        res.status(412).json({ msg: error.message });
+        res.status(412).json({ errorMessage: error.message });
       });
   },
 
 
   /**
-   *@param {object} req
-   * @param {object} res
-   * @return {json}  user
+   * Represents search for instance of a user function
+   * @param {object} req - the request
+   * @param {object} res - the response
+   * @return {json}  User - expected return object
    * */
   searchUsers(req, res) {
     const searchTerm = req.query.q.trim();
 
     const query = {
       where: {
-        $or: [{
-          userName: {
-            $iLike: `%${searchTerm}%`,
-          },
-        }],
+
+        userName: {
+          $iLike: `%${searchTerm}%`,
+        },
       },
+      attributes: ['userName', 'email']
     };
 
     query.limit = (req.query.limit > 0) ? req.query.limit : 10;
@@ -185,49 +232,115 @@ module.exports = {
     return models.User
       .findAndCountAll(query)
       .then((users) => {
-        const pagination = Helper.pagination(
+        const pagination = Pagination.pages(
           query.limit, query.offset, users.count
         );
         if (!users.rows.length) {
           return res.status(404).send({
-            message: 'Search term does not match any user',
+            errorMessage: 'Search term does not match any user',
           });
         }
         res.status(200).send({
-          pagination,
+          message: 'successfully retrieved user(s)',
           users: users.rows,
+          pagination,
         });
       });
   },
 
   /**
-   *@param {object} req
-   * @param {object} res
-   * @param {object} next
-   * @return {json}  status and message
+   * Represents update a single user role function
+   * @param {object} req - the request
+   * @param {object} res - the response
+   * @return {json}  User - expected return object
+   * */
+  updateUserRole(req, res) {
+    const auth = (req.decoded.user.roleId);
+    const userEmail = req.body.email;
+    const newRoleId = parseInt(req.body.roleId, 10);
+    if (auth === 1) {
+      return models.User
+      .findOne({
+        where: {
+          email: userEmail
+        },
+        attributes: ['roleId']
+      })
+      .then((user) => {
+        if (!isNaN(newRoleId)) {
+          models.User.update(
+            { roleId: newRoleId },
+            { where: { email: user.email }
+            })
+                .then((userUpdate) => {
+                  const data = {
+                    message: 'Update profile successfully',
+                    data: userUpdate
+                  };
+                  res.send(data);
+                });
+        } else {
+          res.status(400).json({ errorMessage: 'invalid role ID' });
+        }
+      })
+      .catch((error) => {
+        res.status(412).json({ errorMessage: error.message });
+      });
+    }
+    res.status(403).send({ errorMessage: 'You do not have access to set role' });
+  },
+
+  /**
+   * Represents delete a single user function
+   * @param {object} req - the request
+   * @param {object} res - the response
+   * @return {json}  user - expected return object
    * */
   deleteUser(req, res) {
-    return models.User
-        .destroy({
-          where: {
-            id: req.decoded.user.userId
-          }
-        }).then((user) => {
-          if (user !== 0) {
-            const data = {
-              error: 'false',
-              message: 'Deleted user successfully',
-              data: user
-            };
-            res.send(data);
-          } else {
-            res.status(403).send({
-              message: 'You are not authorize to delete another user data'
-            });
-          }
-        })
-        .catch((error) => {
-          res.status(412).json({ msg: error.message });
+    if (req.decoded.user.roleId === 1) {
+      return models.User
+          .destroy({
+            where: {
+              id: req.params.id
+            }
+          }).then((user) => {
+            if (user !== 0) {
+              const data = {
+                message: 'Deleted user successfully',
+                usersDeleted: user
+              };
+              res.send(data);
+            } else {
+              res.status(404).send({
+                errorMessage: 'user id is not found'
+              });
+            }
+          })
+          .catch((error) => {
+            res.status(412).json({ errorMessage: error.message.toString() });
+          });
+    }
+
+    return models.User.destroy({
+      where: {
+        $and: [{ id: req.params.id }, { id: req.decoded.user.userId }]
+      }
+    }).then((user) => {
+      if (user !== 0) {
+        const data = {
+          message: 'Deleted user successfully',
+          data: user
+        };
+        res.send(data);
+      } else {
+        res.status(403).send({
+          errorMessage:
+          'You are not authorized to delete another user account'
         });
+      }
+    })
+  .catch((error) => {
+    res.status(412).json({ errorMessage: error.message });
+  });
   }
 };

@@ -4,7 +4,7 @@
     "description": "Document Manager App",
     "main": "server/server.js",
     "scripts": {
-        "pretest": "NODE_ENV=test sequelize db:migrate:undo:all && NODE_ENV=test sequelize db:migrate",
+        "pretest": "NODE_ENV=test sequelize db:migrate:undo:all && NODE_ENV=test sequelize db:migrate && NODE_ENV=test sequelize db:seed:all",
         "test": "gulp production && NODE_ENV=test node node_modules/gulp/bin/gulp coverage  && gulp coveralls && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
         "start": "gulp production && NODE_ENV=production node build/server.js",
         "dev": "babel-node server/server.js",
@@ -59,8 +59,8 @@
         "sequelize": "^4.3.2",
         "sequelize-cli": "^2.8.0",
         "sinon": "^2.4.1",
-        "util": "^0.10.3",
-        "supertest": "^3.0.0"
+        "supertest": "^3.0.0",
+        "util": "^0.10.3"
     },
     "devDependencies": {
         "babel-eslint": "^7.2.3",
