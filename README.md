@@ -108,11 +108,11 @@ They are run using the coverage tool in order to generate test coverage reports.
   $ npm test
 
 # Contributing
-- Fork this repository.
-- Clone it.
-- Create your feature branch on your local machine.
-- Push your changes to your remote branch.
-- Open a pull request to the master branch.
+[Click here for Contribution Guide](https://github.com/andela-Taiwo/Document_Manager/wiki/Contribution)
+
+
+[Click here for Pull Request Guide](https://github.com/andela-Taiwo/Document_Manager/wiki/PR-Naming-Convention)
+
 
 
 # License
