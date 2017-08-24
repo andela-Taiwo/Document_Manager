@@ -1,9 +1,7 @@
 
 /**
 *@param {json} request
- *@param {json} response
- *@param {any} next
- *@return {json} response
+ *@return {json} result
  */
 const verifyUserParams = (request) => {
   request.assert('userName', 'userName field is required').notEmpty();
@@ -13,6 +11,11 @@ const verifyUserParams = (request) => {
   request.assert('email', 'valid email address is required').isEmail();
   return request.getValidationResult();
 };
+
+/**
+*@param {json} request
+ *@return {json} result
+ */
 const verifyDocParams = (request) => {
   request.assert('title', 'title field is required').notEmpty();
   request.assert('title', '4 to 50 characters required').len(10, 30);
@@ -21,6 +24,10 @@ const verifyDocParams = (request) => {
   return request.getValidationResult();
 };
 
+/**
+*@param {json} request
+ *@return {json} result
+ */
 const verifyLoginParams = (request) => {
   request.assert('email', 'title field is required').notEmpty();
   request.assert('password', '6 to 15 characters required').len(6, 15);
@@ -28,6 +35,10 @@ const verifyLoginParams = (request) => {
   return request.getValidationResult();
 };
 
+/**
+*@param {json} request
+ *@return {boolean} result
+ */
 const verifyId = (request) => {
   const id = parseInt(request, 10);
   if (isNaN(id)) {
