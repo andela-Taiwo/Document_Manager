@@ -12,9 +12,10 @@ const badToken = mockData.badToken;
 const userToken = auth.setUserToken(mockData.user);
 const request = supertest(app);
 
-describe(' Document', () => {
-  describe('create documents function', () => {
-    it('should return a message document created successfully', (done) => {
+describe('Document controller', () => {
+  describe('CreateDocuments function', () => {
+    it(`should return success message when a user makes a request to create
+      a new document`, (done) => {
       request.post('/api/v1/documents')
       .send({ title: 'johnDoe@yahoo.com',
         content: 'humanity',
@@ -28,8 +29,9 @@ describe(' Document', () => {
       });
     });
 
-    it(`should return error message with status code 400 for invalid
-      access condition`, (done) => {
+    it(`should return error message with status code 400 when user makes a
+      request to create a document with  access value that does not exist in
+      the database`, (done) => {
       request.post('/api/v1/documents')
       .send({ title: 'johnDoe@yahoo.com',
         content: 'humanity',
@@ -43,8 +45,8 @@ describe(' Document', () => {
       });
     });
 
-    it(`should return error message with status code 400 if the document title
-      already exist`, (done) => {
+    it(`should return error message with status code 400 when a user makes a
+      request to create a document with a title that already exist `, (done) => {
       request.post('/api/v1/documents')
       .send({ title: 'Django lady',
         content: 'duplicate',
@@ -53,38 +55,47 @@ describe(' Document', () => {
       .set({ Authorization: `${userToken}` })
       .end((err, res) => {
         expect(res.statusCode).to.be.equal(400);
-        expect(res.body.errorMessage).to.be.equal('Document already exist');
+        expect(res.body.errorMessage).to
+        .be.equal('Document already exist with the title Django lady');
         done();
       });
     });
 
-    it(`should return error message with status code 412 when user tries
-      to create a document with no content`, (done) => {
+    it(`should return error message with status code 412 when user makes a
+       request to create document with empty content `, (done) => {
       request.post('/api/v1/documents')
       .send({ title: 'johnDoe@yahoo.com', access: 'public' })
       .set({ Authorization: `${userToken}` })
       .end((err, res) => {
         expect(res.statusCode).to.be.equal(412);
+        expect(res.body.errorMessage.content.errorMessage).to.be
+        .equal('Document content cannot be empty');
         done();
       });
     });
   });
-  describe('get all documents function ', () => {
-    it(`should return an  object containing  all documents that match user role
-      or document access condition , when is a user`, (done) => {
+  describe('Get all documents function ', () => {
+    it(`should return documents that match the access value when a user
+      makes a request to get all documents`, (done) => {
       request.get('/api/v1/documents/')
     .set({ Authorization: userToken })
     .end((err, res) => {
       expect(res.statusCode).to.be.equal(200);
+      expect(res.body.returnedDocument).to.be.equal(6);
+      expect(res.body.message).to.be
+      .equal('Retrieved documents successfully');
+
       done();
     });
     });
 
-    it('should return all documents to super admin ',
+    it(`should return all documents when a super admin makes a request
+       to get all documents`,
      (done) => {
        request.get('/api/v1/documents')
             .set({ Authorization: superAdminToken })
             .end((err, res) => {
+              expect(res.body.returnedDocument).to.be.equal(10);
               expect(res.status).to.be.equal(200);
               expect(res.body.message).to.be
               .equal('Documents retrieved succesfully');
@@ -93,19 +104,21 @@ describe(' Document', () => {
      });
   });
 
-  describe('get a document', () => {
-    it(`should return an  object containing  a single document
-       if it matches user role or document access condition`, (done) => {
+  describe('Get a document', () => {
+    it(`should return a single document when a user makes a request to
+      get a document`, (done) => {
       request.get('/api/v1/documents/9')
     .set({ Authorization: userToken })
     .end((err, res) => {
       expect(res.status).to.be.equal(200);
+      expect(res.body.message).to.be.equal('Retrieved document succesfully');
+      expect(res.body.document.count).to.be.equal(1);
       done();
     });
     });
 
-    it(`should return forbidden error message when a user tries to
-      access  another user private document`
+    it(`should return error message with status code 403  when a
+      user makes a request to get another user private document`
     , (done) => {
       request.get('/api/v1/documents/1')
     .set({ Authorization: userToken })
@@ -117,17 +130,22 @@ describe(' Document', () => {
     });
     });
 
-    it('should return a document that matched the id for super admin ',
+    it(`should return a single document when a user makes a request
+       to get a document`,
       (done) => {
         request.get('/api/v1/documents/1')
              .set({ Authorization: superAdminToken })
              .end((err, res) => {
+               expect(res.body.document.count).to.be.equal(1);
                expect(res.status).to.be.equal(200);
+               expect(res.body.message).to.be
+               .equal('Retrieved document succesfully');
                done();
              });
       });
 
-    it('should return error message for invalid parameter',
+    it(`should return error message with status code 400 when a super admin
+    makes a request to a get document with a string as id parameter`,
       (done) => {
         request.get('/api/v1/documents/eeyey')
              .set({ Authorization: superAdminToken })
@@ -140,7 +158,7 @@ describe(' Document', () => {
       });
 
 
-    it('should return 403 forbidden error message when user is not logged ',
+    it('should return 403 forbidden error message when user has not logged in ',
      (done) => {
        request.get('/api/v1/documents')
             .set({ Authorization: badToken })
@@ -152,29 +170,33 @@ describe(' Document', () => {
      });
   });
 
-  describe('get a user documents function', () => {
-    it('should return all documents that belongs to a user to an admin',
+  describe('Get a user documents function', () => {
+    it(`should return all documents  belonging to a user when a super
+       admin makes a request`,
       (done) => {
         request.get('/api/v1/users/1/documents')
              .set({ Authorization: superAdminToken })
              .end((err, res) => {
                expect(res.status).to.be.equal(200);
+               expect(res.body.documents.count).to.be.equal(3);
                done();
              });
       });
 
-    it(`should return all documents that belongs to another user if they match
-      user's role or the document's access condition`,
+    it(`should return selected documents that match the documents access value
+       when a user makes a request `,
       (done) => {
         request.get('/api/v1/users/1/documents')
              .set({ Authorization: userToken })
              .end((err, res) => {
                expect(res.status).to.be.equal(200);
+               expect(res.body.documents.count).to.be.equal(1);
                done();
              });
       });
 
-    it('should return error message when invalid parameter is supplied for user id',
+    it(`should return error message with status code 400  when a user makes
+      request with invalid id parameter`,
       (done) => {
         request.get('/api/v1/users/a/documents')
              .set({ Authorization: userToken })
@@ -186,7 +208,8 @@ describe(' Document', () => {
              });
       });
 
-    it('should return all 404 error if user id does not exist ',
+    it(`should return error message with status code 404 when a super admin
+      makes a request for documents from a user that does not exist`,
         (done) => {
           request.get('/api/v1/users/6/documents')
                .set({ Authorization: superAdminToken })
@@ -197,8 +220,8 @@ describe(' Document', () => {
                  done();
                });
         });
-    it(`should return error message with status code 404,
-      if user id does not exist`,
+    it(`should return error message with status code 404,when a user
+       makes a request for documents from user that does not exist`,
         (done) => {
           request.get('/api/v1/users/6/documents')
                .set({ Authorization: userToken })
@@ -211,7 +234,8 @@ describe(' Document', () => {
         });
   });
   describe('update documents function', () => {
-    it('should return a message document updated successfully', (done) => {
+    it(`should return a success message when the user
+      makes a request to update personal document`, (done) => {
       request.put('/api/v1/documents/8')
       .send({ title: 'update my doc',
         content: 'Updating document ',
@@ -223,7 +247,8 @@ describe(' Document', () => {
         done();
       });
     });
-    it('should return error message  with status code 412', (done) => {
+    it(`should return error message  with status code 412 when super admin
+      makes a request to update another user document`, (done) => {
       request.put('/api/v1/documents/8')
       .send({ title: 'update my another user doc',
         content: 'Should not update ',
@@ -231,25 +256,30 @@ describe(' Document', () => {
       .set({ Authorization: `${superAdminToken}` })
       .end((err, res) => {
         expect(res.statusCode).to.be.equal(412);
+        expect(res.body.errorMessage).to
+        .be.equal('You are not authorized to update another user documents');
         done();
       });
     });
   });
 
   describe(' Documents search function', () => {
-    it('should return all documents that match the search term if is a super admin  ',
+    it(`should return all documents that match the search query when super admin
+       makes a request to search for a document title `,
         (done) => {
           request.get('/api/v1/search/documents/?q=update my doc')
                .set({ Authorization: superAdminToken })
                .end((err, res) => {
                  expect(res.status).to.be.equal(200);
+                 expect(res.body.returnedDocument).to.be.equal(1);
                  expect(res.body.message).to.be
                  .equal('Retrieved documents successfully');
                  done();
                });
         });
 
-    it('should return all documents that match the search term with pagination ',
+    it(`should return all documents with pagination when a super admin makes a
+      request to get documents  with limit or offset parameter`,
         (done) => {
           request
           .get('/api/v1/search/documents/?q=update my doc&limit=4&offset=0')
@@ -258,11 +288,14 @@ describe(' Document', () => {
                  expect(res.status).to.be.equal(200);
                  expect(res.body.message).to.be
                  .equal('Retrieved documents successfully');
+                 expect(res.body.pagination.pageCount).to.be.equal(1);
+                 expect(res.body.pagination.totalCount).to.be.equal(1);
+                 expect(res.body.pagination.pageSize).to.be.equal(1);
                  done();
                });
         });
-    it(`should return all documents that match the search term \n
-        with pagination for user `,
+    it(`should return all documents with pagination when a user makes a
+      request to get documents  with limit or offset parameter `,
         (done) => {
           request
           .get('/api/v1/search/documents/?q=update my doc&limit=4&offset=0')
@@ -273,8 +306,8 @@ describe(' Document', () => {
                });
         });
 
-    it(`should return error message with status code 404
-       when no document matches the search term `,
+    it(`should return error message with status code 404 when  a user makes
+       a request to search for a document title that does not exist `,
         (done) => {
           request.get('/api/v1/search/documents/?q=history')
                .set({ Authorization: superAdminToken })
@@ -285,7 +318,8 @@ describe(' Document', () => {
         });
   });
   describe('pagination', () => {
-    it('should return all documents with pagination if  is a super admin ',
+    it(`should return all documents with pagination when a super admin makes a
+    request to get all documuents `,
      (done) => {
        request.get('/api/v1/documents/?limit=5&offset=0')
             .set({ Authorization: superAdminToken })
@@ -299,7 +333,8 @@ describe(' Document', () => {
      });
   });
   describe(' Delete  document', () => {
-    it('should delete the document',
+    it(`should delete the document when a super admin makes a request to
+       delete a document`,
         (done) => {
           request.delete('/api/v1/documents/9')
                .set({ Authorization: superAdminToken })
@@ -311,7 +346,8 @@ describe(' Document', () => {
                });
         });
 
-    it('should return error message for unauthorize deletion ',
+    it(`should return error message with status code 403 when a user makes a
+      request to delete another user document`,
         (done) => {
           request.delete('/api/v1/documents/1')
                .set({ Authorization: userToken })
@@ -323,7 +359,8 @@ describe(' Document', () => {
                });
         });
 
-    it('should return  a message when a document is deleted  ',
+    it(`should return  a  successmessage when a user makes a request to
+       delelte personal document`,
         (done) => {
           request.delete('/api/v1/documents/7')
                .set({ Authorization: userToken })
@@ -334,8 +371,8 @@ describe(' Document', () => {
                  done();
                });
         });
-    it(`should return  error message with status code 404,
-       if id supplied is not found `,
+    it(`should return  error message with status code 404, when a super admin
+      makes a request to delete a document that does not exist `,
         (done) => {
           request.delete('/api/v1/documents/100')
                .set({ Authorization: superAdminToken })
@@ -346,8 +383,8 @@ describe(' Document', () => {
                  done();
                });
         });
-    it(`should return  error message with status code 400,
-      if the id is not a positive integer  `,
+    it(`should return  error message with status code 400, when a super admin
+      makes a request with an invalid id parameter `,
         (done) => {
           request.delete('/api/v1/documents/eds')
                .set({ Authorization: superAdminToken })
@@ -359,8 +396,8 @@ describe(' Document', () => {
                });
         });
 
-    it(`should return message with status code  404
-      if  error when user tries to access deleted document `,
+    it(`should return message with status code  404 when a user makes a request
+       to get a deleted document `,
         (done) => {
           request.get('/api/v1/documents/9')
                .set({ Authorization: superAdminToken })

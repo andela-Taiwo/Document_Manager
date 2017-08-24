@@ -10,7 +10,7 @@ describe('User Model', () => {
     describe('when email and password fields are absent', () => {
       it('should return Validation error message', (done) => {
         User.create({
-          id: 3,
+          id: 9,
           userName: '',
           email: 'deola001@ya.com',
           password: '',
@@ -36,7 +36,7 @@ describe('User Model', () => {
 
     it('should create new user', (done) => {
       User.create({
-        id: 1,
+        id: 10,
         userName: 'Adeola',
         email: 'deola001@ya.com',
         password: 'role1',
@@ -45,7 +45,7 @@ describe('User Model', () => {
         updatedAt: '2017-08-17'
       })
         .then((user) => {
-          expect(user.id).to.be.equal(1);
+          expect(user.id).to.be.equal(10);
           expect(user.userName).to.be.equal('Adeola');
           expect(user.roleId).to.equal(2);
           done();

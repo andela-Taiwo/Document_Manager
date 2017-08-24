@@ -48,7 +48,8 @@ module.exports = {
           });
           } else {
             res.status(400).send({
-              errorMessage: 'Document already exist'
+              errorMessage:
+              `Document already exist with the title ${req.body.title}`
             });
           }
         });
@@ -66,20 +67,25 @@ module.exports = {
     if (Validator.verifyId(req.params.id)) {
       if (req.decoded.user.roleId === 1) {
         return models.Document
-          .findById(req.params.id)
+          .findAndCountAll({
+            where: { id: req.params.id }
+          })
           .then((document) => {
-            if (document === null || document.length === 0) {
+            if (document.count === 0) {
               res.status(404).send({
                 errorMessage: 'Document not found'
               });
             } else {
-              res.status(200).send(document);
+              res.status(200).send({
+                message: 'Retrieved document succesfully',
+                document
+              });
             }
           })
           .catch(err => res.status(404).send(err.toString()));
       }
       return models.Document
-        .findOne({
+        .findAndCountAll({
           where: {
             id: req.params.id,
             $or: [
@@ -94,8 +100,11 @@ module.exports = {
           attributes: ['id', 'title', 'access', 'content', 'createdAt']
         })
         .then((document) => {
-          if (document) {
-            res.status(200).send(document);
+          if (document.count > 0) {
+            res.status(200).send({
+              message: 'Retrieved document succesfully',
+              document
+            });
           } else {
             res.status(403).send({
               errorMessage: 'You are not authorized to view this document'
@@ -131,9 +140,17 @@ module.exports = {
       attributes: ['id', 'title', 'access', 'content', 'createdAt', 'userId'],
     };
 
-    query.limit = (req.query.limit > 0) ? req.query.limit : 10;
+    if (req.query.limit > 0) {
+      query.limit = req.query.limit;
+    } else {
+      query.limit = 10;
+    }
 
-    query.offset = (req.query.offset > 0) ? req.query.offset : 0;
+    if (req.query.offset > 0) {
+      query.offset = req.query.offset;
+    } else {
+      query.offset = 0;
+    }
     query.order = ['createdAt'];
 
     if (req.decoded.user.roleId === 1) {
@@ -145,6 +162,7 @@ module.exports = {
           attributes: ['id', 'title', 'content', 'access', 'createdAt'],
         })
         .then((documents) => {
+          const count = documents.count;
           const pagination = Pagination.pages(
             query.limit, query.offset, documents.count
           );
@@ -155,6 +173,7 @@ module.exports = {
           }
           res.status(200).send({
             message: 'Documents retrieved succesfully',
+            returnedDocument: count,
             documents: documents.rows,
             pagination,
           });
@@ -167,6 +186,7 @@ module.exports = {
     return models.Document
       .findAndCountAll(query)
       .then((documents) => {
+        const count = documents.count;
         const pagination = Pagination.pages(
           query.limit, query.offset, documents.count
         );
@@ -176,6 +196,8 @@ module.exports = {
           });
         }
         res.status(200).send({
+          message: 'Retrieved documents successfully',
+          returnedDocument: count,
           documents: documents.rows,
           pagination,
         });
@@ -222,6 +244,7 @@ module.exports = {
           where: {
             userId: req.params.id } })
             .then((documents) => {
+              const count = documents.count;
               const pagination = Pagination.pages(
                 query.limit, query.offset, documents.count
               );
@@ -232,6 +255,7 @@ module.exports = {
               }
               res.status(200).send({
                 message: 'Retrieved documents successfully',
+                returnedDocument: count,
                 documents,
                 pagination
               });
@@ -255,8 +279,9 @@ module.exports = {
       attributes: ['id', 'title', 'access', 'content', 'createdAt']
     })
     .then((documents) => {
+      const count = documents.count;
       const pagination = Pagination.pages(
-        query.limit, query.offset, documents.count
+        query.limit, query.offset, count
       );
       if (!documents.rows.length) {
         return res.status(404).send({
@@ -265,8 +290,9 @@ module.exports = {
       }
       res.status(200).send({
         message: 'Retrieved documents successfully',
+        returnedDocument: count,
         documents,
-        pagination
+        pagination,
       });
     })
       .catch(err => res.status(400).send({
@@ -313,7 +339,10 @@ module.exports = {
       }
     })
     .catch((error) => {
-      res.status(412).json({ msg: error.message });
+      res.status(412).json({
+        errorMessage: 'You are not authorized to update another user documents',
+        error
+      });
     });
   },
 
@@ -344,6 +373,7 @@ module.exports = {
       return models.Document
       .findAndCountAll(query)
       .then((documents) => {
+        const count = documents.count;
         const pagination = Pagination.pages(
           query.limit, query.offset, documents.count
         );
@@ -354,6 +384,7 @@ module.exports = {
         }
         res.status(200).send({
           message: 'Retrieved documents successfully',
+          returnedDocument: count,
           documents: documents.rows,
           pagination
         });
@@ -374,6 +405,7 @@ module.exports = {
         attributes: ['id', 'title', 'access', 'content', 'createdAt']
       })
       .then((documents) => {
+        const count = documents.count;
         const pagination = Pagination.pages(
           query.limit, query.offset, documents.count
         );
@@ -384,12 +416,13 @@ module.exports = {
         }
         res.status(200).send({
           message: 'Retrieved documents successfully',
+          returnedDocument: count,
           documents: documents.rows,
           pagination
         });
       })
       .catch((error) => {
-        res.status(412).json({ msg: error.message });
+        res.status(412).json({ errorMessage: error.message });
       });
   },
 
@@ -426,7 +459,7 @@ module.exports = {
             return res.send(deletedDocument);
           })
           .catch((error) => {
-            res.status(412).json({ msg: error.message });
+            res.status(412).json({ errorMessage: error.message });
           });
         } else {
           res.status(403).send({

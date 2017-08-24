@@ -40,7 +40,9 @@ module.exports = {
         return next();
       });
     } else {
-      res.status(412).send('Token not provided');
+      res.status(412).send({
+        errorMessage: 'You are not logged in. Please, login and try again'
+      });
     }
   }
 };

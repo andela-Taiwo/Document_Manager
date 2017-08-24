@@ -10,12 +10,12 @@ dotenv.config();
 
 const superAdminToken = auth.setUserToken(mockData.superAdmin);
 const adminToken = auth.setUserToken(mockData.admin);
-const userToken = auth.setUserToken(mockData.regularUser);
-const noToken = auth.setUserToken(mockData.noToken);
+const userToken = auth.setUserToken(mockData.user);
 
-describe('Role Endpoints', () => {
+describe('Role controller', () => {
   describe('create role function', () => {
-    it('should  not create a role if is  not a super Admin ', (done) => {
+    it(`should return error message with status code 403 when a user makes
+      a request to create a role`, (done) => {
       request(app)
         .post('/api/v1/roles/')
         .send({
@@ -29,7 +29,8 @@ describe('Role Endpoints', () => {
           done();
         });
     });
-    it('should successfully create a new role is a super admin', (done) => {
+    it(`should return success message when a super admin makes a request
+      to create a new role`, (done) => {
       request(app)
         .post('/api/v1/roles/')
         .set('Authorization', superAdminToken)
@@ -44,8 +45,8 @@ describe('Role Endpoints', () => {
           done();
         });
     });
-    it(`should return error message with status code 400, if
-      roleType parameter is missing`, (done) => {
+    it(`should return error message with status code 400, when a super admin
+      makes a request to create role with empty roleType parameter`, (done) => {
       request(app)
         .post('/api/v1/roles/')
         .set('Authorization', superAdminToken)
@@ -61,63 +62,75 @@ describe('Role Endpoints', () => {
         });
     });
 
-    it('should reject the request when not signed in', (done) => {
+    it(`should return return error message when a super admin makes a
+       request to create role without logging in`, (done) => {
       request(app)
         .post('/api/v1/roles/')
+        .set('Authorization', '')
         .send({
           roleType: 'Unauthorize'
         })
         .end((err, res) => {
           if (!err) {
             expect(res.status).to.equal(412);
+            expect(res.body.errorMessage).to.be
+            .equal('You are not logged in. Please, login and try again');
           }
           done();
         });
     });
   });
-  describe('get roles function', () => {
-    it(`should return error message with status code 403 if user is
-      not signed in`, (done) => {
+  describe('Get roles function', () => {
+    it(`should return error message with status code 403 if a user
+      makes a request to get all roles`, (done) => {
       request(app)
         .get('/api/v1/roles/')
-        .set('Authorization', noToken)
+        .set('Authorization', userToken)
         .end((err, res) => {
           if (!err) {
             expect(res.status).to.equal(403);
-            expect(res.body.message)
+            expect(res.body.errorMessage)
             .to.equal('You are not authorized to view roles');
           }
           done();
         });
     });
 
-    it('should successfully get all roles if is a super admin', (done) => {
+    it(`should return success message when a super admin makes a
+      request to get all roles`, (done) => {
       request(app)
         .get('/api/v1/roles/')
         .set('Authorization', superAdminToken)
         .end((err, res) => {
           if (!err) {
             expect(res.status).to.equal(200);
+            expect(res.body.message).to.be
+            .equal('Retrieved roles successfully');
+            expect(res.body.returnedRoles).to.be.equal(4);
           }
           done();
         });
     });
-    it('should successfully get all roles if is an admin', (done) => {
+    it(`should return success message when an admin makes a request
+       to get all roles`, (done) => {
       request(app)
         .get('/api/v1/roles/')
         .set('Authorization', adminToken)
         .end((err, res) => {
           if (!err) {
             expect(res.status).to.equal(200);
+            expect(res.body.message).to.be
+            .equal('Retrieved roles successfully');
+            expect(res.body.returnedRoles).to.be.equal(4);
           }
           done();
         });
     });
   });
 
-  describe('update role function', () => {
-    it(`should return message successfully update role if
-       is a super admin`, (done) => {
+  describe('Update role function', () => {
+    it(`should return a success message when a super admin makes a
+      request to update role `, (done) => {
       request(app)
         .put('/api/v1/roles/3')
         .send({
@@ -128,14 +141,15 @@ describe('Role Endpoints', () => {
         .end((err, res) => {
           if (!err) {
             expect(res.status).to.equal(200);
-            expect(res.body.message).to.equal('Update role successfully');
+            expect(res.body.message).to.equal('Role updated succesfully');
           }
           done();
         });
     });
 
-    it(`should return errror message with status code 412,
-      if the role id supplied is not valid `, (done) => {
+    it(`should return errror message with status code 412, when a super admin
+      makes a request to update a role with invalid role id parameter`
+      , (done) => {
       request(app)
         .put('/api/v1/roles/a')
         .send({
@@ -151,8 +165,8 @@ describe('Role Endpoints', () => {
           done();
         });
     });
-    it(`should return  error message with status code 403 ,
-      if a regular user try to update role`, (done) => {
+    it(`should return  error message with status code 403 , when a user
+      makes a request to update a role`, (done) => {
       request(app)
         .put('/api/v1/roles/2')
         .send({
@@ -162,15 +176,15 @@ describe('Role Endpoints', () => {
         .end((err, res) => {
           if (!err) {
             expect(res.status).to.equal(403);
-            expect(res.body.message)
+            expect(res.body.errorMessage)
             .to.equal('You do not have access to set role');
           }
           done();
         });
     });
 
-    it(`should return  error message with status code 404 ,
-      if role id is not found`, (done) => {
+    it(`should return  error message with status code 404 , when a super admin
+       makes a request to update a role that does not exist`, (done) => {
       request(app)
         .put('/api/v1/roles/100')
         .send({
@@ -188,10 +202,11 @@ describe('Role Endpoints', () => {
     });
   });
 
-  describe('delete role function', () => {
-    it('should delete role if is a super admin', (done) => {
+  describe('Delete role function', () => {
+    it(`should return a success message when a user makes a request
+      to delete a role `, (done) => {
       request(app)
-      .delete('/api/v1/roles/3')
+      .delete('/api/v1/roles/4')
       .set({ Authorization: superAdminToken })
       .end((err, res) => {
         expect(res.statusCode).to.be.equal(200);
@@ -199,9 +214,10 @@ describe('Role Endpoints', () => {
         done();
       });
     });
-    it('should not delete role if is not a super admin', (done) => {
+    it('should return error message when a user makes a request to delete a role'
+    , (done) => {
       request(app)
-      .delete('/api/v1/roles/3')
+      .delete('/api/v1/roles/4')
       .set({ Authorization: userToken })
       .end((err, res) => {
         expect(res.statusCode).to.be.equal(403);
@@ -210,17 +226,21 @@ describe('Role Endpoints', () => {
         done();
       });
     });
-    it('should error with status code 412 , if an invalid parameter is supplied', (done) => {
+    it(`should error message with status code 412 , when a super admin makes
+      request to delete a role with invalid role id paramater`
+    , (done) => {
       request(app)
       .delete('/api/v1/roles/---')
       .set({ Authorization: superAdminToken })
       .end((err, res) => {
         expect(res.statusCode).to.be.equal(412);
+        expect(res.body.errorMessage).to.be
+        .equal('invalid input syntax for integer: "---"');
         done();
       });
     });
-    it(`should return error with status code 404, if role to be deleted
-      is not found `
+    it(`should return error message with status code 404, when a super admin
+       makes a request to delete a role that does not exist  `
       , (done) => {
       request(app)
       .delete('/api/v1/roles/199')
