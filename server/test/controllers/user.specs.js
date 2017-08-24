@@ -153,7 +153,7 @@ describe('User controller', () => {
     .set({ Authorization: userToken })
     .end((err, res) => {
       expect(res.statusCode).to.be.equal(200);
-      expect(res.body.message).to.be.equal('Update profile successfully');
+      expect(res.body.message).to.be.equal('adeola Account updated successfully');
       done();
     });
     });
@@ -199,6 +199,7 @@ describe('User controller', () => {
     });
     });
   });
+
   describe('Update user role function', () => {
     it(`should return success message when a super admin makes a request
        to update user role`, (done) => {
@@ -210,7 +211,7 @@ describe('User controller', () => {
     .set({ Authorization: superAdminToken })
     .end((err, res) => {
       expect(res.statusCode).to.be.equal(200);
-      expect(res.body.message).to.be.equal('Update profile successfully');
+      expect(res.body.message).to.be.equal('User role updated successfully');
       done();
     });
     });

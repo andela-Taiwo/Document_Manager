@@ -203,7 +203,7 @@ module.exports = {
           roleId: req.decoded.user.roleId
         }).then((userUpdate) => {
           const userInfo = {
-            message: 'Update profile successfully',
+            message: `${userUpdate.userName} Account updated successfully`,
             data: userUpdate
           };
           res.status(200).send(userInfo);
@@ -281,11 +281,11 @@ module.exports = {
             { where: { email: user.email }
             })
                 .then((userUpdate) => {
-                  const resources = {
-                    message: 'Update profile successfully',
-                    data: userUpdate
+                  const userInfo = {
+                    message: 'User role updated successfully',
+                    user: userUpdate
                   };
-                  res.send(resources);
+                  res.send(userInfo);
                 });
         } else {
           res.status(400).json({ errorMessage: 'invalid role ID' });
