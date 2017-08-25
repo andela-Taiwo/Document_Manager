@@ -1,4 +1,3 @@
-
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.createTable('Users', {
@@ -6,15 +5,17 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       userName: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
+        validate: { notEmpty: true, min: 6 }
       },
       password: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
+        validate: { notEmpty: true, min: 6 }
       },
       email: {
         type: Sequelize.STRING,

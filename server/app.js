@@ -1,8 +1,8 @@
-
-const express = require('express');
-const logger = require('morgan');
-const bodyParser = require('body-parser');
-const expressValidator = require('express-validator');
+import express from 'express';
+import logger from 'morgan';
+import bodyParser from 'body-parser';
+import expressValidator from 'express-validator';
+import path from 'path';
 
 const app = express();
 
@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 app.use(expressValidator({
-  errorFormatter: (param, msg, value) => {
+  errorFormatter: (param, errorMessage, value) => {
     const namespace = param.split('.');
     const root = namespace.shift();
     let formParam = root;
@@ -22,17 +22,23 @@ app.use(expressValidator({
     }
     return {
       param: formParam,
-      msg,
+      errorMessage,
       value
     };
   }
 }));
+app.use(express.static('documentation'));
 
 // Require our routes into the application.
 require('./route')(app);
 
+app.get('/*', (req, res) => {
+  res.sendFile(path.join(__dirname, '/index.html'));
+});
+
 app.get('*', (req, res) => res.status(200).send({
-  message: 'Welcome to the beginning of nothingness.',
+  message: 'Welcome to Reliable-Docs API.',
 }));
+
 
 module.exports = app;

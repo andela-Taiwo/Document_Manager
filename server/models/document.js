@@ -3,7 +3,10 @@ module.exports = (sequelize, DataTypes) => {
   const Document = sequelize.define('Document', {
     title: DataTypes.STRING,
     content: DataTypes.TEXT,
-    access: DataTypes.STRING,
+    access: {
+      type: DataTypes.ENUM,
+      values: ['public', 'private', 'role']
+    },
     roleId: DataTypes.INTEGER,
     userId: DataTypes.INTEGER
   }, {

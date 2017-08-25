@@ -1,9 +1,9 @@
-const roles = require('./roles');
-const users = require('./users');
-const documents = require('./documents.js');
+import Roles from './roles';
+import Users from './users';
+import Documents from './documents';
 
 module.exports = {
-  roles,
-  users,
-  documents
+  Roles,
+  Users,
+  Documents
 };

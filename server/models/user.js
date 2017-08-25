@@ -2,10 +2,22 @@ import bcrypt from 'bcrypt';
 
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
-    userName: DataTypes.STRING,
-    password: DataTypes.STRING,
-    email: DataTypes.STRING,
-    roleId: DataTypes.INTEGER
+    userName: {
+      type: DataTypes.STRING,
+      validate: { notEmpty: true, min: 6 }
+    },
+    password: {
+      type: DataTypes.STRING,
+      validate: { notEmpty: true, min: 6 }
+    },
+    email: {
+      type: DataTypes.STRING,
+      validate: { isEmail: true }
+    },
+    roleId: {
+      type: DataTypes.INTEGER,
+      validate: { notEmpty: true }
+    }
   },
     {
       hooks: {
@@ -28,5 +40,6 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
     });
+
   return User;
 };

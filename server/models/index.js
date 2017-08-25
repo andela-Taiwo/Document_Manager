@@ -1,12 +1,12 @@
-
-const fs = require('fs');
-const path = require('path');
-const Sequelize = require('sequelize');
+import fs from 'fs';
+import path from 'path';
+import Sequelize from 'sequelize';
+import configuration from '../../server/config';
 
 const basename = path.basename(module.filename);
 const env = process.env.NODE_ENV || 'development';
-// const config = require(`${__dirname}/../config.json`)[env];
-const config = require('../../server/config')[env];
+const config = configuration[env];
+
 
 const db = {};
 
