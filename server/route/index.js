@@ -22,7 +22,7 @@ module.exports = (app) => {
   // User routes
   app.post('/api/v1/users', Users.addUser);
   app.get('/api/v1/users', authorize, Users.getAllUsers);
-  app.post('/api/v1/users/login', Users.logginUser);
+  app.post('/api/v1/users/login', Users.logInUser);
   app.get('/api/v1/users/:id', authorize, Users.getUser);
   app.put('/api/v1/users', authorize, Users.updateUser);
   app.get('/api/v1/search/users/', authorize,

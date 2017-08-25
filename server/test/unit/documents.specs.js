@@ -9,26 +9,27 @@ describe('Documents Model', () => {
   describe('Create Document', () => {
     it('should create new document', (done) => {
       Document.create({
-        id: 1,
+        id: 12,
         title: 'AKin goes to school',
         content: 'Knowledge is power',
         access: 'role',
-        roleId: 1,
+        roleId: 3,
         createdAt: '2017-08-17',
         updatedAt: '2017-08-17'
       })
         .then((document) => {
-          expect(document.roleId).to.equal(1);
+          expect(document.roleId).to.equal(3);
+          expect(document.content).to.be.equal('Knowledge is power');
           done();
         });
     });
   });
 
-  describe('delete document', () => {
+  describe('Delete document', () => {
     it('should delete existing document', (done) => {
       Document.destroy({
         where: {
-          id: 1
+          id: 10
         }
       })
         .then((deletedDocument) => {
