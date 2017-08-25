@@ -39,6 +39,8 @@ describe('Role controller', () => {
         })
         .end((err, res) => {
           if (!err) {
+            expect(res.body).to.be.an('object').to.include
+            .any.keys('message');
             expect(res.status).to.equal(201);
             expect(res.body.message).to.equal('successfully created role');
           }
@@ -54,6 +56,8 @@ describe('Role controller', () => {
         })
         .end((err, res) => {
           if (!err) {
+            expect(res.body).to.be.an('object').to.include
+            .any.keys('errorMessage');
             expect(res.status).to.equal(400);
             expect(res.body.errorMessage).to
           .equal('null value in column "roleType" violates not-null constraint');
@@ -72,6 +76,8 @@ describe('Role controller', () => {
         })
         .end((err, res) => {
           if (!err) {
+            expect(res.body).to.be.an('object').to.include
+            .any.keys('errorMessage');
             expect(res.status).to.equal(412);
             expect(res.body.errorMessage).to.be
             .equal('You are not logged in. Please, login and try again');
@@ -88,6 +94,8 @@ describe('Role controller', () => {
         .set('Authorization', userToken)
         .end((err, res) => {
           if (!err) {
+            expect(res.body).to.be.an('object').to.include
+            .any.keys('errorMessage');
             expect(res.status).to.equal(403);
             expect(res.body.errorMessage)
             .to.equal('You are not authorized to view roles');
@@ -103,6 +111,8 @@ describe('Role controller', () => {
         .set('Authorization', superAdminToken)
         .end((err, res) => {
           if (!err) {
+            expect(res.body).to.be.an('object').to.include
+            .any.keys('message', 'returnedRoles');
             expect(res.status).to.equal(200);
             expect(res.body.message).to.be
             .equal('Retrieved roles successfully');
@@ -118,6 +128,8 @@ describe('Role controller', () => {
         .set('Authorization', adminToken)
         .end((err, res) => {
           if (!err) {
+            expect(res.body).to.be.an('object').to.include
+            .any.keys('message', 'returnedRoles');
             expect(res.status).to.equal(200);
             expect(res.body.message).to.be
             .equal('Retrieved roles successfully');
@@ -140,6 +152,8 @@ describe('Role controller', () => {
         .set('Authorization', superAdminToken)
         .end((err, res) => {
           if (!err) {
+            expect(res.body).to.be.an('object').to.include
+            .any.keys('message');
             expect(res.status).to.equal(200);
             expect(res.body.message).to.equal('Role updated succesfully');
           }
@@ -158,6 +172,8 @@ describe('Role controller', () => {
         .set('Authorization', superAdminToken)
         .end((err, res) => {
           if (!err) {
+            expect(res.body).to.be.an('object').to.include
+            .any.keys('errorMessage');
             expect(res.status).to.equal(412);
             expect(res.body.errorMessage).to
             .equal('invalid input syntax for integer: \"a\"');
@@ -175,6 +191,8 @@ describe('Role controller', () => {
         .set('Authorization', userToken)
         .end((err, res) => {
           if (!err) {
+            expect(res.body).to.be.an('object').to.include
+            .any.keys('errorMessage');
             expect(res.status).to.equal(403);
             expect(res.body.errorMessage)
             .to.equal('You do not have access to set role');
@@ -193,6 +211,8 @@ describe('Role controller', () => {
         .set('Authorization', superAdminToken)
         .end((err, res) => {
           if (!err) {
+            expect(res.body).to.be.an('object').to.include
+            .any.keys('errorMessage');
             expect(res.status).to.equal(404);
             expect(res.body.errorMessage)
             .to.equal('role id not found');
@@ -209,6 +229,8 @@ describe('Role controller', () => {
       .delete('/api/v1/roles/4')
       .set({ Authorization: superAdminToken })
       .end((err, res) => {
+        expect(res.body).to.be.an('object').to.include
+        .any.keys('message');
         expect(res.statusCode).to.be.equal(200);
         expect(res.body.message).to.be.equal('Role Deleted successfully');
         done();
@@ -220,6 +242,8 @@ describe('Role controller', () => {
       .delete('/api/v1/roles/4')
       .set({ Authorization: userToken })
       .end((err, res) => {
+        expect(res.body).to.be.an('object').to.include
+        .any.keys('errorMessage');
         expect(res.statusCode).to.be.equal(403);
         expect(res.body.errorMessage).to.be
         .equal('You are not authorized to delete role');
@@ -233,6 +257,8 @@ describe('Role controller', () => {
       .delete('/api/v1/roles/---')
       .set({ Authorization: superAdminToken })
       .end((err, res) => {
+        expect(res.body).to.be.an('object').to.include
+        .any.keys('errorMessage');
         expect(res.statusCode).to.be.equal(412);
         expect(res.body.errorMessage).to.be
         .equal('invalid input syntax for integer: "---"');
@@ -246,6 +272,8 @@ describe('Role controller', () => {
       .delete('/api/v1/roles/199')
       .set({ Authorization: superAdminToken })
       .end((err, res) => {
+        expect(res.body).to.be.an('object').to.include
+        .any.keys('errorMessage');
         expect(res.statusCode).to.be.equal(404);
         expect(res.body.errorMessage).to.be.equal('role not found');
         done();

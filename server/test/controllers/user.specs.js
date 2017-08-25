@@ -23,6 +23,8 @@ describe('User controller', () => {
       userName: 'josh' })
     .end((err, res) => {
       userToken = res.body.token;
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('message', 'userName', 'token');
       expect(res.body.message).to.be
       .equal(`${res.body.userName} successfully signed up`);
       expect(userToken).to.have.lengthOf.above(20);
@@ -36,6 +38,8 @@ describe('User controller', () => {
       request.post('/api/v1/users')
     .send({ email: 'johnDoe@yahoo.com', password: 'humanity' })
     .end((err, res) => {
+      expect(res.body.userName).to.be.an('object').to.include
+      .any.keys('errorMessage');
       expect((res.body.userName.errorMessage)).to.be
       .equal('userName field is required');
       expect(res.status).to.be.equal(401);
@@ -47,6 +51,8 @@ describe('User controller', () => {
        request.post('/api/v1/users')
     .send({ email: 'john@yahoo.com', password: 'humanity', userName: 'adeola' })
     .end((err, res) => {
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('message', 'userName', 'token');
       expect((res.body.message)).to.be
       .equal(`${res.body.userName} successfully signed up`);
       expect((res.statusCode)).to.be.equal(201);
@@ -63,19 +69,24 @@ describe('User controller', () => {
     .send({ email: 'john@yahoo.com', password: 'humivhhf' })
     .end((err, res) => {
       expect(res.statusCode).to.be.equal(401);
-      userToken = res.body.token;
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('errorMessage');
       expect(res.body.errorMessage).to.be.equal('Invalid email or password');
       done();
     });
     });
 
-    it('should return a success message and token when a user logs in successfully',
+    it(`should return a success message and token when a user
+      logs in successfully`,
      (done) => {
        request.post('/api/v1/users/login')
     .send({ email: 'john@yahoo.com', password: 'humanity' })
     .end((err, res) => {
       expect(res.status).to.be.equal(200);
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('message', 'token');
       userToken = res.body.token;
+      expect(userToken).to.have.lengthOf.above(20);
       expect(res.body.message).to.be.equal('You are logged in adeola ');
       done();
     });
@@ -87,6 +98,8 @@ describe('User controller', () => {
     .send({ email: 'johcom', password: 'humanity' })
     .end((err, res) => {
       expect(res.statusCode).to.be.equal(400);
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('errorMessage');
       expect(res.body.errorMessage).to.be.equal('You have not registered');
       done();
     });
@@ -100,7 +113,10 @@ describe('User controller', () => {
     .set({ Authorization: userToken })
     .end((err, res) => {
       expect(res.statusCode).to.be.equal(200);
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('message', 'users');
       expect(res.body.message).to.be.equal('Users successfully retrieved');
+      expect(res.body.users.length).to.be.equal(5);
       expect(res.body.pagination.totalCount).to.be.equal(5);
       done();
     });
@@ -114,6 +130,8 @@ describe('User controller', () => {
     .set({ Authorization: userToken })
     .end((err, res) => {
       expect(res.statusCode).to.be.equal(200);
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('message', 'user');
       expect(res.body.message).to.be.equal('User successfully retrieved');
       expect(res.body.user.id).to.be.equal(1);
       done();
@@ -125,6 +143,8 @@ describe('User controller', () => {
       request.get('/api/v1/users/100')
     .set({ Authorization: userToken })
     .end((err, res) => {
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('errorMessage');
       expect(res.statusCode).to.be.equal(404);
       expect(res.body.errorMessage).to.be.equal('user id does not exist');
       done();
@@ -136,8 +156,11 @@ describe('User controller', () => {
     .set({ Authorization: userToken })
     .end((err, res) => {
       expect(res.statusCode).to.be.equal(400);
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('errorMessage');
       expect(res.body.errorMessage).to.be
       .equal('invalid input syntax for integer: \"av\" invalid parameter');
+
       done();
     });
     });
@@ -153,6 +176,8 @@ describe('User controller', () => {
     .set({ Authorization: userToken })
     .end((err, res) => {
       expect(res.statusCode).to.be.equal(200);
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('message', 'user');
       expect(res.body.message).to.be.equal('adeola Account updated successfully');
       done();
     });
@@ -167,6 +192,10 @@ describe('User controller', () => {
     .set({ Authorization: anotherUserToken })
     .end((err, res) => {
       expect(res.statusCode).to.be.equal(412);
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('errorMessage');
+      expect(res.body.errorMessage)
+      .to.be.equal('Cannot read property \'update\' of null');
       done();
     });
     });
@@ -180,6 +209,8 @@ describe('User controller', () => {
     .set({ Authorization: userToken })
     .end((err, res) => {
       expect(res.statusCode).to.be.equal(200);
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('message', 'users', 'pagination');
       expect(res.body.pagination.totalCount).to.be.equal(1);
       expect(res.body.message).to.be.equal('successfully retrieved user(s)');
       done();
@@ -192,6 +223,8 @@ describe('User controller', () => {
       request.get('/api/v1/search/users/?q=invalid username')
     .set({ Authorization: userToken })
     .end((err, res) => {
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('errorMessage');
       expect(res.body.errorMessage)
       .to.be.equal('Search term does not match any user');
       expect(res.statusCode).to.be.equal(404);
@@ -210,6 +243,8 @@ describe('User controller', () => {
       })
     .set({ Authorization: superAdminToken })
     .end((err, res) => {
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('message', 'user');
       expect(res.statusCode).to.be.equal(200);
       expect(res.body.message).to.be.equal('User role updated successfully');
       done();
@@ -225,6 +260,8 @@ describe('User controller', () => {
       })
     .set({ Authorization: superAdminToken })
     .end((err, res) => {
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('errorMessage');
       expect(res.statusCode).to.be.equal(400);
       expect(res.body.errorMessage).to.be.equal('invalid role ID');
       done();
@@ -241,6 +278,8 @@ describe('User controller', () => {
       })
     .set({ Authorization: superAdminToken })
     .end((err, res) => {
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('errorMessage');
       expect(res.statusCode).to.be.equal(412);
       expect(res.body.errorMessage).to.be
       .equal('Cannot read property \'email\' of null');
@@ -258,6 +297,8 @@ describe('User controller', () => {
     .set({ Authorization: userToken })
     .end((err, res) => {
       expect(res.statusCode).to.be.equal(403);
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('errorMessage');
       expect(res.body.errorMessage).to.be
       .equal('You do not have access to set role');
       done();
@@ -270,6 +311,8 @@ describe('User controller', () => {
       request.delete('/api/v1/users/1')
     .set({ Authorization: anotherUserToken })
     .end((err, res) => {
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('errorMessage');
       expect(res.body.errorMessage)
       .to.be.equal('You are not authorized to delete another user account');
       expect(res.statusCode).to.be.equal(403);
@@ -282,6 +325,8 @@ describe('User controller', () => {
       request.delete('/api/v1/users/q2')
     .set({ Authorization: userToken })
     .end((err, res) => {
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('errorMessage');
       expect(res.statusCode).to.be.equal(412);
       expect(res.body.errorMessage).to.be
       .equal('invalid input syntax for integer: "q2"');
@@ -293,6 +338,8 @@ describe('User controller', () => {
       request.delete('/api/v1/users/5')
     .set({ Authorization: userToken })
     .end((err, res) => {
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('message');
       expect(res.body.message).to.be.equal('User deleted successfully');
       expect(res.statusCode).to.be.equal(200);
       done();
@@ -304,6 +351,8 @@ describe('User controller', () => {
       request.delete('/api/v1/users/----aas')
     .set({ Authorization: superAdminToken })
     .end((err, res) => {
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('errorMessage');
       expect(res.body.errorMessage).to
       .be.equal('invalid input syntax for integer: \"----aas\"');
       expect(res.statusCode).to.be.equal(412);
@@ -315,6 +364,8 @@ describe('User controller', () => {
       request.delete('/api/v1/users/2')
     .set({ Authorization: superAdminToken })
     .end((err, res) => {
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('message');
       expect(res.body.message).to.be.equal('User deleted successfully');
       expect(res.statusCode).to.be.equal(200);
       done();
@@ -327,6 +378,8 @@ describe('User controller', () => {
       request.delete('/api/v1/users/2')
     .set({ Authorization: superAdminToken })
     .end((err, res) => {
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('errorMessage');
       expect(res.body.errorMessage).to.be.equal('user id is not found');
       expect(res.statusCode).to.be.equal(404);
       done();

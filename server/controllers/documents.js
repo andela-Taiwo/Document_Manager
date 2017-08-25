@@ -379,7 +379,7 @@ module.exports = {
         );
         if (!documents.rows.length) {
           return res.status(404).send({
-            error: 'Search term did not match any document',
+            errorMessage: 'Search term did not match any document',
           });
         }
         res.status(200).send({
@@ -411,7 +411,7 @@ module.exports = {
         );
         if (!documents.rows.length) {
           return res.status(404).send({
-            error: 'Search term does not match any document',
+            errorMessage: 'Search term did not match any document',
           });
         }
         res.status(200).send({

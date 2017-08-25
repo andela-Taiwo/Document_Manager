@@ -25,6 +25,7 @@ describe('Document controller', () => {
       .end((err, res) => {
         expect(res.body.message).to.be.equal('New Document created successfully');
         expect(res.statusCode).to.be.equal(201);
+        expect(res.body).to.be.an('object');
         done();
       });
     });
@@ -41,6 +42,7 @@ describe('Document controller', () => {
       .end((err, res) => {
         expect(res.body.errorMessage).to.be.equal('Invalid access parameter');
         expect(res.statusCode).to.be.equal(400);
+        expect(res.body).to.be.an('object').to.include.any.keys('errorMessage');
         done();
       });
     });
@@ -54,6 +56,7 @@ describe('Document controller', () => {
       )
       .set({ Authorization: `${userToken}` })
       .end((err, res) => {
+        expect(res.body).to.be.an('object').to.include.any.keys('errorMessage');
         expect(res.statusCode).to.be.equal(400);
         expect(res.body.errorMessage).to
         .be.equal('Document already exist with the title Django lady');
@@ -70,6 +73,7 @@ describe('Document controller', () => {
         expect(res.statusCode).to.be.equal(412);
         expect(res.body.errorMessage.content.errorMessage).to.be
         .equal('Document content cannot be empty');
+        expect(res.body).to.be.an('object').to.include.any.keys('errorMessage');
         done();
       });
     });
@@ -84,7 +88,9 @@ describe('Document controller', () => {
       expect(res.body.returnedDocument).to.be.equal(6);
       expect(res.body.message).to.be
       .equal('Retrieved documents successfully');
-
+      expect(res.body).to.be.an('object').to.not
+      .include.any.keys('errorMessage');
+      expect(res.body).to.include.any.keys('message');
       done();
     });
     });
@@ -113,6 +119,10 @@ describe('Document controller', () => {
       expect(res.status).to.be.equal(200);
       expect(res.body.message).to.be.equal('Retrieved document succesfully');
       expect(res.body.document.count).to.be.equal(1);
+      expect(res.body).to.include.any.keys('message', 'document');
+      expect(res.body.document.rows[0]).to.include
+      .any.keys('id', 'title', 'access', 'content');
+      expect(res.body.document.rows[0].id).to.equal(9);
       done();
     });
     });
@@ -124,6 +134,7 @@ describe('Document controller', () => {
     .set({ Authorization: userToken })
     .end((err, res) => {
       expect(res.status).to.be.equal(403);
+      expect(res.body).to.be.an('object').to.include.any.keys('errorMessage');
       expect(res.body.errorMessage).to.be
       .equal('You are not authorized to view this document');
       done();
@@ -140,6 +151,9 @@ describe('Document controller', () => {
                expect(res.status).to.be.equal(200);
                expect(res.body.message).to.be
                .equal('Retrieved document succesfully');
+               expect(res.body).to.be.an('object').to
+               .include.any.keys('message');
+               expect(res.body.document.rows[0].id).to.equal(1);
                done();
              });
       });
@@ -153,6 +167,8 @@ describe('Document controller', () => {
                expect(res.status).to.be.equal(400);
                expect(res.body.errorMessage).to.be
                .equal('Invalid parameter, document id can only be integer');
+               expect(res.body).to.be.an('object').to
+               .include.any.keys('errorMessage');
                done();
              });
       });
@@ -164,7 +180,9 @@ describe('Document controller', () => {
             .set({ Authorization: badToken })
             .end((err, res) => {
               expect(res.status).to.be.equal(403);
-              expect(res.body.message).to.be.equal('You are not signed in');
+              expect(res.body.errorMessage).to.be.equal('You are not signed in');
+              expect(res.body).to.be.an('object').to.include
+              .any.keys('errorMessage');
               done();
             });
      });
@@ -178,6 +196,10 @@ describe('Document controller', () => {
              .set({ Authorization: superAdminToken })
              .end((err, res) => {
                expect(res.status).to.be.equal(200);
+               expect(res.body).to.be.an('object').to.include.any
+               .keys('message');
+               expect(res.body.message).to.be
+               .equal('Retrieved documents successfully');
                expect(res.body.documents.count).to.be.equal(3);
                done();
              });
@@ -191,6 +213,14 @@ describe('Document controller', () => {
              .end((err, res) => {
                expect(res.status).to.be.equal(200);
                expect(res.body.documents.count).to.be.equal(1);
+               expect(res.body).to.be.an('object').to.include.any
+               .keys('message');
+               expect(res.body.message).to.be
+               .equal('Retrieved documents successfully');
+               expect(res.body).to.be.an('object').to
+               .include.any.keys('message');
+               expect(res.body.documents.rows[0].id).to.equal(2);
+               expect(res.body.documents.rows[0].access).to.equal('public');
                done();
              });
       });
@@ -202,6 +232,8 @@ describe('Document controller', () => {
              .set({ Authorization: userToken })
              .end((err, res) => {
                expect(res.status).to.be.equal(400);
+               expect(res.body).to.be.an('object').to.include
+               .any.keys('errorMessage');
                expect(res.body.errorMessage).to
                .be.equal('Invalid parameter, user id can only be integer');
                done();
@@ -215,6 +247,8 @@ describe('Document controller', () => {
                .set({ Authorization: superAdminToken })
                .end((err, res) => {
                  expect(res.status).to.be.equal(404);
+                 expect(res.body).to.be.an('object').to.include
+                 .any.keys('errorMessage');
                  expect(res.body.errorMessage).to.be
                  .equal('No user found');
                  done();
@@ -227,6 +261,8 @@ describe('Document controller', () => {
                .set({ Authorization: userToken })
                .end((err, res) => {
                  expect(res.status).to.be.equal(404);
+                 expect(res.body).to.be.an('object').to.include
+                 .any.keys('errorMessage');
                  expect(res.body.errorMessage).to.be
                  .equal('No user found');
                  done();
@@ -242,8 +278,12 @@ describe('Document controller', () => {
         access: 'role' })
       .set({ Authorization: `${userToken}` })
       .end((err, res) => {
+        expect(res.body).to.be.an('object').to.include
+        .any.keys('message', 'document');
         expect(res.body.message).to.be.equal('Updated document successfully');
         expect(res.statusCode).to.be.equal(200);
+        expect(res.body.updatedDocument.id).to.be.equal(8);
+        expect(res.body.updatedDocument.userId).to.be.equal(3);
         done();
       });
     });
@@ -256,6 +296,8 @@ describe('Document controller', () => {
       .set({ Authorization: `${superAdminToken}` })
       .end((err, res) => {
         expect(res.statusCode).to.be.equal(412);
+        expect(res.body).to.be.an('object').to.include
+        .any.keys('errorMessage');
         expect(res.body.errorMessage).to
         .be.equal('You are not authorized to update another user documents');
         done();
@@ -272,6 +314,8 @@ describe('Document controller', () => {
                .end((err, res) => {
                  expect(res.status).to.be.equal(200);
                  expect(res.body.returnedDocument).to.be.equal(1);
+                 expect(res.body).to.be.an('object').to.include
+                 .any.keys('message', 'returnedDocument');
                  expect(res.body.message).to.be
                  .equal('Retrieved documents successfully');
                  done();
@@ -302,6 +346,13 @@ describe('Document controller', () => {
                .set({ Authorization: userToken })
                .end((err, res) => {
                  expect(res.status).to.be.equal(200);
+                 expect(res.body).to.be.an('object').to.include
+                 .any.keys('message', 'returnedDocuments', 'pagination');
+                 expect(res.body.message).to.be
+                 .equal('Retrieved documents successfully');
+                 expect(res.body.pagination.pageCount).to.be.equal(1);
+                 expect(res.body.pagination.totalCount).to.be.equal(1);
+                 expect(res.body.pagination.pageSize).to.be.equal(1);
                  done();
                });
         });
@@ -313,6 +364,10 @@ describe('Document controller', () => {
                .set({ Authorization: superAdminToken })
                .end((err, res) => {
                  expect(res.status).to.be.equal(404);
+                 expect(res.body).to.be.an('object').to.include
+                 .any.keys('errorMessage');
+                 expect(res.body.errorMessage).to.be
+                 .equal('Search term did not match any document');
                  done();
                });
         });
@@ -325,6 +380,10 @@ describe('Document controller', () => {
             .set({ Authorization: superAdminToken })
             .end((err, res) => {
               expect(res.status).to.be.equal(200);
+              expect(res.body).to.be.an('object').to.include
+              .any.keys('message', 'returnedDocument', 'pagination');
+              expect(res.body.message).to.be
+              .equal('Documents retrieved succesfully');
               expect(res.body.pagination.totalCount).to.be.equal(10);
               expect(res.body.pagination.currentPage).to.be.equal(1);
               expect(res.body.pagination.pageSize).to.be.equal(5);
@@ -340,6 +399,8 @@ describe('Document controller', () => {
                .set({ Authorization: superAdminToken })
                .end((err, res) => {
                  expect(res.status).to.be.equal(200);
+                 expect(res.body).to.be.an('object').to.include
+                 .any.keys('message');
                  expect(res.body.message).to.be
                  .equal('Document deleted successfully');
                  done();
@@ -353,19 +414,23 @@ describe('Document controller', () => {
                .set({ Authorization: userToken })
                .end((err, res) => {
                  expect(res.status).to.be.equal(403);
+                 expect(res.body).to.be.an('object').to.include
+                 .any.keys('errorMessage');
                  expect(res.body.errorMessage).to.be
                  .equal('You can not delete other user document');
                  done();
                });
         });
 
-    it(`should return  a  successmessage when a user makes a request to
-       delelte personal document`,
+    it(`should return  a  success message when a user makes a request to
+       delete personal document`,
         (done) => {
           request.delete('/api/v1/documents/7')
                .set({ Authorization: userToken })
                .end((err, res) => {
                  expect(res.status).to.be.equal(200);
+                 expect(res.body).to.be.an('object').to.include
+                 .any.keys('message');
                  expect(res.body.message).to
                  .be.equal('Document deleted successfully');
                  done();
@@ -403,6 +468,9 @@ describe('Document controller', () => {
                .set({ Authorization: superAdminToken })
                .end((err, res) => {
                  expect(res.status).to.be.equal(404);
+                 expect(res.body).to.be.an('object').to.include
+                 .any.keys('errorMessage');
+                 expect(res.body.errorMessage).to.be.equal('Document not found');
                  done();
                });
         });

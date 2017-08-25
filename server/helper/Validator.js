@@ -1,5 +1,6 @@
 
 /**
+* Represents verify the userParams function
 *@param {json} request
  *@return {json} result
  */
@@ -13,6 +14,7 @@ const verifyUserParams = (request) => {
 };
 
 /**
+ * Represents verifyDocParams function
 *@param {json} request
  *@return {json} result
  */
@@ -25,6 +27,7 @@ const verifyDocParams = (request) => {
 };
 
 /**
+ * Represents verifyLoginParams function
 *@param {json} request
  *@return {json} result
  */
@@ -36,6 +39,7 @@ const verifyLoginParams = (request) => {
 };
 
 /**
+ * Represents verifyId  function
 *@param {json} request
  *@return {boolean} result
  */
