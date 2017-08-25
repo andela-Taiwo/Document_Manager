@@ -3,6 +3,7 @@
 * Represents verify the userParams function
 *@param {json} request
  *@return {json} result
+
  */
 const verifyUserParams = (request) => {
   request.assert('userName', 'userName field is required').notEmpty();
@@ -31,6 +32,7 @@ const verifyDocParams = (request) => {
 *@param {json} request
  *@return {json} result
  */
+
 const verifyLoginParams = (request) => {
   request.assert('email', 'title field is required').notEmpty();
   request.assert('password', '6 to 15 characters required').len(6, 15);
@@ -43,6 +45,7 @@ const verifyLoginParams = (request) => {
 *@param {json} request
  *@return {boolean} result
  */
+
 const verifyId = (request) => {
   const id = parseInt(request, 10);
   if (isNaN(id)) {
