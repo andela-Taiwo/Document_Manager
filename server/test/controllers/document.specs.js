@@ -12,7 +12,7 @@ const badToken = mockData.badToken;
 const userToken = auth.setUserToken(mockData.user);
 const request = supertest(app);
 
-describe('Document controller', () => {
+describe('Documents', () => {
   describe('CreateDocuments function', () => {
     it(`should return success message when a user makes a request to create
       a new document`, (done) => {

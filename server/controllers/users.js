@@ -112,9 +112,10 @@ module.exports = {
                   });
                 }
               })
-              .catch(error => res.status(400).send({
-                errorMessage: 'You have not registered',
-                error
+              .catch(errorMessage => res.status(400).send({
+                errorMessage:
+                 'Invalid login parameter, please sign up first and try again',
+
               }));
       });
   },
