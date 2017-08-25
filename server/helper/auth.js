@@ -31,16 +31,18 @@ module.exports = {
     if (token) {
       jwt.verify(token, SECRET_KEY, (err, decoded) => {
         if (err) {
-          const message = {
-            message: 'You are not signed in'
+          const errorMessage = {
+            errorMessage: 'You are not signed in'
           };
-          return res.status(403).send(message);
+          return res.status(403).send(errorMessage);
         }
         req.decoded = decoded;
         return next();
       });
     } else {
-      res.status(412).send('Token not provided');
+      res.status(412).send({
+        errorMessage: 'You are not logged in. Please, login and try again'
+      });
     }
   }
 };

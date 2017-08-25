@@ -67,7 +67,7 @@ Reliable-Docs  API is a document management system API, complete with roles and 
 Click [here](https://reliable-docs-api.herokuapp.com) to access the documentation
 
 
-# System Dependecies
+# Application Dependecies
 
 __What you need to run this app:__
 
@@ -90,12 +90,6 @@ Technology
 - jsonwebtoken - It was used for user authorization and authentication
 - sequelize - Used for ORMs database
 - babel-cli - It enables the app scripts to be tested with babel from the command line.
-
-### The following depencies are required by the app during developmment
-eslint - This is a javascript syntax highlighter used to highlight syntax error during the development of this app
-gulp-nodemon - to watch the files in the directory for any files change
-supertest - to run endpoint test
-
 
 # Tests
 

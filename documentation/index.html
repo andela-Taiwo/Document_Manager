@@ -229,13 +229,16 @@
             <a href="#role" class="toc-h1 toc-link" data-title="Role">Role</a>
               <ul class="toc-list-h2">
                   <li>
-                    <a href="#get-all-instances-of-role" class="toc-h2 toc-link" data-title="Role">Get All Instances of role</a>
-                  </li>
-                  <li>
                     <a href="#create-add-a-role" class="toc-h2 toc-link" data-title="Role">Create/Add  a role</a>
                   </li>
                   <li>
+                    <a href="#get-all-instances-of-role" class="toc-h2 toc-link" data-title="Role">Get All Instances of role</a>
+                  </li>
+                  <li>
                     <a href="#update-role" class="toc-h2 toc-link" data-title="Role">Update role</a>
+                  </li>
+                  <li>
+                    <a href="#delete-role" class="toc-h2 toc-link" data-title="Role">Delete role</a>
                   </li>
               </ul>
           </li>
@@ -249,19 +252,22 @@
                     <a href="#sign-in-a-user" class="toc-h2 toc-link" data-title="Users">Sign in a user</a>
                   </li>
                   <li>
-                    <a href="#update-user-profile" class="toc-h2 toc-link" data-title="Users">Update User Profile</a>
-                  </li>
-                  <li>
                     <a href="#get-all-instances-of-users" class="toc-h2 toc-link" data-title="Users">Get All Instances of users</a>
-                  </li>
-                  <li>
-                    <a href="#search-for-instance-of-a-user" class="toc-h2 toc-link" data-title="Users">Search for instance of a user</a>
                   </li>
                   <li>
                     <a href="#get-instance-of-a-user" class="toc-h2 toc-link" data-title="Users">Get instance of a user</a>
                   </li>
                   <li>
-                    <a href="#delete-a-user" class="toc-h2 toc-link" data-title="Users">Delete  a  user</a>
+                    <a href="#update-user-account" class="toc-h2 toc-link" data-title="Users">Update User Account</a>
+                  </li>
+                  <li>
+                    <a href="#update-user-role" class="toc-h2 toc-link" data-title="Users">Update User Role</a>
+                  </li>
+                  <li>
+                    <a href="#search-for-instance-of-a-user" class="toc-h2 toc-link" data-title="Users">Search for instance of a user</a>
+                  </li>
+                  <li>
+                    <a href="#delete-a-user" class="toc-h2 toc-link" data-title="Users">Delete a user</a>
                   </li>
               </ul>
           </li>
@@ -269,10 +275,10 @@
             <a href="#document" class="toc-h1 toc-link" data-title="Document">Document</a>
               <ul class="toc-list-h2">
                   <li>
-                    <a href="#get-all-instances-of-documents" class="toc-h2 toc-link" data-title="Document">Get All Instances of documents</a>
+                    <a href="#create-add-a-document" class="toc-h2 toc-link" data-title="Document">Create/Add  a document</a>
                   </li>
                   <li>
-                    <a href="#create-add-a-document" class="toc-h2 toc-link" data-title="Document">Create/Add  a document</a>
+                    <a href="#get-all-instances-of-documents" class="toc-h2 toc-link" data-title="Document">Get All Instances of documents</a>
                   </li>
                   <li>
                     <a href="#update-document" class="toc-h2 toc-link" data-title="Document">Update document</a>
@@ -287,7 +293,7 @@
                     <a href="#get-all-instances-of-a-user-documents" class="toc-h2 toc-link" data-title="Document">Get All instances  of a user documents</a>
                   </li>
                   <li>
-                    <a href="#delete-instances-of-a-document" class="toc-h2 toc-link" data-title="Document">Delete  instances  of a  document</a>
+                    <a href="#delete-a-document" class="toc-h2 toc-link" data-title="Document">Delete  a  document</a>
                   </li>
               </ul>
           </li>
@@ -315,11 +321,46 @@
 <aside class="notice">
 You must replace <code>userToken</code> with your personal token.
 </aside>
-<h1 id='role'>Role</h1><h2 id='get-all-instances-of-role'>Get All Instances of role</h2>
-<p>Find matching instances of Role</p>
+<h1 id='role'>Role</h1><h2 id='create-add-a-role'>Create/Add  a role</h2>
+<p>Create an instance of role</p>
 <h3 id='request'>Request</h3>
-<p><code>GET /api/v1/roles</code></p>
+<p><code>POST /api/v1/roles</code></p>
 <h3 id='query-parameters'>Query Parameters</h3>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>roleType</td>
+<td>Facilitator</td>
+<td></td>
+</tr>
+</tbody></table>
+<h3 id='response'>Response</h3>
+<p><code>Status: 201: Ok - created</code></p>
+
+<p><code>Status: 500: Internal Server Error - The request could not be processed at the moment, try again later</code></p>
+
+<blockquote>
+<p>The above command returns JSON structured like this:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"successfully created role"</span><span class="w"> </span><span class="p">,</span><span class="w">
+  </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"roleType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Facilitator"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"updatedAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-11T10:42:49.929Z"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-11T10:42:49.929Z"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<aside class="warning">
+Remember — only super admin can create a new role!
+</aside>
+<h2 id='get-all-instances-of-role'>Get All Instances of role</h2><h3 id='request-2'>Request</h3>
+<p><code>GET /api/v1/roles</code></p>
+<h3 id='query-parameters-2'>Query Parameters</h3>
 <table><thead>
 <tr>
 <th>Parameter</th>
@@ -333,7 +374,7 @@ You must replace <code>userToken</code> with your personal token.
 <td>no parameter required</td>
 </tr>
 </tbody></table>
-<h3 id='response'>Response</h3>
+<h3 id='response-2'>Response</h3>
 <p><code>Status: 200: Ok - retrieved successfully</code></p>
 
 <p><code>Status: 500: Internal Server Error - The request could not be processed at the moment, try again later</code></p>
@@ -343,68 +384,46 @@ You must replace <code>userToken</code> with your personal token.
 </blockquote>
 <pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
     </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Retrieved roles successfully"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"roles"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-        </span><span class="p">{</span><span class="w">
-            </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"roleType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"super admin"</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-16"</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"updatedAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-16"</span><span class="w">
-        </span><span class="p">},</span><span class="w">
-        </span><span class="p">{</span><span class="w">
-            </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"roleType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"admin"</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-16"</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"updatedAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-16"</span><span class="w">
-        </span><span class="p">},</span><span class="w">
-        </span><span class="p">{</span><span class="w">
-            </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"roleType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"user"</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-16"</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"updatedAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-16"</span><span class="w">
-        </span><span class="p">}</span><span class="w">
-    </span><span class="p">]</span><span class="w">
+    </span><span class="s2">"roles"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"count"</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"rows"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+            </span><span class="p">{</span><span class="w">
+                </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"roleType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"super admin"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-19"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"updatedAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-19"</span><span class="w">
+            </span><span class="p">},</span><span class="w">
+            </span><span class="p">{</span><span class="w">
+                </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"roleType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"admin"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-19"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"updatedAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-19"</span><span class="w">
+            </span><span class="p">},</span><span class="w">
+            </span><span class="p">{</span><span class="w">
+                </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"roleType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"user"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-19"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"updatedAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-19"</span><span class="w">
+            </span><span class="p">},</span><span class="w">
+            </span><span class="p">{</span><span class="w">
+                </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"roleType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Facilitator"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-24"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"updatedAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-24"</span><span class="w">
+            </span><span class="p">}</span><span class="w">
+        </span><span class="p">]</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"returnedRoles"</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="w">
 </span><span class="p">}</span><span class="w">
 
-</span></code></pre><h2 id='create-add-a-role'>Create/Add  a role</h2>
-<p>Find matching instances of Role</p>
-<h3 id='request-2'>Request</h3>
-<p>api.roles.post()</p>
-
-<p><code>POST /api/v1/roles</code></p>
-<h3 id='query-parameters-2'>Query Parameters</h3>
-<table><thead>
-<tr>
-<th>Parameter</th>
-<th>Default</th>
-<th>Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td>roleType</td>
-<td>super admin</td>
-<td></td>
-</tr>
-</tbody></table>
-<h3 id='response-2'>Response</h3>
-<p><code>Status: 201: Ok - created</code></p>
-
-<p><code>Status: 500: Internal Server Error - The request could not be processed at the moment, try again later</code></p>
-
-<blockquote>
-<p>The above command returns JSON structured like this:</p>
-</blockquote>
-<pre class="highlight json tab-json"><code><span class="w"> </span><span class="p">{</span><span class="w">
-  </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"successfully created role"</span><span class="w"> </span><span class="p">,</span><span class="w">
-  </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"roleType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"super admin"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"updatedAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-11T10:42:49.929Z"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-11T10:42:49.929Z"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-
-</span></code></pre><h2 id='update-role'>Update role</h2>
-<p>Find matching instances of Role</p>
+</span></code></pre>
+<aside class="success">
+Remember — only super admin and admin can view roles!
+</aside>
+<h2 id='update-role'>Update role</h2>
+<p>Update instance of a Role</p>
 <h3 id='request-3'>Request</h3>
-<p><code>PUT /api/v1/roles</code></p>
+<p><code>PUT /api/v1/roles/:id</code></p>
 <h3 id='query-parameters-3'>Query Parameters</h3>
 <table><thead>
 <tr>
@@ -414,13 +433,16 @@ You must replace <code>userToken</code> with your personal token.
 </tr>
 </thead><tbody>
 <tr>
-<td>email</td>
-<td>ty@ya.com</td>
-<td>email of user to be updated</td>
+<td>roleType</td>
+<td>fellow</td>
+<td>name of the new role</td>
+</tr>
+<tr>
+<td>id</td>
+<td>2</td>
+<td>id of the new role</td>
 </tr>
 </tbody></table>
-
-<p>roleId         |  2         | id of the new role</p>
 <h3 id='response-3'>Response</h3>
 <p><code>Status: 200: Ok</code></p>
 
@@ -430,14 +452,46 @@ You must replace <code>userToken</code> with your personal token.
 <p>The above command returns JSON structured like this:</p>
 </blockquote>
 <pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Update profile successfully"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"data"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-    </span><span class="mi">1</span><span class="w">
-  </span><span class="p">]</span><span class="w">
+ </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Role updated succesfully"</span><span class="w">
+
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
 <aside class="success">
 Remember — only super admin can update user role!
+</aside>
+<h2 id='delete-role'>Delete role</h2>
+<p>Delete instance of Role</p>
+<h3 id='request-4'>Request</h3>
+<p><code>DELETE /api/v1/roles/:id</code></p>
+<h3 id='query-parameters-4'>Query Parameters</h3>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>roleId</td>
+<td>4</td>
+<td>id of the role to be deleted</td>
+</tr>
+</tbody></table>
+<h3 id='response-4'>Response</h3>
+<p><code>Status: 200: Ok</code></p>
+
+<p><code>Status: 500: Internal Server Error - The request could not be processed at the moment, try again later</code></p>
+
+<blockquote>
+<p>The above command returns JSON structured like this:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+    </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Role Deleted successfully"</span><span class="w">
+
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<aside class="warning">
+  Remember — only super admin can delete user role!
 </aside>
 <h1 id='users'>Users</h1><h2 id='create-add-a-user'>Create/Add  a user</h2>
 <p>Create new instance of user</p>
@@ -479,7 +533,7 @@ Remember — only super admin can update user role!
     </span><span class="s2">"userName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Olawale"</span><span class="p">,</span><span class="w">
     </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Olawale successfully signed up"</span><span class="p">,</span><span class="w">
     </span><span class="s2">"userId"</span><span class="p">:</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"token"</span><span class="p">:</span><span class="w"> </span><span class="s2">"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6Nywicm9sZUlkIjozfSwiaWF0IjoxNTAzMDQzMzIwLCJleHAiOjE1MDMxMjk3MjB9.VCWi7es1l4njFOX4dil9-8cRvB76O9mwYG6keNNGIH0"</span><span class="w">
+    </span><span class="s2">"token"</span><span class="p">:</span><span class="w"> </span><span class="s2">"eyJhbGciOiJIUzI1NiIsInR5cCI6dkdkjdIkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6Nywicm9sZUlkIjozfSwiaWF0IjoxNTAzMDQzMzIwLCJleHAiOjE1MDMxMjk3MjB9.VCWi7es1l4njFOX4dil9-8cRvB76O9mwYG6keNNGIH0"</span><span class="w">
 </span><span class="p">}</span><span class="w">
 
 </span></code></pre><h2 id='sign-in-a-user'>Sign in a user</h2><h3 id='request-2'>Request</h3>
@@ -517,58 +571,11 @@ Remember — only super admin can update user role!
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
 <aside class="notice">Returns a token for the user </aside>
-<h2 id='update-user-profile'>Update User Profile</h2>
-<p>Find matching instance of a User</p>
-<h3 id='request-3'>Request</h3>
-<p><code>PUT /api/v1/users</code></p>
-<h3 id='query-parameters-3'>Query Parameters</h3>
-<table><thead>
-<tr>
-<th>Parameter</th>
-<th>Default</th>
-<th>Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td>userName</td>
-<td>McGinnis</td>
-<td>user name</td>
-</tr>
-<tr>
-<td>email</td>
-<td>lovely@gmail.com</td>
-<td>email of the user</td>
-</tr>
-</tbody></table>
-<h3 id='response-3'>Response</h3>
-<p><code>Status: 200: Ok</code></p>
-
-<p><code>Status: 500: Internal Server Error - The request could not be processed at the moment, try again later</code></p>
-
-<blockquote>
-<p>The above command returns JSON structured like this:</p>
-</blockquote>
-<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Update profile successfully"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"data"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"userName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"    McGinnis"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"password"</span><span class="p">:</span><span class="w"> </span><span class="s2">"andelaepic"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ovely@gmail.com "</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"roleId"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-15"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"updatedAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-15"</span><span class="w">
-
-  </span><span class="p">}</span><span class="w">
-</span><span class="p">}</span><span class="w">
-
-</span></code></pre>
-<aside class="notice">only the owner of the profile can update it </aside>
 <h2 id='get-all-instances-of-users'>Get All Instances of users</h2>
-<p>Find matching instances of Users </p>
-<h3 id='request-4'>Request</h3>
+<p>Find instances of Users </p>
+<h3 id='request-3'>Request</h3>
 <p><code>GET /api/v1/users</code></p>
-<h3 id='query-parameters-4'>Query Parameters</h3>
+<h3 id='query-parameters-3'>Query Parameters</h3>
 <table><thead>
 <tr>
 <th>Parameter</th>
@@ -582,7 +589,7 @@ Remember — only super admin can update user role!
 <td>no parameter required</td>
 </tr>
 </tbody></table>
-<h3 id='response-4'>Response</h3>
+<h3 id='response-3'>Response</h3>
 <p><code>Status: 200: Ok - retrieved successfully</code></p>
 
 <p><code>Status: 500: Internal Server Error - The request could not be processed at the moment, try again later</code></p>
@@ -627,11 +634,140 @@ Remember — only super admin can update user role!
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
 <aside class="success">Returns  all users </aside>
-<h2 id='search-for-instance-of-a-user'>Search for instance of a user</h2>
-<p>Find matching instances of a user</p>
+<h2 id='get-instance-of-a-user'>Get instance of a user</h2>
+<p>Find matching instance of a user</p>
+<h3 id='request-4'>Request</h3>
+<p><code>GET /api/v1/users/:id</code></p>
+<h3 id='query-parameters-4'>Query Parameters</h3>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>id</td>
+<td>3</td>
+<td>id of the user</td>
+</tr>
+</tbody></table>
+<h3 id='response-4'>Response</h3>
+<p><code>Status: 200: Ok - retrieved successfully</code></p>
+
+<p><code>Status: 500: Internal Server Error - The request could not be processed at the moment, try again later</code></p>
+
+<blockquote>
+<p>The above command returns JSON structured like this:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+    </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"User successfully retrieved"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"user"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"userName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"YSlim"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"yusuf@ya.com"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<aside class="notice">Returns a single user </aside>
+<h2 id='update-user-account'>Update User Account</h2>
+<p>Update instance of a User</p>
 <h3 id='request-5'>Request</h3>
-<p><code>GET /api/v1/search/users/</code></p>
+<p><code>PUT /api/v1/users</code></p>
 <h3 id='query-parameters-5'>Query Parameters</h3>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>userName</td>
+<td>McGinnis</td>
+<td>user name</td>
+</tr>
+<tr>
+<td>email</td>
+<td>lovely@gmail.com</td>
+<td>email of the user</td>
+</tr>
+</tbody></table>
+<h3 id='response-5'>Response</h3>
+<p><code>Status: 200: Ok</code></p>
+
+<p><code>Status: 500: Internal Server Error - The request could not be processed at the moment, try again later</code></p>
+
+<blockquote>
+<p>The above command returns JSON structured like this:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"McGinnis Account updated successfully"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"userInfo"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"userName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"McGinnis"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"password"</span><span class="p">:</span><span class="w"> </span><span class="s2">"andelaepic"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"lovely@gmail.com "</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"roleId"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-15"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"updatedAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-15"</span><span class="w">
+
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span></code></pre>
+<aside class="notice">only the owner of the account can update it </aside>
+<h2 id='update-user-role'>Update User Role</h2>
+<p>Update instance of a User</p>
+<h3 id='request-6'>Request</h3>
+<p><code>PUT /api/v1/users/roles</code></p>
+<h3 id='query-parameters-6'>Query Parameters</h3>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>email</td>
+<td>lovely@gmail.com</td>
+<td>email of the user</td>
+</tr>
+<tr>
+<td>roleId</td>
+<td>2</td>
+<td>new role ID</td>
+</tr>
+</tbody></table>
+<h3 id='response-6'>Response</h3>
+<p><code>Status: 200: Ok</code></p>
+
+<p><code>Status: 500: Internal Server Error - The request could not be processed at the moment, try again later</code></p>
+
+<blockquote>
+<p>The above command returns JSON structured like this:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"McGinnis Role updated successfully"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">""</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"userName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"McGinnis"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"lovely@gmail.com "</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"roleId"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-15"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"updatedAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-15"</span><span class="w">
+
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span></code></pre>
+<aside class="notice">only the owner of the account can update it </aside>
+<h2 id='search-for-instance-of-a-user'>Search for instance of a user</h2>
+<p>Find instance of a user</p>
+<h3 id='request-7'>Request</h3>
+<p><code>GET /api/v1/search/users/</code></p>
+<h3 id='query-parameters-7'>Query Parameters</h3>
 <table><thead>
 <tr>
 <th>Parameter</th>
@@ -645,7 +781,7 @@ Remember — only super admin can update user role!
 <td>userName of the target user</td>
 </tr>
 </tbody></table>
-<h3 id='response-5'>Response</h3>
+<h3 id='response-7'>Response</h3>
 <p><code>Status: 200: Ok - retrieved successfully</code></p>
 
 <p><code>Status: 500: Internal Server Error - The request could not be processed at the moment, try again later</code></p>
@@ -670,45 +806,9 @@ Remember — only super admin can update user role!
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
 <aside class="success">Returns a single user that matches the search query </aside>
-<h2 id='get-instance-of-a-user'>Get instance of a user</h2>
-<p>Find matching instance of user</p>
-<h3 id='request-6'>Request</h3>
-<p><code>GET /api/v1/users/:id</code></p>
-<h3 id='query-parameters-6'>Query Parameters</h3>
-<table><thead>
-<tr>
-<th>Parameter</th>
-<th>Default</th>
-<th>Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td>id</td>
-<td>3</td>
-<td>id of the user</td>
-</tr>
-</tbody></table>
-<h3 id='response-6'>Response</h3>
-<p><code>Status: 200: Ok - retrieved successfully</code></p>
-
-<p><code>Status: 500: Internal Server Error - The request could not be processed at the moment, try again later</code></p>
-
-<blockquote>
-<p>The above command returns JSON structured like this:</p>
-</blockquote>
-<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-    </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"User successfully retrieved"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"user"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-        </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"userName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"YSlim"</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"email"</span><span class="p">:</span><span class="w"> </span><span class="s2">"yusuf@ya.com"</span><span class="w">
-    </span><span class="p">}</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
-<aside class="notice">Returns a single user </aside>
-<h2 id='delete-a-user'>Delete  a  user</h2><h3 id='request-7'>Request</h3>
+<h2 id='delete-a-user'>Delete a user</h2><h3 id='request-8'>Request</h3>
 <p><code>DELETE /api/v1/users/:id</code></p>
-<h3 id='query-parameters-7'>Query Parameters</h3>
+<h3 id='query-parameters-8'>Query Parameters</h3>
 <table><thead>
 <tr>
 <th>Parameter</th>
@@ -722,8 +822,8 @@ Remember — only super admin can update user role!
 <td>user id</td>
 </tr>
 </tbody></table>
-<h3 id='response-7'>Response</h3>
-<p><code>Status: 200: Ok - retrieved successfully</code></p>
+<h3 id='response-8'>Response</h3>
+<p>`Status: 200: Ok </p>
 
 <p><code>Status: 500: Internal Server Error - The request could not be processed at the moment, try again later</code></p>
 
@@ -731,90 +831,15 @@ Remember — only super admin can update user role!
 <p>The above command returns JSON structured like this:</p>
 </blockquote>
 <pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-    </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Deleted user successfully"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"usersDeleted"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">
+    </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"User deleted successfully"</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
 <aside class="warning"> only the owner and super admin can delete a user   </aside>
-<h1 id='document'>Document</h1><h2 id='get-all-instances-of-documents'>Get All Instances of documents</h2>
-<p>Find matching instances of Role</p>
-<h3 id='request'>Request</h3>
-<p><code>GET /api/v1/documents</code></p>
-<h3 id='query-parameters'>Query Parameters</h3>
-<table><thead>
-<tr>
-<th>Parameter</th>
-<th>Default</th>
-<th>Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td>none</td>
-<td>none</td>
-<td>no parameter required</td>
-</tr>
-</tbody></table>
-<h3 id='response'>Response</h3>
-<p><code>Status: 200: Ok - retrieved successfully</code></p>
-
-<p><code>Status: 500: Internal Server Error - The request could not be processed at the moment, try again later</code></p>
-
-<blockquote>
-<p>The above command returns JSON structured like this:</p>
-</blockquote>
-<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-    </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Documents retrieved succesfully"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"documents"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-        </span><span class="p">{</span><span class="w">
-            </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Adult education"</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"learn to read and write "</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"access"</span><span class="p">:</span><span class="w"> </span><span class="s2">"role"</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-17"</span><span class="w">
-        </span><span class="p">},</span><span class="w">
-        </span><span class="p">{</span><span class="w">
-            </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">11</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Public school education"</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Kowledge is power"</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"access"</span><span class="p">:</span><span class="w"> </span><span class="s2">"private"</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-17"</span><span class="w">
-        </span><span class="p">},</span><span class="w">
-        </span><span class="p">{</span><span class="w">
-            </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Andela is not a  school "</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Technology Technology"</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"access"</span><span class="p">:</span><span class="w"> </span><span class="s2">"public"</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-17"</span><span class="w">
-        </span><span class="p">},</span><span class="w">
-        </span><span class="p">{</span><span class="w">
-            </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">13</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Andela CUP"</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Building Team Spirit"</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"access"</span><span class="p">:</span><span class="w"> </span><span class="s2">"private"</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-17"</span><span class="w">
-        </span><span class="p">},</span><span class="w">
-        </span><span class="p">{</span><span class="w">
-            </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">14</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Legally Blond"</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Changing the colour of your hair."</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"access"</span><span class="p">:</span><span class="w"> </span><span class="s2">"public"</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-17"</span><span class="w">
-        </span><span class="p">}</span><span class="w">
-    </span><span class="p">],</span><span class="w">
-    </span><span class="s2">"pagination"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-        </span><span class="s2">"totalCount"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"currentPage"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"pageCount"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"pageSize"</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="w">
-    </span><span class="p">}</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
-<aside class="notice">Returns  documents created by the user and those that match public or user's role </aside>
-<h2 id='create-add-a-document'>Create/Add  a document</h2>
+<h1 id='document'>Document</h1><h2 id='create-add-a-document'>Create/Add  a document</h2>
 <p>Create a new instance of document</p>
-<h3 id='request-2'>Request</h3>
+<h3 id='request'>Request</h3>
 <p><code>POST /api/v1/documents</code></p>
-<h3 id='query-parameters-2'>Query Parameters</h3>
+<h3 id='query-parameters'>Query Parameters</h3>
 <table><thead>
 <tr>
 <th>Parameter</th>
@@ -838,7 +863,7 @@ Remember — only super admin can update user role!
 <td>access only by the creator and super admin</td>
 </tr>
 </tbody></table>
-<h3 id='response-2'>Response</h3>
+<h3 id='response'>Response</h3>
 <p><code>Status: 201: Ok - created</code></p>
 
 <p><code>Status: 500: Internal Server Error - The request could not be processed at the moment, try again later</code></p>
@@ -853,10 +878,109 @@ Remember — only super admin can update user role!
     </span><span class="s2">"ownerId"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">
 </span><span class="p">}</span><span class="w">
 
+</span></code></pre><h2 id='get-all-instances-of-documents'>Get All Instances of documents</h2><h3 id='request-2'>Request</h3>
+<p><code>GET /api/v1/documents</code></p>
+<h3 id='query-parameters-2'>Query Parameters</h3>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>none</td>
+<td>none</td>
+<td>no parameter required</td>
+</tr>
+</tbody></table>
+<h3 id='response-2'>Response</h3>
+<p><code>Status: 200: Ok - retrieved successfully</code></p>
+
+<p><code>Status: 500: Internal Server Error - The request could not be processed at the moment, try again later</code></p>
+
+<blockquote>
+<p>The above command returns JSON structured like this:</p>
+</blockquote>
+<pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+    </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Documents retrieved succesfully"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"returnedDocument"</span><span class="p">:</span><span class="w"> </span><span class="mi">9</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"documents"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Django lady"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Dummy data,dummy data"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"access"</span><span class="p">:</span><span class="w"> </span><span class="s2">"role"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-19"</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Learning Outcomes"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Active listening, growth mindset, adaptability"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"access"</span><span class="p">:</span><span class="w"> </span><span class="s2">"public"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-19"</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Private matter"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"prvay paapapjdjdjjd"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"access"</span><span class="p">:</span><span class="w"> </span><span class="s2">"private"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-19"</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Monkey Suit"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Dressing Sensibilty"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"access"</span><span class="p">:</span><span class="w"> </span><span class="s2">"private"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-19"</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Healthy Living"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Yoga, eat well, dring a lot of water"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"access"</span><span class="p">:</span><span class="w"> </span><span class="s2">"public"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-19"</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Dancing Lessons"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Yoga, Salsa"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"access"</span><span class="p">:</span><span class="w"> </span><span class="s2">"role"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-19"</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"The Drummer boy"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"King drummer, nonsene"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"access"</span><span class="p">:</span><span class="w"> </span><span class="s2">"private"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-19"</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Awesome Individual"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Awesomeness in the amking"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"access"</span><span class="p">:</span><span class="w"> </span><span class="s2">"role"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-19"</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+            </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">9</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Cooking mastery"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Boiling water 101"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"access"</span><span class="p">:</span><span class="w"> </span><span class="s2">"public"</span><span class="p">,</span><span class="w">
+            </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-19"</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">],</span><span class="w">
+    </span><span class="s2">"pagination"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"totalCount"</span><span class="p">:</span><span class="w"> </span><span class="mi">9</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"currentPage"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"pageCount"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"pageSize"</span><span class="p">:</span><span class="w"> </span><span class="mi">9</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
 </span></code></pre>
 <aside class="notice">Returns  documents created by the user and those that match public or user's role </aside>
 <h2 id='update-document'>Update document</h2>
-<p>Update matching instance of Document</p>
+<p>Update matching instance of a Document</p>
 <h3 id='request-3'>Request</h3>
 <p><code>PUT /api/v1/documents</code></p>
 <h3 id='query-parameters-3'>Query Parameters</h3>
@@ -897,7 +1021,7 @@ Remember — only super admin can update user role!
 </span><span class="p">}</span><span class="w">
 
 </span></code></pre>
-<aside class="notice">only the owner of the document can update it </aside>
+<aside class="notice">only the owner of the document can update the document </aside>
 <h2 id='search-for-instances-of-documents'>Search for instances of documents</h2>
 <p>Find matching instances of Documents</p>
 <h3 id='request-4'>Request</h3>
@@ -927,7 +1051,7 @@ Remember — only super admin can update user role!
 </tr>
 </tbody></table>
 <h3 id='response-4'>Response</h3>
-<p><code>Status: 200: Ok - retrieved successfully</code></p>
+<p><code>Status: 200: Ok</code></p>
 
 <p><code>Status: 500: Internal Server Error - The request could not be processed at the moment, try again later</code></p>
 
@@ -936,6 +1060,7 @@ Remember — only super admin can update user role!
 </blockquote>
 <pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
     </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Retrieved documents successfully"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"returnedDocument"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
     </span><span class="s2">"documents"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
         </span><span class="p">{</span><span class="w">
             </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span><span class="w">
@@ -981,12 +1106,12 @@ Remember — only super admin can update user role!
 </thead><tbody>
 <tr>
 <td>id</td>
-<td>2</td>
+<td>3</td>
 <td>id of the document</td>
 </tr>
 </tbody></table>
 <h3 id='response-5'>Response</h3>
-<p><code>Status: 200: Ok - retrieved successfully</code></p>
+<p><code>Status: 200: Ok</code></p>
 
 <p><code>Status: 500: Internal Server Error - The request could not be processed at the moment, try again later</code></p>
 
@@ -994,18 +1119,25 @@ Remember — only super admin can update user role!
 <p>The above command returns JSON structured like this:</p>
 </blockquote>
 <pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"the hunting paradise"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Arsene Wenger has challenged new signing Alexandre Lacazette to try and maintain"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"access"</span><span class="p">:</span><span class="w"> </span><span class="s2">"private"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"roleId"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"userId"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-16"</span><span class="p">,</span><span class="w">
-  </span><span class="s2">"updatedAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-16"</span><span class="w">
-
+    </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Retrieved document succesfully"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"document"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"count"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"rows"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+            </span><span class="p">{</span><span class="w">
+                </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Private matter"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"prvay paapapjdjdjjd"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"access"</span><span class="p">:</span><span class="w"> </span><span class="s2">"private"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"roleId"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"userId"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-19"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"updatedAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-19"</span><span class="w">
+            </span><span class="p">}</span><span class="w">
+        </span><span class="p">]</span><span class="w">
+    </span><span class="p">}</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
-<aside class="notice">Returns  document created by the user and those that match public or user's role </aside>
+<aside class="notice">Returns  a single document </aside>
 <h2 id='get-all-instances-of-a-user-documents'>Get All instances  of a user documents</h2>
 <p>Find matching instances of Documents</p>
 <h3 id='request-6'>Request</h3>
@@ -1020,7 +1152,7 @@ Remember — only super admin can update user role!
 </thead><tbody>
 <tr>
 <td>userId</td>
-<td>1</td>
+<td>3</td>
 <td>id of the owner</td>
 </tr>
 </tbody></table>
@@ -1034,43 +1166,53 @@ Remember — only super admin can update user role!
 </blockquote>
 <pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
     </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Retrieved documents successfully"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"documents"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
-        </span><span class="p">{</span><span class="w">
-            </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Code Testing"</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dummy data"</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"access"</span><span class="p">:</span><span class="w"> </span><span class="s2">"public"</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"roleId"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"userId"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-17"</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"updatedAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-17"</span><span class="w">
-        </span><span class="p">},</span><span class="w">
-        </span><span class="p">{</span><span class="w">
-            </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">9</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Role testing"</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"test data  dummy"</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"access"</span><span class="p">:</span><span class="w"> </span><span class="s2">"private"</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"roleId"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"userId"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-17"</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"updatedAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-17"</span><span class="w">
-        </span><span class="p">},</span><span class="w">
-        </span><span class="p">{</span><span class="w">
-            </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Alex the Stranger"</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Walkind dead, walking dead"</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"access"</span><span class="p">:</span><span class="w"> </span><span class="s2">"public"</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"roleId"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"userId"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-18"</span><span class="p">,</span><span class="w">
-            </span><span class="s2">"updatedAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-18"</span><span class="w">
-        </span><span class="p">}</span><span class="w">
-    </span><span class="p">]</span><span class="w">
+    </span><span class="s2">"returnedDocument"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"documents"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"count"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"rows"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+            </span><span class="p">{</span><span class="w">
+                </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"The Drummer boy"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"King drummer, nonsene"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"access"</span><span class="p">:</span><span class="w"> </span><span class="s2">"private"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"roleId"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"userId"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-19"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"updatedAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-19"</span><span class="w">
+            </span><span class="p">},</span><span class="w">
+            </span><span class="p">{</span><span class="w">
+                </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Awesome Individual"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Awesomeness in the amking"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"access"</span><span class="p">:</span><span class="w"> </span><span class="s2">"role"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"roleId"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"userId"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-19"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"updatedAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-19"</span><span class="w">
+            </span><span class="p">},</span><span class="w">
+            </span><span class="p">{</span><span class="w">
+                </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">9</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Cooking mastery"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Boiling water 101"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"access"</span><span class="p">:</span><span class="w"> </span><span class="s2">"public"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"roleId"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"userId"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"createdAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-19"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"updatedAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2017-08-19"</span><span class="w">
+            </span><span class="p">}</span><span class="w">
+        </span><span class="p">]</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"pagination"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"totalCount"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"currentPage"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"pageCount"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"pageSize"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="w">
+    </span><span class="p">}</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
-<aside class="notice">Returns  document created by the user and those that match public or user's role </aside>
-<h2 id='delete-instances-of-a-document'>Delete  instances  of a  document</h2>
-<p>Delete matching instances of Document</p>
+<aside class="notice">Returns  all documents </aside>
+<h2 id='delete-a-document'>Delete  a  document</h2>
+<p>Delete matching instance of a Document</p>
 <h3 id='request-7'>Request</h3>
 <p><code>DELETE /api/v1/documents/:id</code></p>
 <h3 id='query-parameters-7'>Query Parameters</h3>
@@ -1096,7 +1238,7 @@ Remember — only super admin can update user role!
 <p>The above command returns JSON structured like this:</p>
 </blockquote>
 <pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Deleted document successfully"</span><span class="w">
+    </span><span class="s2">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Document deleted successfully"</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
 <aside class="warning"> only the owner can delete a document  </aside>

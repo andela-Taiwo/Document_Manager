@@ -13,6 +13,7 @@ const mockData = {
   admin: { userId: 2, roleId: 2 },
   regularUser: { userId: 1, email: 'johnDoe@yahoo.com', roleId: 2 },
   user: { userId: 3, roleId: 3 },
+  anotherUser: { userId: 8, roleId: 3 },
   regularUserData: { password: '12345', email: 'johnDoe@yahoo.com', roleId: 2, userName: 'adeola' },
 
   invalidTitle: { param: 'title',

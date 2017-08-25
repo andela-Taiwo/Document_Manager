@@ -76,7 +76,7 @@ module.exports = {
    * @param {object} res - the response
    * @return {json}  User - expected return object
    * */
-  logginUser(req, res) {
+  logInUser(req, res) {
     Validator.verifyLoginParams(req)
       .then((result) => {
         const verifiedParams = result.mapped();
@@ -113,7 +113,8 @@ module.exports = {
                 }
               })
               .catch(error => res.status(400).send({
-                errorMessage: `${error} invalid parameter`
+                errorMessage: 'You have not registered',
+                error
               }));
       });
   },
@@ -180,6 +181,13 @@ module.exports = {
           res.status(412).json({ errorMessage: error.message });
         });
   },
+
+  /**
+   * Represents update user account function
+   * @param {object} req - the request
+   * @param {object} res - the response
+   * @return {json}  User - expected return object
+   * */
   updateUser(req, res) {
     return models.User
       .findOne({
@@ -194,11 +202,11 @@ module.exports = {
           email: req.body.email || user.email,
           roleId: req.decoded.user.roleId
         }).then((userUpdate) => {
-          const data = {
-            message: 'Update profile successfully',
+          const userInfo = {
+            message: `${userUpdate.userName} Account updated successfully`,
             data: userUpdate
           };
-          res.status(200).send(data);
+          res.status(200).send(userInfo);
         });
       })
       .catch((error) => {
@@ -273,11 +281,11 @@ module.exports = {
             { where: { email: user.email }
             })
                 .then((userUpdate) => {
-                  const data = {
-                    message: 'Update profile successfully',
-                    data: userUpdate
+                  const userInfo = {
+                    message: 'User role updated successfully',
+                    user: userUpdate
                   };
-                  res.send(data);
+                  res.send(userInfo);
                 });
         } else {
           res.status(400).json({ errorMessage: 'invalid role ID' });
@@ -306,7 +314,7 @@ module.exports = {
           }).then((user) => {
             if (user !== 0) {
               const data = {
-                message: 'Deleted user successfully',
+                message: 'User deleted successfully',
                 usersDeleted: user
               };
               res.send(data);
@@ -327,11 +335,9 @@ module.exports = {
       }
     }).then((user) => {
       if (user !== 0) {
-        const data = {
-          message: 'Deleted user successfully',
-          data: user
-        };
-        res.send(data);
+        res.status(200).send({
+          message: 'User deleted successfully',
+        });
       } else {
         res.status(403).send({
           errorMessage:

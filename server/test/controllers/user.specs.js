@@ -1,194 +1,190 @@
-
-
 import { expect } from 'chai';
 import supertest from 'supertest';
 import 'babel-register';
 import auth from '../../helper/auth';
-import models from '../../../build/models';
 import app from '../../../build/server';
 import mockData from '../mockData/mockData';
 
-const User = models.User;
-const Role = models.Role;
 
-const anotherUserToken = auth.setUserToken(mockData.user);
+const anotherUserToken = auth.setUserToken(mockData.anotherUser);
 const superAdminToken = auth.setUserToken(mockData.superAdmin);
 
-let regularToken;
+let userToken;
 const request = supertest(app);
 
-describe('user controller', () => {
-  describe('user', () => {
-    beforeEach((done) => {
-      User.destroy({
-        where: {},
-        truncate: true,
-        cascade: true,
-        restartIdentity: true
-      })
-  .then((err) => {
-    if (!err) {
-      Role.destroy({
-        where: {},
-        truncate: true,
-        cascade: true,
-        restartIdentity: true
-      })
-      .then((err) => {
-        if (!err) {
-          Role.bulkCreate([
-            { roleType: 'super admin' },
-            { roleType: 'admin' },
-            { roleType: 'user' }
-          ]).then(() => {
-            done();
-          });
-        }
-      });
-    }
-  });
+describe('User controller', () => {
+  describe('Add user function', () => {
+    it('should return a success message when a user makes a request to sign up',
+    (done) => {
+      request.post('/api/v1/users')
+    .send({
+      email: 'johnDoe@yahoo.com',
+      password: 'humanity',
+      userName: 'josh' })
+    .end((err, res) => {
+      userToken = res.body.token;
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('message', 'userName', 'token');
+      expect(res.body.message).to.be
+      .equal(`${res.body.userName} successfully signed up`);
+      expect(userToken).to.have.lengthOf.above(20);
+      expect(res.statusCode).to.be.equal(201);
+      done();
+    });
     });
 
-    describe('add user function', () => {
-      it(`should return a JSON object containing message and a token
-        if all the required parameter are suppplied`,
-      (done) => {
-        request.post('/api/v1/users')
-      .send({
-        email: 'johnDoe@yahoo.com',
-        password: 'humanity',
-        userName: 'josh' })
-      .end((err, res) => {
-        regularToken = res.body.token;
-        expect(res.body.message).to.be
-        .equal(`${res.body.userName} successfully signed up`);
-        expect(regularToken).to.have.lengthOf.above(20);
-        expect(res.statusCode).to.be.equal(201);
-        done();
-      });
-      });
-
-      it('should return error message with status code 401 for missing parameter ', (done) => {
-        request.post('/api/v1/users')
-      .send({ email: 'johnDoe@yahoo.com', password: 'humanity' })
-      .end((err, res) => {
-        expect((res.body.userName.errorMessage)).to.be
-        .equal('userName field is required');
-        expect(res.status).to.be.equal(401);
-        done();
-      });
-      });
-      it('should create a user if all the requiered parameter are supplied', (done) => {
-        request.post('/api/v1/users')
-      .send({ email: 'john@yahoo.com', password: 'humanity', userName: 'adeola' })
-      .end((err, res) => {
-        expect((res.body.message)).to.be
-        .equal(`${res.body.userName} successfully signed up`);
-        expect((res.statusCode)).to.be.equal(201);
-        done();
-      });
-      });
+    it(`should return error message with status code 401 when a user makes a
+      request to sign up with empty userName `, (done) => {
+      request.post('/api/v1/users')
+    .send({ email: 'johnDoe@yahoo.com', password: 'humanity' })
+    .end((err, res) => {
+      expect(res.body.userName).to.be.an('object').to.include
+      .any.keys('errorMessage');
+      expect((res.body.userName.errorMessage)).to.be
+      .equal('userName field is required');
+      expect(res.status).to.be.equal(401);
+      done();
     });
+    });
+    it('should return a success message when a user makes a request to signup',
+     (done) => {
+       request.post('/api/v1/users')
+    .send({ email: 'john@yahoo.com', password: 'humanity', userName: 'adeola' })
+    .end((err, res) => {
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('message', 'userName', 'token');
+      expect((res.body.message)).to.be
+      .equal(`${res.body.userName} successfully signed up`);
+      expect((res.statusCode)).to.be.equal(201);
+      done();
+    });
+     });
   });
 
-  describe(' user  login function', () => {
-    it(`should return error message with status 401 for
-      invalid email or password`, (done) => {
+
+  describe('Login function', () => {
+    it(`should return error message with status 401 when a user makes a
+       request to login with wrong password`, (done) => {
       request.post('/api/v1/users/login')
     .send({ email: 'john@yahoo.com', password: 'humivhhf' })
     .end((err, res) => {
       expect(res.statusCode).to.be.equal(401);
-      regularToken = res.body.token;
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('errorMessage');
       expect(res.body.errorMessage).to.be.equal('Invalid email or password');
       done();
     });
     });
 
-    it(`should return an  object containing  a token when user
-      successfully logged in`, (done) => {
-      request.post('/api/v1/users/login')
+    it(`should return a success message and token when a user
+      logs in successfully`,
+     (done) => {
+       request.post('/api/v1/users/login')
     .send({ email: 'john@yahoo.com', password: 'humanity' })
     .end((err, res) => {
       expect(res.status).to.be.equal(200);
-      regularToken = res.body.token;
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('message', 'token');
+      userToken = res.body.token;
+      expect(userToken).to.have.lengthOf.above(20);
       expect(res.body.message).to.be.equal('You are logged in adeola ');
       done();
     });
-    });
+     });
 
-    it(`should return error message with status code 400 ,
-      if email is not found`, (done) => {
+    it(`should return error message with status code 400 when a user makes a
+      request to sign in without being registered ,`, (done) => {
       request.post('/api/v1/users/login')
     .send({ email: 'johcom', password: 'humanity' })
     .end((err, res) => {
       expect(res.statusCode).to.be.equal(400);
-      expect(res.body.errorMessage).to.be
-.equal('TypeError: Cannot read property \'password\' of null invalid parameter');
-      done();
-    });
-    });
-  });
-  describe('get all users function ', () => {
-    it('should return an  object containing  all users', (done) => {
-      request.get('/api/v1/users/')
-    .set({ Authorization: regularToken })
-    .end((err, res) => {
-      expect(res.statusCode).to.be.equal(200);
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('errorMessage');
+      expect(res.body.errorMessage).to.be.equal('You have not registered');
       done();
     });
     });
   });
 
-  describe('get a user function', () => {
-    it(`should return an  object containing  a single user
-      if the user id is supplied`, (done) => {
-      request.get('/api/v1/users/1')
-    .set({ Authorization: regularToken })
+  describe('Get all users function ', () => {
+    it('should return all users with success message when a user makes a request'
+    , (done) => {
+      request.get('/api/v1/users/')
+    .set({ Authorization: userToken })
     .end((err, res) => {
       expect(res.statusCode).to.be.equal(200);
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('message', 'users');
+      expect(res.body.message).to.be.equal('Users successfully retrieved');
+      expect(res.body.users.length).to.be.equal(5);
+      expect(res.body.pagination.totalCount).to.be.equal(5);
+      done();
+    });
+    });
+  });
+
+  describe('Get a user function', () => {
+    it(`should return a success message when a user makes a request to
+      get a single user`, (done) => {
+      request.get('/api/v1/users/1')
+    .set({ Authorization: userToken })
+    .end((err, res) => {
+      expect(res.statusCode).to.be.equal(200);
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('message', 'user');
+      expect(res.body.message).to.be.equal('User successfully retrieved');
+      expect(res.body.user.id).to.be.equal(1);
       done();
     });
     });
 
     it(`should return an error message with status code 404
-      if the user id is not found`, (done) => {
+      when a user makes a request with id parameter that does not exist`, (done) => {
       request.get('/api/v1/users/100')
-    .set({ Authorization: regularToken })
+    .set({ Authorization: userToken })
     .end((err, res) => {
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('errorMessage');
       expect(res.statusCode).to.be.equal(404);
       expect(res.body.errorMessage).to.be.equal('user id does not exist');
       done();
     });
     });
-    it(`should return an error message with status code 412
-      if the user id is not valid`, (done) => {
+    it(`should return an error message with status code 400 when a user makes a
+       request with a string as an id parameter`, (done) => {
       request.get('/api/v1/users/av')
-    .set({ Authorization: regularToken })
+    .set({ Authorization: userToken })
     .end((err, res) => {
       expect(res.statusCode).to.be.equal(400);
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('errorMessage');
       expect(res.body.errorMessage).to.be
       .equal('invalid input syntax for integer: \"av\" invalid parameter');
+
       done();
     });
     });
   });
 
-  describe('user update profile function', () => {
-    it('should update personal profile, if is the owner ', (done) => {
+  describe('Update User Account function', () => {
+    it(`should return success message when a user makes a request to update
+     a personal account`, (done) => {
       request.put('/api/v1/users')
       .send({
         userName: 'adeola'
       })
-    .set({ Authorization: regularToken })
+    .set({ Authorization: userToken })
     .end((err, res) => {
       expect(res.statusCode).to.be.equal(200);
-      expect(res.body.message).to.be.equal('Update profile successfully');
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('message', 'user');
+      expect(res.body.message).to.be.equal('adeola Account updated successfully');
       done();
     });
     });
 
-    it(`should return error message  with status code 412 if user tries to update
-       another user profile `, (done) => {
+    it(`should return error message  with status code 412 when a user makes
+      a request to update another user account `, (done) => {
       request.put('/api/v1/users')
       .send({
         userName: 'adeola'
@@ -196,28 +192,39 @@ describe('user controller', () => {
     .set({ Authorization: anotherUserToken })
     .end((err, res) => {
       expect(res.statusCode).to.be.equal(412);
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('errorMessage');
+      expect(res.body.errorMessage)
+      .to.be.equal('Cannot read property \'update\' of null');
       done();
     });
     });
   });
 
 
-  describe('search function', () => {
-    it('should return a result that match the user query ', (done) => {
+  describe('Search function', () => {
+    it(`should return all user(s) that match the search query when a
+      user makes request `, (done) => {
       request.get('/api/v1/search/users/?q=adeola')
-    .set({ Authorization: regularToken })
+    .set({ Authorization: userToken })
     .end((err, res) => {
       expect(res.statusCode).to.be.equal(200);
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('message', 'users', 'pagination');
+      expect(res.body.pagination.totalCount).to.be.equal(1);
+      expect(res.body.message).to.be.equal('successfully retrieved user(s)');
       done();
     });
     });
 
     it(`should return error message with status code 404
-       if no data matches the user query`,
+       when user makes a request with username parameter that does not exist`,
     (done) => {
       request.get('/api/v1/search/users/?q=invalid username')
-    .set({ Authorization: regularToken })
+    .set({ Authorization: userToken })
     .end((err, res) => {
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('errorMessage');
       expect(res.body.errorMessage)
       .to.be.equal('Search term does not match any user');
       expect(res.statusCode).to.be.equal(404);
@@ -225,11 +232,10 @@ describe('user controller', () => {
     });
     });
   });
-  describe('pagination', () => {
 
-  });
-  describe('update user role function', () => {
-    it('should update user role if is a super admin ', (done) => {
+  describe('Update user role function', () => {
+    it(`should return success message when a super admin makes a request
+       to update user role`, (done) => {
       request.put('/api/v1/users/roles')
       .send({
         email: 'john@yahoo.com',
@@ -237,14 +243,16 @@ describe('user controller', () => {
       })
     .set({ Authorization: superAdminToken })
     .end((err, res) => {
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('message', 'user');
       expect(res.statusCode).to.be.equal(200);
-      expect(res.body.message).to.be.equal('Update profile successfully');
+      expect(res.body.message).to.be.equal('User role updated successfully');
       done();
     });
     });
 
-    it(`should return error message with status code 400,
-      if super admin supplied role id thats not an integer `, (done) => {
+    it(`should return error message with status code 400, when a super admin
+       makes a request to update user role with invalid id `, (done) => {
       request.put('/api/v1/users/roles')
       .send({
         email: 'john@yahoo.com',
@@ -252,14 +260,17 @@ describe('user controller', () => {
       })
     .set({ Authorization: superAdminToken })
     .end((err, res) => {
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('errorMessage');
       expect(res.statusCode).to.be.equal(400);
-      // expect(res.body.message).to.be.equal('Update profile successfully');
+      expect(res.body.errorMessage).to.be.equal('invalid role ID');
       done();
     });
     });
 
-    it(`should return error message with status code 412,
-      if email does not exist `, (done) => {
+    it(`should return error message with status code 412, when a super admin
+      makes a request to update the role of a user that does not exist `
+      , (done) => {
       request.put('/api/v1/users/roles')
       .send({
         email: 'jsikkjkjkekjek@yahoo.com',
@@ -267,6 +278,8 @@ describe('user controller', () => {
       })
     .set({ Authorization: superAdminToken })
     .end((err, res) => {
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('errorMessage');
       expect(res.statusCode).to.be.equal(412);
       expect(res.body.errorMessage).to.be
       .equal('Cannot read property \'email\' of null');
@@ -274,90 +287,99 @@ describe('user controller', () => {
     });
     });
 
-    it(`should return error message with status code 403,
-      if is not super admin  `, (done) => {
+    it(`should return error message with status code 403, when a user makes a
+       request to update user role `, (done) => {
       request.put('/api/v1/users/roles')
       .send({
         email: 'john@yahoo.com',
         roleId: '2'
       })
-    .set({ Authorization: regularToken })
+    .set({ Authorization: userToken })
     .end((err, res) => {
       expect(res.statusCode).to.be.equal(403);
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('errorMessage');
       expect(res.body.errorMessage).to.be
       .equal('You do not have access to set role');
       done();
     });
     });
   });
-  describe('delete user function', () => {
-    it('should not be able to delete another user account ', (done) => {
+  describe('Delete user function', () => {
+    it(`should return an error message with status code 403 when a user makes
+     a request to delete another user account`, (done) => {
       request.delete('/api/v1/users/1')
     .set({ Authorization: anotherUserToken })
     .end((err, res) => {
-      expect(res.statusCode).to.be.equal(403);
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('errorMessage');
       expect(res.body.errorMessage)
       .to.be.equal('You are not authorized to delete another user account');
       expect(res.statusCode).to.be.equal(403);
+
       done();
     });
     });
     it(`should return error message with status code 412
-       if user id is not an integer`, (done) => {
+       when user makes a request to delete with an invalid user id`, (done) => {
       request.delete('/api/v1/users/q2')
-    .set({ Authorization: regularToken })
+    .set({ Authorization: userToken })
     .end((err, res) => {
-      // expect(res.body.message).to.be.equal('Deleted user successfully');
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('errorMessage');
       expect(res.statusCode).to.be.equal(412);
+      expect(res.body.errorMessage).to.be
+      .equal('invalid input syntax for integer: "q2"');
       done();
     });
     });
-    it('should delete a  personal profile if is a user ', (done) => {
-      request.delete('/api/v1/users/1')
-    .set({ Authorization: regularToken })
+    it(`should return a success message when  user makes a request to
+       delete personal account`, (done) => {
+      request.delete('/api/v1/users/5')
+    .set({ Authorization: userToken })
     .end((err, res) => {
-      expect(res.body.message).to.be.equal('Deleted user successfully');
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('message');
+      expect(res.body.message).to.be.equal('User deleted successfully');
       expect(res.statusCode).to.be.equal(200);
       done();
     });
     });
 
-    it('should return "User successfully signup" and status 201', (done) => {
-      request.post('/api/v1/users')
-    .send({ email: 'jane@yahoo.com', password: 'precious', userName: 'pretty' })
-    .end((err, res) => {
-      expect((res.body.message)).to.be
-      .equal(`${res.body.userName} successfully signed up`);
-      expect((res.statusCode)).to.be.equal(201);
-      done();
-    });
-    });
-    it(`should return error message with status code 412,
-      if the user id is invalid `, (done) => {
+    it(`should return error message with status code 412, when a super admin
+      makes a request to delete an account with invalid user id `, (done) => {
       request.delete('/api/v1/users/----aas')
     .set({ Authorization: superAdminToken })
     .end((err, res) => {
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('errorMessage');
       expect(res.body.errorMessage).to
       .be.equal('invalid input syntax for integer: \"----aas\"');
       expect(res.statusCode).to.be.equal(412);
       done();
     });
     });
-    it('should delete another user profile if is a super admin ', (done) => {
+    it(`should return a success message when a super admin makes a
+      request to delete an acccount`, (done) => {
       request.delete('/api/v1/users/2')
     .set({ Authorization: superAdminToken })
     .end((err, res) => {
-      expect(res.body.message).to.be.equal('Deleted user successfully');
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('message');
+      expect(res.body.message).to.be.equal('User deleted successfully');
       expect(res.statusCode).to.be.equal(200);
       done();
     });
     });
 
-    it('should  return error message with status code 404 if the user id is not found '
+    it(`should  return error message with status code 404 when a super admin
+      makes a request to delete an account that does not exist`
     , (done) => {
       request.delete('/api/v1/users/2')
     .set({ Authorization: superAdminToken })
     .end((err, res) => {
+      expect(res.body).to.be.an('object').to.include
+      .any.keys('errorMessage');
       expect(res.body.errorMessage).to.be.equal('user id is not found');
       expect(res.statusCode).to.be.equal(404);
       done();

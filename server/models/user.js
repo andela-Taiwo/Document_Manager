@@ -14,7 +14,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       validate: { isEmail: true }
     },
-    roleId: DataTypes.INTEGER
+    roleId: {
+      type: DataTypes.INTEGER,
+      validate: { notEmpty: true }
+    }
   },
     {
       hooks: {

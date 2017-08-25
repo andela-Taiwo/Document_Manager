@@ -12,16 +12,17 @@ module.exports = {
     const auth = (req.decoded.user.roleId);
     if (auth === 1 || auth === 2) {
       return models.Role
-      .all()
+      .findAndCountAll()
       .then(roles => res.status(200).send({
         message: 'Retrieved roles successfully',
-        roles
+        roles,
+        returnedRoles: roles.count
       }))
       .catch((error) => {
-        res.status(412).json({ msg: error.message });
+        res.status(412).json({ errorMessage: error.message });
       });
     }
-    res.status(403).send({ message: 'You are not authorized to view roles' });
+    res.status(403).send({ errorMessage: 'You are not authorized to view roles' });
   },
 
   /**
@@ -45,7 +46,7 @@ module.exports = {
           errorMessage: error.message
         }));
     }
-    res.status(403).send({ message: 'unauthorize user cannot  set role' });
+    res.status(403).send({ errorMessage: 'unauthorize user cannot  set role' });
   },
 
   /**
@@ -72,19 +73,17 @@ module.exports = {
           { where: { id: req.params.id }
           }
         )
-        .then((roleUpdate) => {
-          const data = {
-            message: 'Update role successfully',
-            rolesUpdated: roleUpdate
-          };
-          res.send(data);
+        .then(() => {
+          res.status(200).send({
+            message: 'Role updated succesfully'
+          });
         });
       })
       .catch((error) => {
         res.status(412).json({ errorMessage: error.message });
       });
     }
-    res.status(403).send({ message: 'You do not have access to set role' });
+    res.status(403).send({ errorMessage: 'You do not have access to set role' });
   },
 
   /**
@@ -102,11 +101,9 @@ module.exports = {
             }
           }).then((role) => {
             if (role !== 0) {
-              const data = {
-                message: 'Role Deleted successfully',
-                rolesDeleted: role
-              };
-              res.send(data);
+              res.status(200).send({
+                message: 'Role Deleted successfully'
+              });
             } else {
               res.status(404).send({
                 errorMessage: 'role not found'
