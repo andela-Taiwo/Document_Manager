@@ -4,6 +4,11 @@ import autoprefixer from 'autoprefixer';
 import path from 'path';
 
 export default {
+  output: {
+    path: path.resolve(__dirname, 'client/dist'), // Note: Physical files are only output by the production build task `npm run build`.
+    publicPath: '/',
+    filename: 'bundle.js'
+  },
   resolve: {
     extensions: ['*', '.js', '.jsx', '.json']
   },
@@ -16,11 +21,7 @@ export default {
     path.resolve(__dirname, 'client/src/index.js') // Defining path seems necessary for this to work consistently on Windows machines.
   ],
   target: 'web',
-  output: {
-    path: path.resolve(__dirname, 'dist'), // Note: Physical files are only output by the production build task `npm run build`.
-    publicPath: '/',
-    filename: 'bundle.js'
-  },
+
   plugins: [
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('development'), // Tells React to build in either dev or prod modes. https://facebook.github.io/react/downloads.html (See bottom)
