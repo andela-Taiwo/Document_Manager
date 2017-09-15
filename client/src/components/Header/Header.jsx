@@ -1,26 +1,32 @@
 import React from  'react';
+import { Link } from 'react-router';
 
-const Header = () => {
-    return(
+class Header extends React.Component{
+  componentDidMount() {
+    $('.button-collapse').sideNav();
+  }
+    render(){
+      return(
       <nav>
       <div className="nav-wrapper">
-        <a href="#!" className="brand-logo">RD</a>
-        <a href="#" data-activates="mobile-demo" className="button-collapse"><i className="material-icons">menu</i></a>
+        <Link to="#!" className="brand-logo center">RD</Link>
+        <Link to="#" data-activates="mobile-demo" className="button-collapse"><i className="material-icons">menu</i></Link>
         <ul className="right hide-on-med-and-down">
-          <li><a href="sass.html">Sass</a></li>
-          <li><a href="badges.html">Components</a></li>
-          <li><a href="collapsible.html">Javascript</a></li>
-          <li><a href="mobile.html">Mobile</a></li>
+          <li><Link to="sass.html">Sass</Link></li>
+          <li><Link to="badges.html">Components</Link></li>
+          <li><Link to="collapsible.html">Javascript</Link></li>
+          <li><Link to="mobile.html">Mobile</Link></li>
         </ul>
         <ul className="side-nav" id="mobile-demo">
-          <li><a href="sass.html">Sass</a></li>
-          <li><a href="badges.html">Components</a></li>
-          <li><a href="collapsible.html">Javascript</a></li>
-          <li><a href="mobile.html">Mobile</a></li>
+          <li><Link to="sass.html">Sass</Link></li>
+          <li><Link to="badges.html">Components</Link></li>
+          <li><Link to="collapsible.html">Javascript</Link></li>
+          <li><Link to="mobile.html">Mobile</Link></li>
         </ul>
       </div>
     </nav>
     );
   }
+}
 
 export default Header;

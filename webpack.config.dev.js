@@ -3,6 +3,7 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import autoprefixer from 'autoprefixer';
 import path from 'path';
 
+
 export default {
   output: {
     path: path.resolve(__dirname, 'client/dist'), // Note: Physical files are only output by the production build task `npm run build`.

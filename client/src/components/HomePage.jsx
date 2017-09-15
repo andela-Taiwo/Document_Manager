@@ -1,8 +1,14 @@
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import React from 'react';
-import Login from './Login.jsx';
-import SignUp from './SignUp.jsx';
+import Login from './login/Login.jsx';
+import SignUpForm from './signup/SignUpForm.jsx';
+// import {userSignupRequest} from '../actions/SignUpAction';
+import { signUp } from '../actions/SignUpAction'
+
 class HomePage extends React.Component {
   render(){
+    const {signUp}  = this.props;
     return(
       <div>
         <div className="">
@@ -13,7 +19,7 @@ class HomePage extends React.Component {
           </div>
           <div className="row">
             <div className="card-panel col l6">
-              <SignUp />
+              <SignUpForm />
             </div>
             <div className="card-panel small col l6">
               <Login />
@@ -27,4 +33,15 @@ class HomePage extends React.Component {
   }
 }
 
+// HomePage.propTypes= {
+//   signUp: PropTypes.func.isRequired,
+// }
+
+// function mapStateToProps(state) {
+//   return{user: state.SignUpReducer}
+// }
+// function mapDispatchToProps(dispatch) {
+//   return bindActionCreators({reducer},dispatch)
+// }
 export default HomePage;
+// export default connect(mapStateToProps)(HomePage)

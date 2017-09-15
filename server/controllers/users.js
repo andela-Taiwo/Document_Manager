@@ -22,6 +22,7 @@ module.exports = {
         const verifiedParams = result.mapped();
         const noErrors = result.isEmpty();
         if (!noErrors) {
+          console.log(verifiedParams)
           res.status(401).send(verifiedParams);
           return {};
         }
@@ -82,7 +83,7 @@ module.exports = {
         const verifiedParams = result.mapped();
         const noErrors = result.isEmpty();
         if (!noErrors) {
-          res.send(verifiedParams);
+          res.status(401).send(verifiedParams);
           return {};
         }
         const password = req.body.password;
