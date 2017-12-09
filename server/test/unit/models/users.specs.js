@@ -1,5 +1,5 @@
 import chai from 'chai';
-import models from '../../../server/models';
+import models from '../../../../server/models';
 
 const expect = chai.expect;
 

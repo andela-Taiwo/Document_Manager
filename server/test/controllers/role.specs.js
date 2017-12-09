@@ -12,7 +12,7 @@ const superAdminToken = auth.setUserToken(mockData.superAdmin);
 const adminToken = auth.setUserToken(mockData.admin);
 const userToken = auth.setUserToken(mockData.user);
 
-describe('Role controller', () => {
+describe('Roles', () => {
   describe('create role function', () => {
     it(`should return error message with status code 403 when a user makes
       a request to create a role`, (done) => {
@@ -161,7 +161,7 @@ describe('Role controller', () => {
         });
     });
 
-    it(`should return errror message with status code 412, when a super admin
+    it(`should return error message with status code 412, when a super admin
       makes a request to update a role with invalid role id parameter`
       , (done) => {
       request(app)
@@ -223,7 +223,7 @@ describe('Role controller', () => {
   });
 
   describe('Delete role function', () => {
-    it(`should return a success message when a user makes a request
+    it(`should return a success message when a super admin makes a request
       to delete a role `, (done) => {
       request(app)
       .delete('/api/v1/roles/4')
@@ -251,8 +251,7 @@ describe('Role controller', () => {
       });
     });
     it(`should error message with status code 412 , when a super admin makes
-      request to delete a role with invalid role id paramater`
-    , (done) => {
+      request to delete a role with invalid role id paramater`, (done) => {
       request(app)
       .delete('/api/v1/roles/---')
       .set({ Authorization: superAdminToken })

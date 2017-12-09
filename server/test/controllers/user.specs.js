@@ -12,7 +12,7 @@ const superAdminToken = auth.setUserToken(mockData.superAdmin);
 let userToken;
 const request = supertest(app);
 
-describe('User controller', () => {
+describe('Users', () => {
   describe('Add user function', () => {
     it('should return a success message when a user makes a request to sign up',
     (done) => {
@@ -100,7 +100,8 @@ describe('User controller', () => {
       expect(res.statusCode).to.be.equal(400);
       expect(res.body).to.be.an('object').to.include
       .any.keys('errorMessage');
-      expect(res.body.errorMessage).to.be.equal('You have not registered');
+      expect(res.body.errorMessage).to.be
+      .equal('Invalid login parameter, please sign up first and try again');
       done();
     });
     });
